@@ -9,7 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 export interface PageItem {
   key: string;
   label: string;
-  icon?: string;
+  icon?: string | React.ReactNode;
   component: React.ReactElement;
 }
 
