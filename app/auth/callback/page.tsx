@@ -28,12 +28,31 @@ function CallbackContent() {
     return <div className="p-4 text-red-600">{error}</div>;
   }
 
-  return <div className="p-4">Authenticating...</div>;
+  // Centered loading GIF
+  return (
+    <div className="flex items-center justify-center w-full h-screen">
+      <img
+        src="/loading_state.gif"
+        alt="Loading"
+        // className="w-32 h-32"
+      />
+    </div>
+  );
 }
 
 export default function CallbackPage() {
   return (
-    <Suspense fallback={<div className="p-4">Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center w-full h-screen">
+          <img
+            src="/loading_state.gif"
+            alt="Loading"
+            // className="w-32 h-32"
+          />
+        </div>
+      }
+    >
       <CallbackContent />
     </Suspense>
   );

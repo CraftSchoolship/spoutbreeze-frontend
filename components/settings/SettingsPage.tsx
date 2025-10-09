@@ -7,7 +7,9 @@ import DeleteAccount from "./deleteAccount/DeleteAccount";
 import AccountInfo from "./accountInfo/AccountInfo";
 import PasswordSettings from "./password/PasswordSettings";
 import AccessControl from "./accessControl/AccessControl";
+import Integrations from "./integrations/Integrations";
 import { fetchCurrentUser, User, isAdmin } from "@/actions/fetchUsers";
+import LinkIcon from "@mui/icons-material/Link";
 
 const SettingsPage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -29,7 +31,15 @@ const SettingsPage: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center w-full h-screen">
+      <img
+        src="/loading_state.gif"
+        alt="Loading"
+        // className="w-32 h-32"
+      />
+    </div>
+    );
   }
 
   const baseItems: PageItem[] = [
@@ -44,6 +54,12 @@ const SettingsPage: React.FC = () => {
       label: "Password",
       icon: "/sidebar/password_icon.svg",
       component: <PasswordSettings />,
+    },
+    {
+      key: "integrations",
+      label: "Integrations",
+      icon: <LinkIcon fontSize="small" />,
+      component: <Integrations />,
     },
   ];
 

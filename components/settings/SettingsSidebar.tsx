@@ -85,13 +85,22 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
             label={
               <Box className="flex items-center w-full tab-content">
                 {item.icon && (
-                  <Image
-                    src={item.icon}
-                    alt={item.label}
-                    width={16}
-                    height={16}
-                    className="w-4 h-4 mr-3 transition-all duration-200"
-                  />
+                  typeof item.icon === "string" ? (
+                    <Image
+                      src={item.icon}
+                      alt={item.label}
+                      width={16}
+                      height={16}
+                      className="w-4 h-4 mr-3 transition-all duration-200"
+                    />
+                  ) : (
+                    <Box
+                      className="mr-3 flex items-center justify-center"
+                      sx={{ width: 16, height: 16 }}
+                    >
+                      {item.icon}
+                    </Box>
+                  )
                 )}
                 <span className="text-[15px] font-medium">{item.label}</span>
               </Box>
