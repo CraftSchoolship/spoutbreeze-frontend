@@ -1,7 +1,7 @@
-export interface TwitchTokenStatus {
+export interface YouTubeTokenStatus {
   user_id: string;
   has_token: boolean;
-  token_preview?: string;
+  token_preview?: string | null;
   expires_at: string;
   current_time: string;
   time_until_expiry: string;
@@ -9,13 +9,12 @@ export interface TwitchTokenStatus {
   expires_soon: boolean;
   has_refresh_token: boolean;
   created_at: string;
-  error?: string;
+  error?: string | null;
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
 async function authFetch<T>(url: string, options: RequestInit = {}): Promise<T> {
-  // If you use cookies (HttpOnly) for auth, credentials: include
   const res = await fetch(url, {
     ...options,
     headers: {
@@ -31,20 +30,21 @@ async function authFetch<T>(url: string, options: RequestInit = {}): Promise<T> 
   return res.json();
 }
 
-export const getTwitchAuthUrl = () =>
+export const getYouTubeAuthUrl = () =>
   authFetch<{ authorization_url: string; user_id: string }>(
-    `${API_BASE}/api/auth/twitch/login`
+    `${API_BASE}/api/auth/youtube/login`
   );
 
-export const getTwitchTokenStatus = () =>
-  authFetch<TwitchTokenStatus>(`${API_BASE}/api/auth/twitch/token-status`);
+export const getYouTubeTokenStatus = () =>
+  authFetch<YouTubeTokenStatus>(`${API_BASE}/api/auth/youtube/token-status`);
 
-export const revokeTwitchToken = () =>
-  authFetch<{ message: string }>(`${API_BASE}/api/auth/twitch/token`, {
+export const revokeYouTubeToken = () =>
+  authFetch<{ message: string }>(`${API_BASE}/api/auth/youtube/token`, {
     method: "DELETE",
   });
 
-export const startTwitchConnection = () =>
-  authFetch<{ connected: boolean }>(`${API_BASE}/api/auth/twitch/connect`, {
-    method: "POST",
-  });
+export const startYouTubeConnection = () =>
+  authFetch<{ message: string; user_id: string }>(
+    `${API_BASE}/api/auth/youtube/connect`,
+    { method: "POST" }
+  );
