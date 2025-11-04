@@ -13,13 +13,15 @@ export const logout = async (): Promise<LogoutResponse> => {
 
     // Clear sessionStorage (cookies are already cleared by backend)
     clearTokens();
+    window.location.href = '/';
 
     return response.data;
   } catch (error) {
     console.error("Error logging out:", error);
     
-    // Even if logout fails, clear sessionStorage
+    // Even if logout fails, clear sessionStorage and redirect
     clearTokens();
+    window.location.href = '/';
     
     return {
       message: "Logout completed (with errors)",
