@@ -83,7 +83,7 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
           <StyledTab
             key={item.key}
             label={
-              <Box className="flex items-center w-full tab-content">
+              <Box className="flex items-center w-full tab-content h-full">
                 {item.icon && (
                   typeof item.icon === "string" ? (
                     <Image

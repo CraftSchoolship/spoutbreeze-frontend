@@ -35,13 +35,16 @@ const isPublicPath = (pathname: string) => {
   return publicPaths.some(path => pathname.includes(path));
 };
 
+// Detect server environment
+const isServer = typeof window === 'undefined';
+
 // Simplified response interceptor with loop prevention
 axiosInstance.interceptors.response.use(
   (res) => res,
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+  if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         // If we're already refreshing, queue this request
         return new Promise((resolve, reject) => {
@@ -64,24 +67,30 @@ axiosInstance.interceptors.response.use(
           return axiosInstance(originalRequest);
         } else {
           processQueue(error, null);
-          clearTokens();
+          // Avoid touching client storage in SSR
+          if (!isServer) clearTokens();
           
-          // Only redirect to login if we're NOT on a public path
-          if (!isPublicPath(window.location.pathname)) {
-            const loginUrl = await getLoginUrl();
-            window.location.href = loginUrl;
+          // Only redirect to login on the client
+          if (!isServer) {
+            const pathname = window.location?.pathname || '/';
+            if (!isPublicPath(pathname)) {
+              const loginUrl = await getLoginUrl();
+              window.location.href = loginUrl;
+            }
           }
           
           return Promise.reject(error);
         }
       } catch (refreshError) {
         processQueue(refreshError, null);
-        clearTokens();
+        if (!isServer) clearTokens();
         
-        // Only redirect to login if we're NOT on a public path
-        if (!isPublicPath(window.location.pathname)) {
-          const loginUrl = await getLoginUrl();
-          window.location.href = loginUrl;
+        if (!isServer) {
+          const pathname = window.location?.pathname || '/';
+          if (!isPublicPath(pathname)) {
+            const loginUrl = await getLoginUrl();
+            window.location.href = loginUrl;
+          }
         }
         
         return Promise.reject(refreshError);
