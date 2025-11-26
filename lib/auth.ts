@@ -14,7 +14,13 @@ export const initPKCE = async () => {
   const codeChallenge = await generateCodeChallenge(codeVerifier);
 
   // Store code verifier in sessionStorage
-  sessionStorage.setItem("code_verifier", codeVerifier);
+  if (typeof window !== "undefined") {
+    try {
+      sessionStorage.setItem("code_verifier", codeVerifier);
+    } catch (_) {
+      // ignore storage errors in restricted environments
+    }
+  }
 
   return { codeVerifier, codeChallenge };
 };
@@ -32,7 +38,9 @@ export const getLoginUrl = async () => {
 
 // Send code to FastAPI backend for token exchange
 export const exchangeCodeForToken = async (code: string) => {
-  const codeVerifier = sessionStorage.getItem("code_verifier");
+  const codeVerifier = typeof window !== "undefined"
+    ? sessionStorage.getItem("code_verifier")
+    : null;
 
   if (!codeVerifier) {
     throw new Error("Code verifier not found");
@@ -55,7 +63,11 @@ export const exchangeCodeForToken = async (code: string) => {
   }
   
   // Clear the code verifier after successful exchange
-  sessionStorage.removeItem("code_verifier");
+  if (typeof window !== "undefined") {
+    try {
+      sessionStorage.removeItem("code_verifier");
+    } catch (_) {}
+  }
   
   const data = await response.json();
   return data;
@@ -63,7 +75,13 @@ export const exchangeCodeForToken = async (code: string) => {
 
 // Clear sessionStorage only
 export const clearTokens = () => {
-  sessionStorage.removeItem("code_verifier");
+  if (typeof window !== "undefined") {
+    try {
+      sessionStorage.removeItem("code_verifier");
+    } catch (_) {
+      // ignore if storage not accessible
+    }
+  }
   // Note: HTTP-only cookies are cleared by the backend logout endpoint
 };
 

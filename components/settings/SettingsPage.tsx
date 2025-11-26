@@ -8,8 +8,10 @@ import AccountInfo from "./accountInfo/AccountInfo";
 import PasswordSettings from "./password/PasswordSettings";
 import AccessControl from "./accessControl/AccessControl";
 import Integrations from "./integrations/Integrations";
+import BillingSettings from "./BillingSettings";
 import { fetchCurrentUser, User, isAdmin } from "@/actions/fetchUsers";
 import LinkIcon from "@mui/icons-material/Link";
+import PaymentIcon from "@mui/icons-material/Payment";
 
 const SettingsPage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -54,6 +56,12 @@ const SettingsPage: React.FC = () => {
       label: "Password",
       icon: "/sidebar/password_icon.svg",
       component: <PasswordSettings />,
+    },
+    {
+      key: "subscription",
+      label: "Subscription & Billing",
+      icon: <PaymentIcon fontSize="small" />,
+      component: <BillingSettings />,
     },
     {
       key: "integrations",
