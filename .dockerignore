@@ -1,6 +1,12 @@
 node_modules
 .next
+.build
+coverage
+*.log
 .git
+.gitignore
+.vscode
+.idea
 Dockerfile
 .dockerignore
 .env.local
