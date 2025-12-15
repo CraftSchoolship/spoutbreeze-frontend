@@ -16,7 +16,7 @@ const Recordings: React.FC = () => {
     const fetchRecordingsData = async () => {
       try {
         const data = await getRecordings();
-        setRecordings(data.recordings);
+        setRecordings(data.recordings ?? []);
         setLoading(false);
       } catch (error) {
         console.error("Detailed error:", error);
