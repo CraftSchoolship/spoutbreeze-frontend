@@ -25,7 +25,7 @@ jobs:
 
       - name: Load environment variables
         run: |
-          echo "${{ vars.ENV_FILE }}" > .env
+          echo "${{ vars.ENV_FILE }}" > .env.production
           set -a
           source .env
           set +a
