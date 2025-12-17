@@ -17,6 +17,7 @@ import {
   Skeleton,
 } from "@mui/material";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import {
   getYouTubeAuthUrl,
   getYouTubeTokenStatus,
@@ -28,11 +29,13 @@ import {
 const BRAND_COLOR = "#27AAFF";
 
 const YouTubeIntegrationCard: React.FC = () => {
+  const searchParams = useSearchParams();
   const [status, setStatus] = useState<YouTubeTokenStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [working, setWorking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [justRevoked, setJustRevoked] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const loadStatus = async () => {
     setLoading(true);
@@ -49,17 +52,56 @@ const YouTubeIntegrationCard: React.FC = () => {
 
   useEffect(() => {
     loadStatus();
-  }, []);
+
+    // Check for OAuth callback parameters
+    const youtubeSuccess = searchParams.get("youtube_success");
+    const youtubeError = searchParams.get("youtube_error");
+
+    if (youtubeSuccess === "true") {
+      setSuccessMessage("Successfully connected to YouTube!");
+      setError(null);
+      // Reload status to get fresh token info
+      setTimeout(() => {
+        loadStatus();
+      }, 500);
+
+      // Clean URL after 3 seconds
+      setTimeout(() => {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("youtube_success");
+        window.history.replaceState({}, "", url.toString());
+        setSuccessMessage(null);
+      }, 3000);
+    } else if (youtubeError) {
+      const errorMessages: Record<string, string> = {
+        access_denied:
+          "You denied access to YouTube. Please try again if you want to connect.",
+        auth_failed: "Failed to authenticate with YouTube. Please try again.",
+        invalid_callback: "Invalid OAuth callback. Please try again.",
+      };
+
+      setError(
+        errorMessages[youtubeError] || `Authentication error: ${youtubeError}`
+      );
+
+      // Clean URL after showing error
+      setTimeout(() => {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("youtube_error");
+        window.history.replaceState({}, "", url.toString());
+      }, 5000);
+    }
+  }, [searchParams]);
 
   const handleConnect = async () => {
     setWorking(true);
     setError(null);
     try {
       const { authorization_url } = await getYouTubeAuthUrl();
-      window.open(authorization_url, "_blank", "noopener,noreferrer");
+      // Redirect current window to YouTube OAuth
+      window.location.href = authorization_url;
     } catch (e: any) {
       setError(e?.message || "Failed to initiate YouTube authentication");
-    } finally {
       setWorking(false);
     }
   };
@@ -83,6 +125,8 @@ const YouTubeIntegrationCard: React.FC = () => {
     setError(null);
     try {
       await startYouTubeConnection();
+      setSuccessMessage("Chat polling started successfully!");
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (e: any) {
       setError(e?.message || "Failed to start YouTube chat polling");
     } finally {
@@ -103,14 +147,13 @@ const YouTubeIntegrationCard: React.FC = () => {
     return `${hrs}h ${remMin}m`;
   }, [status]);
 
-  const chipProps =
-    status?.has_token
-      ? status.is_expired
-        ? { label: "Expired", color: "error" as const }
-        : status.expires_soon
-        ? { label: "Expires Soon", color: "warning" as const }
-        : { label: "Connected", color: "success" as const }
-      : null;
+  const chipProps = status?.has_token
+    ? status.is_expired
+      ? { label: "Expired", color: "error" as const }
+      : status.expires_soon
+      ? { label: "Expires Soon", color: "warning" as const }
+      : { label: "Connected", color: "success" as const }
+    : null;
 
   return (
     <Card
@@ -143,7 +186,12 @@ const YouTubeIntegrationCard: React.FC = () => {
                 justifyContent: "center",
               }}
             >
-              <Image src="/youtube_icon.svg" alt="YouTube" width={26} height={26} />
+              <Image
+                src="/youtube_icon.svg"
+                alt="YouTube"
+                width={26}
+                height={26}
+              />
             </Box>
             <Typography variant="h6" fontWeight={600}>
               YouTube
@@ -154,9 +202,18 @@ const YouTubeIntegrationCard: React.FC = () => {
                 {...chipProps}
                 sx={{
                   fontWeight: 500,
-                  "&.MuiChip-colorSuccess": { backgroundColor: "#28c76f", color: "#fff" },
-                  "&.MuiChip-colorError": { backgroundColor: "#ff4d4f", color: "#fff" },
-                  "&.MuiChip-colorWarning": { backgroundColor: "#ff9800", color: "#fff" },
+                  "&.MuiChip-colorSuccess": {
+                    backgroundColor: "#28c76f",
+                    color: "#fff",
+                  },
+                  "&.MuiChip-colorError": {
+                    backgroundColor: "#ff4d4f",
+                    color: "#fff",
+                  },
+                  "&.MuiChip-colorWarning": {
+                    backgroundColor: "#ff9800",
+                    color: "#fff",
+                  },
                 }}
               />
             )}
@@ -170,13 +227,26 @@ const YouTubeIntegrationCard: React.FC = () => {
         }
       />
       <CardContent sx={{ pt: 1 }}>
+        {successMessage && (
+          <Alert
+            severity="success"
+            sx={{ mb: 2 }}
+            onClose={() => setSuccessMessage(null)}
+          >
+            {successMessage}
+          </Alert>
+        )}
         {error && (
           <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
             {error}
           </Alert>
         )}
         {justRevoked && (
-          <Alert severity="info" sx={{ mb: 2 }} onClose={() => setJustRevoked(false)}>
+          <Alert
+            severity="info"
+            sx={{ mb: 2 }}
+            onClose={() => setJustRevoked(false)}
+          >
             YouTube token revoked
           </Alert>
         )}
@@ -236,10 +306,15 @@ const YouTubeIntegrationCard: React.FC = () => {
                 )}
               </Stack>
               <Typography variant="body2">
-                Expires at: <strong>{new Date(status.expires_at).toLocaleString()}</strong>
+                Expires at:{" "}
+                <strong>{new Date(status.expires_at).toLocaleString()}</strong>
               </Typography>
               {status.is_expired && (
-                <Typography variant="caption" color="error" sx={{ fontWeight: 500 }}>
+                <Typography
+                  variant="caption"
+                  color="error"
+                  sx={{ fontWeight: 500 }}
+                >
                   Token expired. Disconnect & reconnect to refresh.
                 </Typography>
               )}
@@ -262,7 +337,7 @@ const YouTubeIntegrationCard: React.FC = () => {
                 "&:hover": { backgroundColor: "#159BEF" },
               }}
             >
-              {working ? "Opening..." : "Connect YouTube"}
+              {working ? "Connecting..." : "Connect YouTube"}
             </Button>
           )}
 

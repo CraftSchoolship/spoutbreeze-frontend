@@ -25,7 +25,6 @@ import {
 } from "@/actions/twitchIntegration";
 import Image from "next/image";
 
-
 const BRAND_COLOR = "#27AAFF";
 
 const TwitchIntegrationCard: React.FC = () => {
@@ -50,6 +49,22 @@ const TwitchIntegrationCard: React.FC = () => {
 
   useEffect(() => {
     loadStatus();
+
+    // Check for OAuth callback parameters
+    const params = new URLSearchParams(window.location.search);
+    const success = params.get("twitch_success");
+    const error = params.get("twitch_error");
+
+    if (success) {
+      setError(null);
+      setJustRevoked(false);
+      // Optionally show success message
+      // Clean URL
+      window.history.replaceState({}, "", window.location.pathname);
+    } else if (error) {
+      setError(`Twitch authentication failed: ${error}`);
+      window.history.replaceState({}, "", window.location.pathname);
+    }
   }, []);
 
   const handleConnect = async () => {
@@ -57,9 +72,8 @@ const TwitchIntegrationCard: React.FC = () => {
     setError(null);
     try {
       const { authorization_url } = await getTwitchAuthUrl();
-      // Open in new tab instead of redirecting current page
-      window.open(authorization_url, "_blank", "noopener,noreferrer");
-      setWorking(false);
+      // Redirect current window instead of opening new tab
+      window.location.href = authorization_url;
     } catch (e: any) {
       setError(e?.message || "Failed to initiate Twitch authentication");
       setWorking(false);
@@ -105,14 +119,13 @@ const TwitchIntegrationCard: React.FC = () => {
     return `${hrs}h ${remMin}m`;
   }, [status]);
 
-  const chipProps =
-    status?.has_token
-      ? status.is_expired
-        ? { label: "Expired", color: "error" as const }
-        : status.expires_soon
-        ? { label: "Expires Soon", color: "warning" as const }
-        : { label: "Connected", color: "success" as const }
-      : null;
+  const chipProps = status?.has_token
+    ? status.is_expired
+      ? { label: "Expired", color: "error" as const }
+      : status.expires_soon
+      ? { label: "Expires Soon", color: "warning" as const }
+      : { label: "Connected", color: "success" as const }
+    : null;
 
   return (
     <Card
@@ -123,11 +136,11 @@ const TwitchIntegrationCard: React.FC = () => {
         borderColor: BRAND_COLOR,
         "&:before": {
           content: '""',
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(135deg, rgba(39,170,255,0.08), rgba(39,170,255,0))",
-            pointerEvents: "none",
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(135deg, rgba(39,170,255,0.08), rgba(39,170,255,0))",
+          pointerEvents: "none",
         },
       }}
     >
@@ -164,9 +177,18 @@ const TwitchIntegrationCard: React.FC = () => {
                 {...chipProps}
                 sx={{
                   fontWeight: 500,
-                  "&.MuiChip-colorSuccess": { backgroundColor: "#28c76f", color: "#fff" },
-                  "&.MuiChip-colorError": { backgroundColor: "#ff4d4f", color: "#fff" },
-                  "&.MuiChip-colorWarning": { backgroundColor: "#ff9800", color: "#fff" },
+                  "&.MuiChip-colorSuccess": {
+                    backgroundColor: "#28c76f",
+                    color: "#fff",
+                  },
+                  "&.MuiChip-colorError": {
+                    backgroundColor: "#ff4d4f",
+                    color: "#fff",
+                  },
+                  "&.MuiChip-colorWarning": {
+                    backgroundColor: "#ff9800",
+                    color: "#fff",
+                  },
                 }}
               />
             )}
@@ -181,11 +203,7 @@ const TwitchIntegrationCard: React.FC = () => {
       />
       <CardContent sx={{ pt: 1 }}>
         {error && (
-          <Alert
-            severity="error"
-            sx={{ mb: 2 }}
-            onClose={() => setError(null)}
-          >
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
             {error}
           </Alert>
         )}
@@ -255,9 +273,7 @@ const TwitchIntegrationCard: React.FC = () => {
               </Stack>
               <Typography variant="body2">
                 Expires at:{" "}
-                <strong>
-                  {new Date(status.expires_at).toLocaleString()}
-                </strong>
+                <strong>{new Date(status.expires_at).toLocaleString()}</strong>
               </Typography>
               {status.is_expired && (
                 <Typography
@@ -293,45 +309,45 @@ const TwitchIntegrationCard: React.FC = () => {
             </Button>
           )}
 
-            {!loading && status?.has_token && (
-              <>
-                <Button
-                  variant="outlined"
-                  onClick={handleRevoke}
-                  disabled={working}
-                  color="error"
-                  sx={{ textTransform: "none", fontWeight: 600 }}
-                >
-                  {working ? "Revoking..." : "Disconnect"}
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleStartIrc}
-                  disabled={working || status.is_expired}
-                  sx={{
-                    backgroundColor: BRAND_COLOR,
-                    textTransform: "none",
-                    fontWeight: 600,
-                    "&:hover": { backgroundColor: "#159BEF" },
-                  }}
-                >
-                  {working ? "Starting..." : "Start IRC Session"}
-                </Button>
-                <Button
-                  variant="text"
-                  onClick={loadStatus}
-                  disabled={working}
-                  sx={{
-                    textTransform: "none",
-                    fontWeight: 500,
-                    color: BRAND_COLOR,
-                    "&:hover": { backgroundColor: "rgba(39,170,255,0.08)" },
-                  }}
-                >
-                  Refresh
-                </Button>
-              </>
-            )}
+          {!loading && status?.has_token && (
+            <>
+              <Button
+                variant="outlined"
+                onClick={handleRevoke}
+                disabled={working}
+                color="error"
+                sx={{ textTransform: "none", fontWeight: 600 }}
+              >
+                {working ? "Revoking..." : "Disconnect"}
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleStartIrc}
+                disabled={working || status.is_expired}
+                sx={{
+                  backgroundColor: BRAND_COLOR,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  "&:hover": { backgroundColor: "#159BEF" },
+                }}
+              >
+                {working ? "Starting..." : "Start IRC Session"}
+              </Button>
+              <Button
+                variant="text"
+                onClick={loadStatus}
+                disabled={working}
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 500,
+                  color: BRAND_COLOR,
+                  "&:hover": { backgroundColor: "rgba(39,170,255,0.08)" },
+                }}
+              >
+                Refresh
+              </Button>
+            </>
+          )}
         </Stack>
       </CardContent>
     </Card>
