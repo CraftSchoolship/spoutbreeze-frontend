@@ -27,7 +27,7 @@ jobs:
         run: |
           echo "${{ vars.ENV_FILE }}" > .env.production
           set -a
-          source .env.prouction
+          source .env.production
           set +a
 
       - name: Generate metadata (tags, labels)
