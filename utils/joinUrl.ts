@@ -8,7 +8,7 @@ export const getShareableJoinUrl = (eventId: string, role: 'attendee' | 'moderat
   }
   
   // Fallback for server-side rendering (shouldn't be called server-side, but just in case)
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   return `${baseUrl}/join/${eventId}?role=${role}`;
 };
 
