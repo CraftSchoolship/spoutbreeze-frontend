@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import PageLayout, { PageItem } from "../common/PageLayout";
 import SettingsSidebar from "./SettingsSidebar";
 import DeleteAccount from "./deleteAccount/DeleteAccount";
@@ -35,10 +36,12 @@ const SettingsPage: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center w-full h-screen">
-      <img
+      <Image
         src="/loading_state.gif"
         alt="Loading"
-        // className="w-32 h-32"
+        width={32}
+        height={32}
+        unoptimized
       />
     </div>
     );

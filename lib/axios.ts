@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { refreshToken, clearTokens, getLoginUrl } from './auth'
+import { refreshToken } from './auth'
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -67,15 +67,13 @@ axiosInstance.interceptors.response.use(
           return axiosInstance(originalRequest);
         } else {
           processQueue(error, null);
-          // Avoid touching client storage in SSR
-          if (!isServer) clearTokens();
           
-          // Only redirect to login on the client
+          // Only clear access token and redirect to home, not to Keycloak login
           if (!isServer) {
+            document.cookie = 'access_token=; path=/; max-age=0';
             const pathname = window.location?.pathname || '/';
             if (!isPublicPath(pathname)) {
-              const loginUrl = await getLoginUrl();
-              window.location.href = loginUrl;
+              window.location.href = '/';
             }
           }
           
@@ -83,13 +81,13 @@ axiosInstance.interceptors.response.use(
         }
       } catch (refreshError) {
         processQueue(refreshError, null);
-        if (!isServer) clearTokens();
         
+        // Only clear access token and redirect to home
         if (!isServer) {
+          document.cookie = 'access_token=; path=/; max-age=0';
           const pathname = window.location?.pathname || '/';
           if (!isPublicPath(pathname)) {
-            const loginUrl = await getLoginUrl();
-            window.location.href = loginUrl;
+            window.location.href = '/';
           }
         }
         
