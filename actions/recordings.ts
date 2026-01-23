@@ -76,6 +76,24 @@ export const getChannelRecordings = async (channelId: string): Promise<ChannelRe
     return response.data;
   } catch (error) {
     console.error("Error fetching channel recordings:", error);
+
+    if (axios.isAxiosError(error) && error.response) {
+      const status = error.response.status;
+
+      // If backend returns 404, treat it as "no recordings" for this channel
+      if (status === 404) {
+        return {
+          recordings: [],
+          total_recordings: 0,
+        };
+      }
+
+      // For server errors, propagate a clear signal to callers
+      if (status === 500) {
+        throw new Error("SERVER_ERROR");
+      }
+    }
+
     throw error;
   }
 };
