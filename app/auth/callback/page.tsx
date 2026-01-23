@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { exchangeCodeForToken } from "@/lib/auth";
 
 function CallbackContent() {
@@ -31,10 +32,12 @@ function CallbackContent() {
   // Centered loading GIF
   return (
     <div className="flex items-center justify-center w-full h-screen">
-      <img
+      <Image
         src="/loading_state.gif"
         alt="Loading"
-        // className="w-32 h-32"
+        width={32}
+        height={32}
+        unoptimized
       />
     </div>
   );
@@ -45,10 +48,12 @@ export default function CallbackPage() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center w-full h-screen">
-          <img
+          <Image
             src="/loading_state.gif"
             alt="Loading"
-            // className="w-32 h-32"
+            width={32}
+            height={32}
+            unoptimized
           />
         </div>
       }

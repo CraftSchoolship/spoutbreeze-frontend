@@ -68,12 +68,12 @@ export default function BillingSettings() {
       if (plansData.length === 0) {
         setError("No subscription plans configured. Please check Stripe configuration.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to load subscription data:", err);
       if (err?.response?.status === 500) {
         setError("Payment system is not configured yet. Please contact support or check the setup guide.");
       } else {
-        setError(err.message || "Failed to load subscription data");
+        setError(err?.message || "Failed to load subscription data");
       }
     } finally {
       setLoading(false);
@@ -81,9 +81,9 @@ export default function BillingSettings() {
   };
 
 
-  const showSnackbar = (message) => setSnackbar({ open: true, message });
+  const showSnackbar = (message: string) => setSnackbar({ open: true, message });
 
-  const handleSubscribe = async (plan) => {
+  const handleSubscribe = async (plan: PlanInfo) => {
     if (plan.plan_type === "free") return;
     if (plan.plan_type === "enterprise") {
       setContactDialog(true);
@@ -95,8 +95,8 @@ export default function BillingSettings() {
       const cancelUrl = `${window.location.origin}/settings?tab=subscription&canceled=true`;
       const session = await createCheckoutSession(plan.stripe_price_id, successUrl, cancelUrl);
       if (session?.url) window.location.href = session.url;
-    } catch (err) {
-      showSnackbar(err.message || "Failed to start checkout");
+    } catch (err: any) {
+      showSnackbar(err?.message || "Failed to start checkout");
       setProcessingPlan(null);
     }
   };
@@ -109,8 +109,8 @@ export default function BillingSettings() {
       if (portal && portal.url) {
         window.location.href = portal.url;
       }
-    } catch (err) {
-      setError(err.message || "Failed to open subscription management");
+    } catch (err: any) {
+      setError(err?.message || "Failed to open subscription management");
     }
   };
 
