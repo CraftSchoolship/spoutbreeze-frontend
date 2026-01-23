@@ -46,7 +46,9 @@ export default function SubscriptionManagement() {
       setSubscription(subData);
       setLimits(limitsData);
     } catch (err) {
-      setError(err.message || "Failed to load subscription data");
+      setError(
+        err instanceof Error ? err.message : "Failed to load subscription data",
+      );
     } finally {
       setLoading(false);
     }
@@ -62,7 +64,11 @@ export default function SubscriptionManagement() {
         window.location.href = portal.url;
       }
     } catch (err) {
-      setError(err.message || "Failed to open subscription management");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to open subscription management",
+      );
       setManagingSubscription(false);
     }
   };
@@ -158,13 +164,22 @@ export default function SubscriptionManagement() {
               <Typography variant="h6" gutterBottom>
                 Current Plan
               </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}
+              >
                 <Typography variant="h4" fontWeight="bold">
                   {getPlanName(subscription.plan)}
                 </Typography>
                 <Chip
                   label={subscription.status.toUpperCase()}
-                  color={getStatusColor(subscription.status) }
+                  color={
+                    getStatusColor(subscription.status) as
+                      | "success"
+                      | "info"
+                      | "error"
+                      | "warning"
+                      | "default"
+                  }
                   size="small"
                 />
               </Box>
@@ -294,19 +309,25 @@ export default function SubscriptionManagement() {
                   <ListItem sx={{ px: 0 }}>
                     <ListItemText
                       primary="Chat Content Filter"
-                      secondary={limits.chat_filter ? "Enabled" : "Not Available"}
+                      secondary={
+                        limits.chat_filter ? "Enabled" : "Not Available"
+                      }
                     />
                   </ListItem>
                   <ListItem sx={{ px: 0 }}>
                     <ListItemText
                       primary="OAuth Integration"
-                      secondary={limits.oauth_enabled ? "Enabled" : "Not Available"}
+                      secondary={
+                        limits.oauth_enabled ? "Enabled" : "Not Available"
+                      }
                     />
                   </ListItem>
                   <ListItem sx={{ px: 0 }}>
                     <ListItemText
                       primary="Analytics"
-                      secondary={limits.analytics_enabled ? "Enabled" : "Not Available"}
+                      secondary={
+                        limits.analytics_enabled ? "Enabled" : "Not Available"
+                      }
                     />
                   </ListItem>
                 </List>
@@ -319,18 +340,19 @@ export default function SubscriptionManagement() {
       {/* Billing Information */}
       {subscription.plan !== "free" && (
         <Box sx={{ mt: 3 }}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Billing Information
-                </Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  To update your billing information, payment method, or view
-                  invoices, click the &quot;Manage Subscription&quot; button above. You&apos;ll
-                  be redirected to our secure billing portal powered by Stripe.
-                </Typography>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Billing Information
+              </Typography>
+              <Typography variant="body2" color="text.secondary" paragraph>
+                To update your billing information, payment method, or view
+                invoices, click the &quot;Manage Subscription&quot; button
+                above. You&apos;ll be redirected to our secure billing portal
+                powered by Stripe.
+              </Typography>
+            </CardContent>
+          </Card>
         </Box>
       )}
     </Box>
