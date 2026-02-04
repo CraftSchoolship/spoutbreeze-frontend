@@ -2,7 +2,7 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [main, staging]
+    branches: [main, cicd]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -168,7 +168,7 @@ jobs:
     name: Update Helm Charts
     runs-on: ubuntu-latest
     needs: [build-and-deploy]
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/cicd')
     
     env:
       HELM_REPO: CraftSchoolship/deployment-configs
