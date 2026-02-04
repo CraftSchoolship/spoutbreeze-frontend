@@ -43,8 +43,8 @@ export const revokeYouTubeToken = () =>
     method: "DELETE",
   });
 
-export const startYouTubeConnection = () =>
-  authFetch<{ message: string; user_id: string }>(
-    `${API_BASE}/api/auth/youtube/connect`,
-    { method: "POST" }
-  );
+// export const startYouTubeConnection = () =>
+//   authFetch<{ message: string; user_id: string }>(
+//     `${API_BASE}/api/auth/youtube/connect`,
+//     { method: "POST" }
+//   );

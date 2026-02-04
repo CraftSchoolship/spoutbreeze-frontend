@@ -54,12 +54,12 @@ const SettingsPage: React.FC = () => {
       icon: "/sidebar/account_info_icon.svg",
       component: <AccountInfo />,
     },
-    {
-      key: "password",
-      label: "Password",
-      icon: "/sidebar/password_icon.svg",
-      component: <PasswordSettings />,
-    },
+    // {
+    //   key: "password",
+    //   label: "Password",
+    //   icon: "/sidebar/password_icon.svg",
+    //   component: <PasswordSettings />,
+    // },
     {
       key: "subscription",
       label: "Subscription & Billing",

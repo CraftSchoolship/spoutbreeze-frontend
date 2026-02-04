@@ -150,13 +150,18 @@ const ChannelsComponent: React.FC = () => {
   }
 
   return (
-    <section className="px-10 pt-10 h-screen flex flex-col">
-      <div className="flex items-center justify-between">
-        <h1 className="text-[18px] font-medium text-black mb-[20px]">
-          Channels
-        </h1>
+    <section className="px-4 pt-6 sm:px-6 sm:pt-8 lg:px-10 lg:pt-10 h-screen flex flex-col">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
+        <div>
+          <h1 className="text-[18px] font-medium text-black">
+            Channels
+          </h1>
+          <p className="mt-1 text-[13px] text-[#5B5D60] max-w-xl">
+            This is a section where you can organize your events into different channels. Channels let you group events by topic or category.
+          </p>
+        </div>
         <button
-          className="mb-[14px] font-medium text-[13px] border p-2.5 text-[#27AAFF] rounded-[2px] cursor-pointer"
+          className="mt-2 sm:mt-0 mb-3.5 font-medium text-[13px] border p-2.5 text-[#27AAFF] rounded-xs cursor-pointer self-start sm:self-auto"
           onClick={handleOpenModal}
         >
           + Create a channel
@@ -181,7 +186,7 @@ const ChannelsComponent: React.FC = () => {
           </p>
           <button
             onClick={handleOpenModal}
-            className="px-4 py-2 bg-[#27AAFF] text-white rounded-[2px] font-medium hover:bg-[#2686BE] transition-colors"
+            className="px-4 py-2 bg-[#27AAFF] text-white rounded-xs font-medium hover:bg-[#2686BE] transition-colors"
           >
             Create a Channel
           </button>
@@ -192,11 +197,11 @@ const ChannelsComponent: React.FC = () => {
             {channelsData.channels.map((channel) => (
               <div
                 key={channel.id}
-                className="h-[110px] rounded-[10px] relative cursor-pointer"
+                className="h-27.5 rounded-[10px] relative cursor-pointer"
                 style={{ backgroundColor: getRandomColor(channel.id) }}
                 onClick={() => handleChannelClick(channel)}
               >
-                <div className="flex flex-col h-full text-white p-[15px]">
+                <div className="flex flex-col h-full text-white p-3.75">
                   <span className="text-lg font-semibold mb-auto">
                     {channel.name}
                   </span>
