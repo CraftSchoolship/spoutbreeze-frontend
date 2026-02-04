@@ -199,18 +199,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          BRANCH_NAME="Update-image-tag"
+          BRANCH_NAME="update-image-tag-${{ needs.build-and-deploy.outputs.image_tag }}"
           git config --global user.email "bot@spoutbreeze.com"
           git config --global user.name "SpoutBreeze Bot"
           
-          git checkout -b $BRANCH_NAME
+          git checkout -b "$BRANCH_NAME"
           git add spoutbreeze/frontend/values.yaml
           git commit -m "chore: update spoutbreeze image to ${{ needs.build-and-deploy.outputs.image_tag }}"
-          git push origin $BRANCH_NAME
+          git push origin "$BRANCH_NAME"
 
           gh pr create \
             --repo CraftSchoolship/deployment-configs \
             --title "Deploy SpoutBreeze ${{ needs.build-and-deploy.outputs.image_tag }}" \
             --body "Automated update from CI pipeline." \
             --base main \
-            --head $BRANCH_NAME
+            --head "$BRANCH_NAME"
