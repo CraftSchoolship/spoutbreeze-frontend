@@ -171,7 +171,7 @@ jobs:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     
     env:
-      HELM_REPO: github.com/CraftSchoolship/deployment-configs
+      HELM_REPO: CraftSchoolship/deployment-configs
       VALUES_FILE: values.yaml                           
       
     steps:
