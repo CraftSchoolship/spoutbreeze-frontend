@@ -193,7 +193,7 @@ jobs:
       - name: Update Image Tag
         run: |
           sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
-          yq -i '.image.tag = "${{ needs.build-and-deploy.outputs.image_tag }}"' sputbreeze/frontend/values.yaml
+          yq -i '.image.tag = "${{ needs.build-and-deploy.outputs.image_tag }}"' spoutbreeze/frontend/values.yaml
 
       - name: Create Branch and Push
         env:
@@ -204,7 +204,7 @@ jobs:
           git config --global user.name "SpoutBreeze Bot"
           
           git checkout -b $BRANCH_NAME
-          git add sputbreeze/frontend/values.yaml
+          git add spoutbreeze/frontend/values.yaml
           git commit -m "chore: update spoutbreeze image to ${{ needs.build-and-deploy.outputs.image_tag }}"
           git push origin $BRANCH_NAME
 
