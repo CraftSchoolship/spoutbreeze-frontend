@@ -209,7 +209,7 @@ jobs:
           git push origin $BRANCH_NAME
 
           gh pr create \
-            --repo CraftSchoolship/deployment-configs.git \
+            --repo CraftSchoolship/deployment-configs \
             --title "Deploy SpoutBreeze ${{ needs.build-and-deploy.outputs.image_tag }}" \
             --body "Automated update from CI pipeline." \
             --base main \
