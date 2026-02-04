@@ -23,7 +23,6 @@ env:
   NODE_VERSION: '20'
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  ENV_FILE: ${{ vars.ENV_FILE }}
 jobs:
   lint-and-typecheck:
     name: Lint & Type Check
@@ -130,12 +129,17 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Load environment variables
+      - name: Create build environment
         run: |
-          echo "${{ vars.ENV_FILE }}" > .env.production
-          set -a
-          source .env.production
-          set +a
+          cat << EOF > .env.production
+          NEXT_PUBLIC_KEYCLOAK_SERVER_URL=${{ vars.NEXT_PUBLIC_KEYCLOAK_SERVER_URL }}
+          NEXT_PUBLIC_KEYCLOAK_REALM=${{ vars.NEXT_PUBLIC_KEYCLOAK_REALM }}
+          NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${{ vars.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID }}
+          NEXT_PUBLIC_KEYCLOAK_REDIRECT_URI=${{ vars.NEXT_PUBLIC_KEYCLOAK_REDIRECT_URI }}
+          NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
+          KEYCLOAK_CLIENT_SECRET=${{ secrets.KEYCLOAK_CLIENT_SECRET }}
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+          EOF
 
       - name: Set image tag
         id: tag
