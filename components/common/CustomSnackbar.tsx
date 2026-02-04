@@ -44,7 +44,15 @@ const CustomSnackbar: React.FC<CustomSnackbarProps> = ({
       <Alert
         onClose={handleClose}
         severity={severity}
-        sx={{ width: "100%" }}
+        sx={{ 
+          width: "100%",
+          borderRadius: "12px",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+          fontWeight: 500,
+          "& .MuiAlert-icon": {
+            alignItems: "center",
+          },
+        }}
       >
         {message}
       </Alert>

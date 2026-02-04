@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import {
   fetchChannels,
   deleteChannel,
-  createChannel, // Add this import
+  createChannel,
   Channels,
   CreateChannelReq,
   ChannelWithUserName,
@@ -17,25 +17,21 @@ import DeleteConfirmationDialog from "@/components/common/DeleteConfirmationDial
 import { useGlobalSnackbar } from '@/contexts/SnackbarContext';
 
 const colorPalette = [
-  "#27AAFF", // Light Blue
-  "#FF092A", // Red
-  "#44D500", // Green
-  "#9747FF", // Purple
-  "#2E27FF", // Indigo
-  "#FF0099", // Pink
-  "#FF8800", // Deep Orange
-  "#FFC919", // Yellow
+  "#0ea5e9", // Sky Blue
+  "#06b6d4", // Teal
+  "#14b8a6", // Teal darker
+  "#0284c7", // Sky Blue darker
+  "#0891b2", // Cyan
+  "#0d9488", // Teal accent
+  "#6366f1", // Indigo
+  "#8b5cf6", // Purple
 ];
 
-// Function to get a random color based on the channel ID
 const getRandomColor = (id: string) => {
-  // Use a more distributed hash algorithm
   const hash = id.split("").reduce((acc, char, index) => {
-    // Prime multiplication helps distribute values better
     return acc + char.charCodeAt(0) * (31 ** index % 127);
   }, 0);
 
-  // Use a larger prime number for modulo to improve distribution
   return colorPalette[Math.abs(hash) % colorPalette.length];
 };
 
@@ -69,7 +65,6 @@ const ChannelsComponent: React.FC = () => {
         setChannelsData(data);
         setError(null);
       } catch (error: unknown) {
-        // Handle 404 error specifically (no channels found)
         if (error instanceof Error && error.message === "NO_CHANNELS_FOUND") {
           setChannelsData({ channels: [], total: 0 });
           setError(null);
@@ -88,10 +83,8 @@ const ChannelsComponent: React.FC = () => {
 
   const handleAddChannel = async (formData: CreateChannelReq) => {
     try {
-      // Actually create the channel first
       await createChannel(formData);
       
-      // Then fetch the updated channels list
       const updatedData = await fetchChannels();
       setChannelsData(updatedData);
       handleCloseModal();
@@ -150,43 +143,61 @@ const ChannelsComponent: React.FC = () => {
   }
 
   return (
-    <section className="px-4 pt-6 sm:px-6 sm:pt-8 lg:px-10 lg:pt-10 h-screen flex flex-col">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
+    <section className="px-6 py-8 sm:px-8 lg:px-10 h-screen flex flex-col">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
-          <h1 className="text-[18px] font-medium text-black">
+          <h1 className="text-xl font-semibold text-slate-800">
             Channels
           </h1>
-          <p className="mt-1 text-[13px] text-[#5B5D60] max-w-xl">
-            This is a section where you can organize your events into different channels. Channels let you group events by topic or category.
+          <p className="mt-2 text-sm text-slate-500 max-w-xl leading-relaxed">
+            Organize your events into different channels. Channels let you group events by topic or category.
           </p>
         </div>
         <button
-          className="mt-2 sm:mt-0 mb-3.5 font-medium text-[13px] border p-2.5 text-[#27AAFF] rounded-xs cursor-pointer self-start sm:self-auto"
+          className="mt-2 sm:mt-0 font-semibold text-sm px-5 py-2.5 text-white rounded-xl cursor-pointer self-start sm:self-auto transition-all duration-200"
+          style={{
+            background: "linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)",
+            boxShadow: "0 2px 8px rgba(14, 165, 233, 0.3)",
+          }}
           onClick={handleOpenModal}
+          onMouseOver={(e) => {
+            e.currentTarget.style.boxShadow = "0 4px 12px rgba(14, 165, 233, 0.4)";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.boxShadow = "0 2px 8px rgba(14, 165, 233, 0.3)";
+          }}
         >
-          + Create a channel
+          + Create Channel
         </button>
       </div>
       
-      {loading && <div className="flex-1 flex items-center justify-center"><p>Loading...</p></div>}
+      {loading && (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-8 h-8 border-3 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
       {error && <div className="flex-1 flex items-center justify-center"><p className="text-red-500">{error}</p></div>}
       
       {!loading && !error && channelsData.channels.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center text-gray-500">
+        <div className="flex-1 flex flex-col items-center justify-center text-slate-400">
           <Image
             src="/empty_icon.svg"
             alt="No channels"
             width={96}
             height={71}
-            className="mb-4 opacity-50"
+            className="mb-4 opacity-40"
           />
-          <p className="text-lg mb-2">No channels found</p>
-          <p className="text-sm text-center mb-4">
+          <p className="text-lg mb-2 text-slate-600">No channels found</p>
+          <p className="text-sm text-center mb-6 text-slate-400">
             You haven&apos;t created any channel yet.
           </p>
           <button
             onClick={handleOpenModal}
-            className="px-4 py-2 bg-[#27AAFF] text-white rounded-xs font-medium hover:bg-[#2686BE] transition-colors"
+            className="px-6 py-3 text-white rounded-xl font-semibold transition-all duration-200"
+            style={{
+              background: "linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)",
+              boxShadow: "0 2px 8px rgba(14, 165, 233, 0.3)",
+            }}
           >
             Create a Channel
           </button>
@@ -197,16 +208,19 @@ const ChannelsComponent: React.FC = () => {
             {channelsData.channels.map((channel) => (
               <div
                 key={channel.id}
-                className="h-27.5 rounded-[10px] relative cursor-pointer"
-                style={{ backgroundColor: getRandomColor(channel.id) }}
+                className="h-28 rounded-2xl relative cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
+                style={{ 
+                  background: `linear-gradient(135deg, ${getRandomColor(channel.id)} 0%, ${getRandomColor(channel.id)}cc 100%)`,
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                }}
                 onClick={() => handleChannelClick(channel)}
               >
-                <div className="flex flex-col h-full text-white p-3.75">
+                <div className="flex flex-col h-full text-white p-4">
                   <span className="text-lg font-semibold mb-auto">
                     {channel.name}
                   </span>
                   <div className="flex justify-between items-center">
-                    <span className="text-[12px] font-medium">
+                    <span className="text-xs font-medium opacity-90">
                       Created by {channel.creator_name}
                     </span>
                     <Image
@@ -214,7 +228,7 @@ const ChannelsComponent: React.FC = () => {
                       alt="Delete Channel"
                       width={15}
                       height={16}
-                      className="cursor-pointer"
+                      className="cursor-pointer opacity-80 hover:opacity-100 transition-opacity"
                       onClick={(e) => confirmDeleteChannel(channel.id, e)}
                     />
                   </div>
@@ -225,7 +239,6 @@ const ChannelsComponent: React.FC = () => {
         )
       )}
       
-      {/* The confirmation dialog */}
       <DeleteConfirmationDialog
         open={deleteDialogOpen}
         title="Delete Channel"

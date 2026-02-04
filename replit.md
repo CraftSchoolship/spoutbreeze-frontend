@@ -43,5 +43,6 @@ Required environment variables (see `.env.local.example`):
 - `NEXT_PUBLIC_API_URL` - Backend API URL
 
 ## Recent Changes
+- 2026-02-04: Updated all internal pages (Dashboard, Settings, Channels, Events, Join) with BlueScale design
 - 2026-02-04: Complete redesign with BlueScale branding - new logo, modern UI with trust/comfort colors
 - 2026-02-04: Initial Replit setup, configured dev server on port 5000

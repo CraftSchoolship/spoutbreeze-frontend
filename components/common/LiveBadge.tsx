@@ -14,26 +14,31 @@ const LiveBadge: React.FC<LiveBadgeProps> = ({ show, variant = "default" }) => {
       label="LIVE"
       size="small"
       sx={{
-        backgroundColor: "#ff4444",
+        background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
         color: "white",
         fontSize: "10px",
-        fontWeight: "bold",
-        height: "20px",
-        borderRadius: "10px",
+        fontWeight: 700,
+        letterSpacing: "0.5px",
+        height: "22px",
+        borderRadius: "6px",
+        boxShadow: "0 2px 8px rgba(239, 68, 68, 0.4)",
         "& .MuiChip-label": {
-          padding: "0 8px",
+          padding: "0 10px",
         },
         ...(variant === "pulse" && {
           animation: "pulse 2s infinite",
           "@keyframes pulse": {
             "0%": {
               opacity: 1,
+              boxShadow: "0 2px 8px rgba(239, 68, 68, 0.4)",
             },
             "50%": {
-              opacity: 0.7,
+              opacity: 0.85,
+              boxShadow: "0 2px 12px rgba(239, 68, 68, 0.6)",
             },
             "100%": {
               opacity: 1,
+              boxShadow: "0 2px 8px rgba(239, 68, 68, 0.4)",
             },
           },
         }),

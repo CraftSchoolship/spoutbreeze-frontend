@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import PageLayout, { PageItem } from "../common/PageLayout";
 import SettingsSidebar from "./SettingsSidebar";
 import DeleteAccount from "./deleteAccount/DeleteAccount";
 import AccountInfo from "./accountInfo/AccountInfo";
-// import PasswordSettings from "./password/PasswordSettings";
 import AccessControl from "./accessControl/AccessControl";
 import Integrations from "./integrations/Integrations";
 import BillingSettings from "./BillingSettings";
@@ -35,15 +33,12 @@ const SettingsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center w-full h-screen">
-      <Image
-        src="/loading_state.gif"
-        alt="Loading"
-        width={32}
-        height={32}
-        unoptimized
-      />
-    </div>
+      <div className="gradient-bg min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-3 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-sm text-slate-500">Loading settings...</span>
+        </div>
+      </div>
     );
   }
 
@@ -54,12 +49,6 @@ const SettingsPage: React.FC = () => {
       icon: "/sidebar/account_info_icon.svg",
       component: <AccountInfo />,
     },
-    // {
-    //   key: "password",
-    //   label: "Password",
-    //   icon: "/sidebar/password_icon.svg",
-    //   component: <PasswordSettings />,
-    // },
     {
       key: "subscription",
       label: "Subscription & Billing",
@@ -74,7 +63,6 @@ const SettingsPage: React.FC = () => {
     },
   ];
 
-  // Add Access Control section only for admin users
   const adminItems: PageItem[] = user && isAdmin(user) ? [
     {
       key: "access control",

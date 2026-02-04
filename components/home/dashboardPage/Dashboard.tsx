@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
 import PastEventList from "./PastEventList";
 import LiveEventList from "./LiveEventList";
 import { fetchUpcmingEvents } from "@/actions/events";
@@ -44,7 +45,7 @@ const Dashboard: React.FC = () => {
   const [value, setValue] = React.useState(0);
   const [showEventForm, setShowEventForm] = React.useState(false);
 
-  let refreshUpcomingEvents: (() => void) | null = null; // Store the refresh function
+  let refreshUpcomingEvents: (() => void) | null = null;
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -58,7 +59,6 @@ const Dashboard: React.FC = () => {
     setShowEventForm(false);
   };
 
-  // Handle successful event creation
   const handleEventCreated = async () => {
     setShowEventForm(false);
     if (refreshUpcomingEvents) {
@@ -67,14 +67,13 @@ const Dashboard: React.FC = () => {
     showSnackbar("Event created successfully!", "success");
   };
 
-  // Handle event creation errors
   const handleEventError = (message: string) => {
     showSnackbar(message, "error");
   };
 
   if (showEventForm) {
     return (
-      <section className="px-10 pt-10 h-screen overflow-y-auto">
+      <section className="px-6 py-8 sm:px-8 lg:px-10 h-screen overflow-y-auto">
         <CreateEvent
           onBack={handleBackToChannel}
           onEventCreated={handleEventCreated}
@@ -85,12 +84,12 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <section className="px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10 h-screen flex flex-col">
-      <div className="mb-5">
-        <h1 className="text-[18px] font-medium">Dashboard</h1>
-        <p className="mt-1 text-[13px] text-[#5B5D60] max-w-2xl">
+    <section className="px-6 py-8 sm:px-8 lg:px-10 h-screen flex flex-col">
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold text-slate-800">Dashboard</h1>
+        <p className="mt-2 text-sm text-slate-500 max-w-2xl leading-relaxed">
           To receive messages from your streaming platform&apos;s chat inside a
-          session, <strong>first connect that platform in Settings → Integrations.</strong> Choose
+          session, <span className="font-medium text-slate-600">first connect that platform in Settings → Integrations.</span> Choose
           the service you use (for example Twitch or YouTube) and log in so chat
           messages can be relayed into your session chat.
         </p>
@@ -101,65 +100,60 @@ const Dashboard: React.FC = () => {
           sx={{
             width: "fit-content",
             borderBottom: 1,
-            borderColor: "divider",
+            borderColor: "#e2e8f0",
           }}
         >
           <Tabs
             value={value}
             onChange={handleChange}
-            aria-label="basic tabs example"
-            textColor="primary"
-            indicatorColor="primary"
+            aria-label="dashboard tabs"
             sx={{
               "& .MuiTab-root": {
-                color: "#CCCCCC", // Default tab color
+                color: "#94a3b8",
+                fontWeight: 500,
+                fontSize: "14px",
+                textTransform: "none",
                 "&.Mui-selected": {
-                  color: "#27AAFF", // Selected tab color
+                  color: "#0ea5e9",
                 },
-                // Add padding to control tab width
                 paddingLeft: 0,
-                paddingRight: "30px",
+                paddingRight: "24px",
                 paddingTop: 0,
-                paddingBottom: 0,
+                paddingBottom: "12px",
                 minWidth: "unset",
               },
               "& .MuiTabs-indicator": {
-                backgroundColor: "#27AAFF",
-                height: 3,
+                backgroundColor: "#0ea5e9",
+                height: 2,
+                borderRadius: "2px 2px 0 0",
               },
             }}
           >
-            <Tab
-              label="Upcoming events"
-              {...a11yProps(0)}
-              sx={{ fontSize: "14px", fontWeight: 500 }}
-            />
-            <Tab
-              label="Live events"
-              {...a11yProps(1)}
-              sx={{ fontSize: "14px", fontWeight: 500 }}
-            />
-            <Tab
-              label="Past events"
-              {...a11yProps(2)}
-              sx={{ fontSize: "14px", fontWeight: 500 }}
-            />
+            <Tab label="Upcoming events" {...a11yProps(0)} />
+            <Tab label="Live events" {...a11yProps(1)} />
+            <Tab label="Past events" {...a11yProps(2)} />
           </Tabs>
         </Box>
 
         <Button
-          variant="outlined"
+          variant="contained"
+          startIcon={<AddIcon />}
           onClick={handleCreateEvent}
           sx={{
-            color: "#27AAFF",
-            padding: "10px",
-            fontSize: "12px",
-            fontWeight: 500,
-            borderRadius: "2px",
-            borderColor: "#27AAFF",
+            background: 'linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)',
+            padding: "10px 20px",
+            fontSize: "13px",
+            fontWeight: 600,
+            borderRadius: "10px",
+            boxShadow: '0 2px 8px rgba(14, 165, 233, 0.3)',
+            textTransform: "none",
+            '&:hover': {
+              background: 'linear-gradient(135deg, #0284c7 0%, #0891b2 100%)',
+              boxShadow: '0 4px 12px rgba(14, 165, 233, 0.4)',
+            },
           }}
         >
-          Schedule
+          Schedule Event
         </Button>
       </div>
 
