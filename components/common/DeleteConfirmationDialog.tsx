@@ -26,27 +26,42 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
       open={open}
       onClose={onClose}
       aria-labelledby="delete-confirmation-dialog"
-      sx={{}}
+      PaperProps={{
+        sx: {
+          borderRadius: "16px",
+          padding: "8px",
+          minWidth: "360px",
+        }
+      }}
     >
-      <DialogTitle>{title}</DialogTitle>
+      <DialogTitle sx={{ 
+        fontWeight: 600,
+        fontSize: "18px",
+        color: "#0f172a",
+      }}>
+        {title}
+      </DialogTitle>
       <DialogContent>
-        <DialogContentText>{message}</DialogContentText>
+        <DialogContentText sx={{ color: "#64748b", fontSize: "14px" }}>
+          {message}
+        </DialogContentText>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ padding: "16px 24px" }}>
         <Button
           type="button"
-          variant="contained"
+          variant="outlined"
           onClick={onClose}
           sx={{
-            padding: "10px",
+            padding: "10px 20px",
             fontSize: "14px",
             fontWeight: 500,
             textTransform: "none",
-            backgroundColor: "#CCCCCC",
-            boxShadow: "none",
+            borderRadius: "10px",
+            borderColor: "#e2e8f0",
+            color: "#64748b",
             "&:hover": {
-              backgroundColor: "#CCCCCC",
-              boxShadow: "none",
+              borderColor: "#cbd5e1",
+              backgroundColor: "#f8fafc",
             },
           }}
         >
@@ -54,15 +69,20 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
         </Button>
         <Button
           onClick={onConfirm}
-          variant="outlined"
+          variant="contained"
           type="submit"
           sx={{
-            padding: "10px",
+            padding: "10px 20px",
             fontSize: "14px",
             fontWeight: 500,
             textTransform: "none",
-            color: "#27AAFF",
-            borderColor: "#27AAFF",
+            borderRadius: "10px",
+            backgroundColor: "#ef4444",
+            boxShadow: "0 2px 8px rgba(239, 68, 68, 0.3)",
+            "&:hover": {
+              backgroundColor: "#dc2626",
+              boxShadow: "0 4px 12px rgba(239, 68, 68, 0.4)",
+            },
           }}
           autoFocus
         >

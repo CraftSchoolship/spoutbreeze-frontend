@@ -24,11 +24,9 @@ import { User, fetchCurrentUser } from "@/actions/fetchUsers";
 import OrganizerSelector from "./OrganizerSelector";
 import NavigateBeforeRoundedIcon from "@mui/icons-material/NavigateBeforeRounded";
 
-// Configure dayjs to use UTC and timezone plugins
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-// Get all available timezones
 const timezones = Intl.supportedValuesOf("timeZone").sort();
 
 interface EventFormProps {
@@ -48,10 +46,8 @@ const CreateEvent: React.FC<EventFormProps> = ({
   eventToEdit,
   onEventUpdated,
 }) => {
-  // Detect user's timezone
   const detectedTimezone = dayjs.tz.guess();
 
-  // Add state for available channels
   const [availableChannels, setAvailableChannels] = useState<
     ChannelWithUserName[]
   >([]);
@@ -59,9 +55,8 @@ const CreateEvent: React.FC<EventFormProps> = ({
   const [selectedTimezone, setSelectedTimezone] = useState(detectedTimezone);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [titleError, setTitleError] = useState<string | null>(null); // State for title error
+  const [titleError, setTitleError] = useState<string | null>(null);
 
-  // Initialize formData based on whether channel is provided
   const [formData, setFormData] = useState<CreateEventReq>({
     title: eventToEdit ? eventToEdit.title : "",
     description: eventToEdit ? eventToEdit.description : "",
@@ -74,7 +69,6 @@ const CreateEvent: React.FC<EventFormProps> = ({
     channel_name: channel ? channel.name : "",
   });
 
-  // Fetch current user data
   React.useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -98,7 +92,6 @@ const CreateEvent: React.FC<EventFormProps> = ({
     fetchUser();
   }, [onError]);
 
-  // Fetch available channels if no channel is provided
   React.useEffect(() => {
     if (!channel) {
       const loadChannels = async () => {
@@ -119,11 +112,8 @@ const CreateEvent: React.FC<EventFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Clear any previous title errors
     setTitleError(null);
 
-    // Basic validation
     if (!formData.title.trim()) {
       if (onError) {
         onError("Event title is required.");
@@ -138,7 +128,6 @@ const CreateEvent: React.FC<EventFormProps> = ({
       return;
     }
 
-    // Validate channel name
     if (!formData.channel_name.trim()) {
       if (onError) {
         onError("Channel name is required.");
@@ -156,7 +145,6 @@ const CreateEvent: React.FC<EventFormProps> = ({
     setLoading(true);
 
     try {
-      // Convert times to UTC using dayjs with the selected timezone
       const startTimeUTC = dayjs(formData.start_time)
         .tz(selectedTimezone)
         .utc()
@@ -168,18 +156,14 @@ const CreateEvent: React.FC<EventFormProps> = ({
       };
 
       if (eventToEdit && onEventUpdated) {
-        // If editing an existing event, call the update function
         await onEventUpdated(eventToEdit.title, eventData);
       } else {
-        // If creating a new event, call the create function
         await createEvent(eventData);
       }
-      // Call the callback to refresh events list
       if (onEventCreated) {
         onEventCreated();
       }
 
-      // Navigate back immediately
       onBack();
     } catch (err) {
       console.error("Error creating event:", err);
@@ -224,14 +208,16 @@ const CreateEvent: React.FC<EventFormProps> = ({
   };
 
   return (
-    <div className="w-[50%]">
-      <h1 className="text-[18px] font-medium mb-6 -ml-1.5">
+    <div className="w-full max-w-2xl">
+      <h1 className="text-xl font-semibold text-slate-800 mb-6 -ml-1.5 flex items-center">
         <NavigateBeforeRoundedIcon
           onClick={onBack}
           sx={{
-            width: "25px",
-            height: "25px",
+            width: "28px",
+            height: "28px",
             cursor: "pointer",
+            color: "#64748b",
+            "&:hover": { color: "#0ea5e9" },
           }}
         />
         {eventToEdit
@@ -250,9 +236,16 @@ const CreateEvent: React.FC<EventFormProps> = ({
           required
           fullWidth
           variant="outlined"
-          sx={{ mb: "20px" }}
-          error={!!titleError} // Show error state if titleError is not null
-          helperText={titleError} // Display the error message
+          error={!!titleError}
+          helperText={titleError}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "10px",
+              "&:hover fieldset": { borderColor: "#0ea5e9" },
+              "&.Mui-focused fieldset": { borderColor: "#0ea5e9" },
+            },
+            "& .MuiInputLabel-root.Mui-focused": { color: "#0ea5e9" },
+          }}
         />
 
         <TextField
@@ -265,7 +258,14 @@ const CreateEvent: React.FC<EventFormProps> = ({
           multiline
           rows={4}
           variant="outlined"
-          sx={{ mb: "20px" }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "10px",
+              "&:hover fieldset": { borderColor: "#0ea5e9" },
+              "&.Mui-focused fieldset": { borderColor: "#0ea5e9" },
+            },
+            "& .MuiInputLabel-root.Mui-focused": { color: "#0ea5e9" },
+          }}
         />
 
         <FormControl fullWidth>
@@ -278,7 +278,11 @@ const CreateEvent: React.FC<EventFormProps> = ({
               const { value } = e.target;
               setFormData((prev) => ({ ...prev, occurs: value }));
             }}
-            sx={{ mb: "20px" }}
+            sx={{
+              borderRadius: "10px",
+              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#0ea5e9" },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#0ea5e9" },
+            }}
           >
             <MenuItem value="once">Once</MenuItem>
             <MenuItem value="daily">Daily</MenuItem>
@@ -340,7 +344,6 @@ const CreateEvent: React.FC<EventFormProps> = ({
           />
         </div>
 
-        {/* organizers */}
         <OrganizerSelector
           organizer_ids={formData.organizer_ids}
           currentUser={user}
@@ -361,7 +364,6 @@ const CreateEvent: React.FC<EventFormProps> = ({
           }}
         />
 
-        {/* Replace the existing channel selection with Autocomplete for better UX */}
         {channel ? (
           <TextField
             label="Channel Name"
@@ -371,7 +373,6 @@ const CreateEvent: React.FC<EventFormProps> = ({
             fullWidth
             variant="outlined"
             disabled
-            sx={{ mb: "20px" }}
           />
         ) : (
           <Autocomplete
@@ -399,7 +400,6 @@ const CreateEvent: React.FC<EventFormProps> = ({
                 required
                 variant="outlined"
                 helperText="Select an existing channel or type a new channel name"
-                sx={{ mb: "20px" }}
               />
             )}
             renderOption={(props, option) => {
@@ -407,32 +407,32 @@ const CreateEvent: React.FC<EventFormProps> = ({
               return (
                 <li key={key} {...otherProps}>
                   <div className="flex items-center">
-                    <span className="text-sm text-gray-500 mr-2">📁</span>
+                    <span className="text-sm text-slate-400 mr-2">📁</span>
                     {option}
                   </div>
                 </li>
               );
             }}
             noOptionsText="Type to create a new channel"
-            sx={{ mb: "20px" }}
           />
         )}
 
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-4 pt-4">
           <Button
             type="button"
-            variant="contained"
+            variant="outlined"
             onClick={onBack}
             sx={{
-              padding: "10px",
+              padding: "10px 24px",
               fontSize: "14px",
               fontWeight: 500,
               textTransform: "none",
-              backgroundColor: "#CCCCCC",
-              boxShadow: "none",
+              borderRadius: "10px",
+              borderColor: "#e2e8f0",
+              color: "#64748b",
               "&:hover": {
-                backgroundColor: "#CCCCCC",
-                boxShadow: "none",
+                borderColor: "#cbd5e1",
+                backgroundColor: "#f8fafc",
               },
             }}
           >
@@ -440,14 +440,19 @@ const CreateEvent: React.FC<EventFormProps> = ({
           </Button>
           <Button
             type="submit"
-            variant="outlined"
+            variant="contained"
             sx={{
-              padding: "10px",
+              padding: "10px 24px",
               fontSize: "14px",
-              fontWeight: 500,
+              fontWeight: 600,
               textTransform: "none",
-              color: "#27AAFF",
-              borderColor: "#27AAFF",
+              borderRadius: "10px",
+              background: "linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)",
+              boxShadow: "0 2px 8px rgba(14, 165, 233, 0.3)",
+              "&:hover": {
+                background: "linear-gradient(135deg, #0284c7 0%, #0891b2 100%)",
+                boxShadow: "0 4px 12px rgba(14, 165, 233, 0.4)",
+              },
             }}
             disabled={loading}
           >

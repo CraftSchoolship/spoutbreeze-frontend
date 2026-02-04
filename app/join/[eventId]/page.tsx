@@ -3,6 +3,10 @@
 import React, { useState } from 'react';
 import { getJoinUrlWithName } from '@/actions/events';
 import { useParams, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const JoinEventPage: React.FC = () => {
   const params = useParams();
@@ -27,7 +31,6 @@ const JoinEventPage: React.FC = () => {
     try {
       const joinUrl = await getJoinUrlWithName(eventId, fullName.trim(), role);
       if (joinUrl) {
-        // Redirect to BBB session
         window.location.href = joinUrl;
       } else {
         setError('Failed to get join URL');
@@ -47,42 +50,96 @@ const JoinEventPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900">Join Event</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Please enter your name to join the {role} session
-          </p>
-        </div>
-        
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
-              Full Name
-            </label>
-            <input
-              id="fullName"
-              type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your full name"
-              disabled={isLoading}
-            />
+    <div className="min-h-screen flex items-center justify-center gradient-bg px-4">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-sky-200/40 to-teal-200/40 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-blue-200/30 to-cyan-200/30 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div className="relative max-w-md w-full">
+        <div className="bg-white rounded-3xl shadow-xl shadow-sky-100/50 border border-sky-100 p-8 sm:p-10">
+          <div className="text-center mb-8">
+            <div className="flex justify-center mb-6">
+              <Image
+                src="/bluescale_logo.png"
+                alt="BlueScale"
+                width={64}
+                height={64}
+                className="object-contain"
+              />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-2">
+              Join Event
+            </h2>
+            <p className="text-slate-500">
+              Enter your name to join as {role === 'moderator' ? 'a moderator' : 'an attendee'}
+            </p>
           </div>
           
-          {error && (
-            <div className="text-red-600 text-sm">{error}</div>
-          )}
+          <div className="space-y-6">
+            <TextField
+              id="fullName"
+              label="Full Name"
+              variant="outlined"
+              fullWidth
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              disabled={isLoading}
+              error={!!error && !fullName.trim()}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                  '&:hover fieldset': {
+                    borderColor: '#0ea5e9',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#0ea5e9',
+                  },
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: '#0ea5e9',
+                },
+              }}
+            />
+            
+            {error && (
+              <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3">
+                <p className="text-red-600 text-sm">{error}</p>
+              </div>
+            )}
+            
+            <Button
+              fullWidth
+              variant="contained"
+              size="large"
+              endIcon={!isLoading && <ArrowForwardIcon />}
+              onClick={handleJoinEvent}
+              disabled={isLoading || !fullName.trim()}
+              sx={{
+                background: 'linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)',
+                padding: '14px 24px',
+                fontSize: '16px',
+                fontWeight: 600,
+                borderRadius: '12px',
+                boxShadow: '0 4px 14px rgba(14, 165, 233, 0.35)',
+                textTransform: 'none',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #0284c7 0%, #0891b2 100%)',
+                  boxShadow: '0 6px 20px rgba(14, 165, 233, 0.45)',
+                },
+                '&.Mui-disabled': {
+                  background: '#e2e8f0',
+                  color: '#94a3b8',
+                },
+              }}
+            >
+              {isLoading ? 'Joining...' : 'Join Meeting'}
+            </Button>
+          </div>
           
-          <button
-            onClick={handleJoinEvent}
-            disabled={isLoading || !fullName.trim()}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Joining...' : 'Join Meeting'}
-          </button>
+          <p className="text-center text-xs text-slate-400 mt-6">
+            Powered by <span className="font-semibold text-sky-500">BlueScale</span>
+          </p>
         </div>
       </div>
     </div>

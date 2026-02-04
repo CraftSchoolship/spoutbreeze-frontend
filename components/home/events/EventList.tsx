@@ -30,7 +30,7 @@ interface EventListProps {
   handleStartEvent: (eventId: string) => void;
   handleDeleteEvent: (eventId: string) => void;
   handleEditEvent: (eventId: string) => void;
-  handleGetJoinUrl: (eventId: string) => Promise<void>; // Change return type
+  handleGetJoinUrl: (eventId: string) => Promise<void>;
 }
 
 const EventList: React.FC<EventListProps> = ({
@@ -50,7 +50,7 @@ const EventList: React.FC<EventListProps> = ({
 
   const [urlDialog, setUrlDialog] = React.useState({
     open: false,
-    eventId: "", // Change from joinUrls to eventId
+    eventId: "",
     eventTitle: "",
   });
 
@@ -59,7 +59,7 @@ const EventList: React.FC<EventListProps> = ({
       const event = eventsData.events.find((e) => e.id === eventId);
       setUrlDialog({
         open: true,
-        eventId: eventId, // Store eventId instead of joinUrls
+        eventId: eventId,
         eventTitle: event?.title || "Event",
       });
     } catch (error) {
@@ -75,7 +75,7 @@ const EventList: React.FC<EventListProps> = ({
   return (
     <div className="flex flex-col">
       {loading ? (
-        <p className="text-center py-4">Loading events...</p>
+        <p className="text-center py-4 text-slate-500">Loading events...</p>
       ) : error ? (
         <p className="text-center py-4 text-red-500">{error}</p>
       ) : (
@@ -90,7 +90,7 @@ const EventList: React.FC<EventListProps> = ({
                   flexDirection: "row",
                   justifyContent: "space-between",
                   gap: 1.5,
-                  py: 1,
+                  py: 1.5,
                 }}
               >
                 <ListItemText
@@ -104,7 +104,7 @@ const EventList: React.FC<EventListProps> = ({
                         flexWrap: "wrap",
                       }}
                     >
-                      <span className="font-medium text-[15px] sm:text-[17px] md:text-[18px] truncate max-w-full">
+                      <span className="font-medium text-[15px] sm:text-[17px] md:text-[18px] truncate max-w-full text-slate-800">
                         {event.title}
                       </span>
                       <LiveBadge show={event.status === "live"} variant="pulse" />
@@ -149,7 +149,7 @@ const EventList: React.FC<EventListProps> = ({
                           <Typography
                             component="span"
                             variant="body2"
-                            color="#5B5D60"
+                            sx={{ color: "#64748b" }}
                           >
                             {formatDate(event.start_date)}
                           </Typography>
@@ -171,7 +171,7 @@ const EventList: React.FC<EventListProps> = ({
                           <Typography
                             component="span"
                             variant="body2"
-                            color="#5B5D60"
+                            sx={{ color: "#64748b" }}
                           >
                             {formatTime(event.start_time)}
                           </Typography>
@@ -181,13 +181,11 @@ const EventList: React.FC<EventListProps> = ({
                   }
                 />
 
-                {/* item related buttons */}
                 <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end sm:flex-nowrap ml-2">
-                  {/* Only show Copy Link button if event status is not "ended" */}
                   {event.status !== "ended" && (
                     <button
                       onClick={() => handleCopyLink(event.id)}
-                      className="flex items-center text-[#27AAFF] font-medium text-[12px] sm:text-[13px] cursor-pointer sm:mr-[15px] whitespace-nowrap"
+                      className="flex items-center text-sky-500 font-medium text-[12px] sm:text-[13px] cursor-pointer sm:mr-[15px] whitespace-nowrap hover:text-sky-600 transition-colors"
                     >
                       <Image
                         src="/events/link_icon.svg"
@@ -205,7 +203,7 @@ const EventList: React.FC<EventListProps> = ({
                     aria-haspopup="true"
                     aria-expanded={open ? "true" : undefined}
                     onClick={(e) => handleClick(e, event.id)}
-                    className="flex text-[#27AAFF] font-medium text-[13px] cursor-pointer"
+                    className="flex text-slate-400 hover:text-slate-600 font-medium text-[13px] cursor-pointer transition-colors"
                   >
                     <MoreVertIcon className="mr-[5px]" />
                   </button>
@@ -224,9 +222,10 @@ const EventList: React.FC<EventListProps> = ({
                       },
                       paper: {
                         sx: {
-                          borderRadius: "10px",
-                          minWidth: "120px",
-                          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                          borderRadius: "12px",
+                          minWidth: "140px",
+                          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+                          border: "1px solid #e2e8f0",
                           padding: 0,
                         },
                       },
@@ -242,7 +241,6 @@ const EventList: React.FC<EventListProps> = ({
                   >
                     {eventMenuItems
                       .filter((item) => {
-                        // Hide "start" menu item for ended events
                         if (item.key === "start" && event.status === "ended") {
                           return false;
                         }
@@ -272,9 +270,9 @@ const EventList: React.FC<EventListProps> = ({
                             handleClose();
                           }}
                           sx={{
-                            padding: "15px 15px",
+                            padding: "12px 16px",
                             "&:hover": {
-                              backgroundColor: "#2686BE1A",
+                              backgroundColor: "rgba(14, 165, 233, 0.04)",
                             },
                           }}
                         >
@@ -289,9 +287,9 @@ const EventList: React.FC<EventListProps> = ({
                               alt={item.label}
                               width={14}
                               height={14}
-                              className="mr-2"
+                              className="mr-2 opacity-60"
                             />
-                            <span>{item.label}</span>
+                            <span className="text-slate-600 text-sm">{item.label}</span>
                           </Box>
                         </MenuItem>
                       ))}
@@ -299,18 +297,17 @@ const EventList: React.FC<EventListProps> = ({
                 </div>
               </ListItem>
               {index < eventsData.events.length - 1 && (
-                <Divider sx={{ marginY: "12px" }} />
+                <Divider sx={{ marginY: "12px", borderColor: "#f1f5f9" }} />
               )}
             </List>
           ))}
         </div>
       )}
 
-      {/* URL Selection Dialog */}
       <JoinUrlDialog
         open={urlDialog.open}
         onClose={handleCloseUrlDialog}
-        eventId={urlDialog.eventId} // Pass eventId instead of joinUrls
+        eventId={urlDialog.eventId}
         eventTitle={urlDialog.eventTitle}
       />
     </div>
