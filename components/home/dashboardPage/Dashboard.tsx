@@ -85,12 +85,18 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <section className="px-10 py-10 h-screen flex flex-col">
-      <div className="flex justify-between items-center mb-5">
+    <section className="px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10 h-screen flex flex-col">
+      <div className="mb-5">
         <h1 className="text-[18px] font-medium">Dashboard</h1>
+        <p className="mt-1 text-[13px] text-[#5B5D60] max-w-2xl">
+          To receive messages from your streaming platform&apos;s chat inside a
+          session, <strong>first connect that platform in Settings → Integrations.</strong> Choose
+          the service you use (for example Twitch or YouTube) and log in so chat
+          messages can be relayed into your session chat.
+        </p>
       </div>
 
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
         <Box
           sx={{
             width: "fit-content",

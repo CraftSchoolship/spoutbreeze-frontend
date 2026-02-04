@@ -20,7 +20,7 @@ import {
   getTwitchAuthUrl,
   getTwitchTokenStatus,
   revokeTwitchToken,
-  startTwitchConnection,
+  // startTwitchConnection,
   TwitchTokenStatus,
 } from "@/actions/twitchIntegration";
 import Image from "next/image";
@@ -94,17 +94,17 @@ const TwitchIntegrationCard: React.FC = () => {
     }
   };
 
-  const handleStartIrc = async () => {
-    setWorking(true);
-    setError(null);
-    try {
-      await startTwitchConnection();
-    } catch (e: any) {
-      setError(e?.message || "Failed to start Twitch connection");
-    } finally {
-      setWorking(false);
-    }
-  };
+  // const handleStartIrc = async () => {
+  //   setWorking(true);
+  //   setError(null);
+  //   try {
+  //     await startTwitchConnection();
+  //   } catch (e: any) {
+  //     setError(e?.message || "Failed to start Twitch connection");
+  //   } finally {
+  //     setWorking(false);
+  //   }
+  // };
 
   const timeInfo = useMemo(() => {
     if (!status?.has_token || !status.expires_at) return null;
@@ -320,7 +320,7 @@ const TwitchIntegrationCard: React.FC = () => {
               >
                 {working ? "Revoking..." : "Disconnect"}
               </Button>
-              <Button
+              {/* <Button
                 variant="contained"
                 onClick={handleStartIrc}
                 disabled={working || status.is_expired}
@@ -332,7 +332,7 @@ const TwitchIntegrationCard: React.FC = () => {
                 }}
               >
                 {working ? "Starting..." : "Start IRC Session"}
-              </Button>
+              </Button> */}
               <Button
                 variant="text"
                 onClick={loadStatus}

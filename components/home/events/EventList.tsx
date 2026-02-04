@@ -87,12 +87,24 @@ const EventList: React.FC<EventListProps> = ({
                 sx={{
                   display: "flex",
                   alignItems: "center",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  gap: 1.5,
+                  py: 1,
                 }}
               >
                 <ListItemText
+                  sx={{ flex: 1, minWidth: 0 }}
                   primary={
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <span style={{ fontSize: "18px", fontWeight: 500 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <span className="font-medium text-[15px] sm:text-[17px] md:text-[18px] truncate max-w-full">
                         {event.title}
                       </span>
                       <LiveBadge show={event.status === "live"} variant="pulse" />
@@ -101,55 +113,81 @@ const EventList: React.FC<EventListProps> = ({
                   slotProps={{
                     primary: {
                       sx: {
-                        fontSize: "18px",
+                        fontSize: { xs: "14px", sm: "16px", md: "18px" },
                         fontWeight: 500,
                       },
+                    },
+                    secondary: {
+                      component: "div",
                     },
                   }}
                   secondary={
                     <React.Fragment>
-                      <Box component="span" display="flex" mt={1}>
-                        <Image
-                          src="/events/agenda_icon.svg"
-                          alt="agenda"
-                          width={15}
-                          height={15}
-                          className="mr-1"
-                        />
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          color="#5B5D60"
+                      <Box
+                        component="span"
+                        mt={0.5}
+                        sx={{
+                          display: "flex",
+                          flexDirection: { xs: "column", sm: "row" },
+                          alignItems: { xs: "flex-start", sm: "center" },
+                          gap: { xs: 0.5, sm: 2 },
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.5,
+                          }}
                         >
-                          {formatDate(event.start_date)}
-                        </Typography>
+                          <Image
+                            src="/events/agenda_icon.svg"
+                            alt="agenda"
+                            width={15}
+                            height={15}
+                          />
+                          <Typography
+                            component="span"
+                            variant="body2"
+                            color="#5B5D60"
+                          >
+                            {formatDate(event.start_date)}
+                          </Typography>
+                        </Box>
 
-                        <Image
-                          src="/events/clock_icon.svg"
-                          alt="clock"
-                          width={15}
-                          height={15}
-                          className="mx-2"
-                        />
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          color="#5B5D60"
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.5,
+                          }}
                         >
-                          {formatTime(event.start_time)}
-                        </Typography>
+                          <Image
+                            src="/events/clock_icon.svg"
+                            alt="clock"
+                            width={15}
+                            height={15}
+                          />
+                          <Typography
+                            component="span"
+                            variant="body2"
+                            color="#5B5D60"
+                          >
+                            {formatTime(event.start_time)}
+                          </Typography>
+                        </Box>
                       </Box>
                     </React.Fragment>
                   }
                 />
 
                 {/* item related buttons */}
-                <div className="flex items-center">
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end sm:flex-nowrap ml-2">
                   {/* Only show Copy Link button if event status is not "ended" */}
                   {event.status !== "ended" && (
                     <button
                       onClick={() => handleCopyLink(event.id)}
-                      className="flex items-center text-[#27AAFF] font-medium text-[13px] cursor-pointer mr-[15px] whitespace-nowrap"
+                      className="flex items-center text-[#27AAFF] font-medium text-[12px] sm:text-[13px] cursor-pointer sm:mr-[15px] whitespace-nowrap"
                     >
                       <Image
                         src="/events/link_icon.svg"
@@ -217,6 +255,10 @@ const EventList: React.FC<EventListProps> = ({
                             if (item.key === "start") {
                               if (menuState.eventId) {
                                 handleStartEvent(menuState.eventId);
+                              }
+                            } else if (item.key === "share") {
+                              if (menuState.eventId) {
+                                handleCopyLink(menuState.eventId);
                               }
                             } else if (item.key === "delete") {
                               if (menuState.eventId) {

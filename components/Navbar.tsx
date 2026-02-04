@@ -112,8 +112,8 @@ const Navbar: React.FC = () => {
   }, [pathname, searchParams, router]);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 flex items-center justify-between pt-[13px] pb-[17px] border-b border-[#E0E5EC] bg-white z-10">
-      <div className="ml-[100px]">
+    <nav className="fixed top-0 left-0 right-0 flex items-center justify-between px-4 sm:px-8 lg:px-[100px] pt-2 pb-2 sm:pt-[13px] sm:pb-[17px] border-b border-[#E0E5EC] bg-white z-10">
+      <div className="">
         <Link href="/" className="">
           <Image
             src="/spoutbreeze_icon.svg"
@@ -124,7 +124,7 @@ const Navbar: React.FC = () => {
           />
         </Link>
       </div>
-      <div className="flex items-center justify-end mr-[100px]">
+      <div className="flex items-center justify-end">
         {loading ? (
           // Loading state
           <Box

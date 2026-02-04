@@ -20,15 +20,16 @@ const SideBar: React.FC<SidebarMenuProps> = ({
   onMenuItemClick,
 }) => {
   return (
-    <div className="flex flex-col bg-white rounded-[10px] overflow-hidden">
+    <div className="flex flex-row sm:flex-col bg-white rounded-[10px] overflow-x-auto sm:overflow-visible">
       {menuItems.map((item, index) => (
         <button
           key={item.key}
           className={`
-            flex items-center py-[15px] pl-[15px] cursor-pointer w-full
+            flex items-center py-2 px-3 sm:py-[15px] sm:pl-[15px] cursor-pointer
+            whitespace-nowrap
             ${activeKey === item.key ? "bg-[#2686BE]/10" : ""}
-            ${index === 0 ? "rounded-t-[10px]" : ""}
-            ${index === menuItems.length - 1 ? "rounded-b-[10px]" : ""}
+            ${index === 0 ? "rounded-l-[10px] sm:rounded-t-[10px]" : ""}
+            ${index === menuItems.length - 1 ? "rounded-r-[10px] sm:rounded-b-[10px]" : ""}
           `}
           onClick={() => onMenuItemClick(item.key)}
         >
@@ -37,9 +38,11 @@ const SideBar: React.FC<SidebarMenuProps> = ({
             alt={item.label}
             width={12}
             height={12}
-            className="w-6 h-6 mr-2"
+            className="w-5 h-5 mr-2 sm:w-6 sm:h-6"
           />
-          <span className="text-[#262262] text-[13px] font-medium">{item.label}</span>
+          <span className="text-[#262262] text-[12px] sm:text-[13px] font-medium">
+            {item.label}
+          </span>
         </button>
       ))}
     </div>

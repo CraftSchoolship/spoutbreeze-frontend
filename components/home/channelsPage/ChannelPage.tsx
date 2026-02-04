@@ -197,7 +197,7 @@ const ChannelPage: React.FC<ChannelPageProps> = ({
       {/* Channel header */}
       <div className="flex justify-between items-center">
         <div className="flex flex-col">
-          <button className="flex items-center font-medium text-[18px] -ml-1.5 mb-[5px]">
+          <button className="flex items-center font-medium text-[18px] -ml-1.5 mb-1.25">
             <NavigateBeforeRoundedIcon
               onClick={onBack}
               sx={{ cursor: "pointer" }}
@@ -210,12 +210,12 @@ const ChannelPage: React.FC<ChannelPageProps> = ({
         </div>
         <div>
           <button
-            className="mb-[14px] font-medium text-[13px] border p-2.5 text-[#27AAFF] rounded-[2px] cursor-pointer mr-4"
+            className="mb-3.5 font-medium text-[13px] border p-2.5 text-[#27AAFF] rounded-xs cursor-pointer mr-4"
             onClick={handleCreateEvent}
           >
             Create Event
           </button>
-          <button className="mb-[14px] font-medium text-[13px] border p-2.5 text-[#27AAFF] rounded-[2px] cursor-pointer">
+          <button className="mb-3.5 font-medium text-[13px] border p-2.5 text-[#27AAFF] rounded-xs cursor-pointer">
             Start Session
           </button>
         </div>

@@ -6,7 +6,7 @@ import PageLayout, { PageItem } from "../common/PageLayout";
 import SettingsSidebar from "./SettingsSidebar";
 import DeleteAccount from "./deleteAccount/DeleteAccount";
 import AccountInfo from "./accountInfo/AccountInfo";
-import PasswordSettings from "./password/PasswordSettings";
+// import PasswordSettings from "./password/PasswordSettings";
 import AccessControl from "./accessControl/AccessControl";
 import Integrations from "./integrations/Integrations";
 import BillingSettings from "./BillingSettings";
@@ -54,12 +54,12 @@ const SettingsPage: React.FC = () => {
       icon: "/sidebar/account_info_icon.svg",
       component: <AccountInfo />,
     },
-    {
-      key: "password",
-      label: "Password",
-      icon: "/sidebar/password_icon.svg",
-      component: <PasswordSettings />,
-    },
+    // {
+    //   key: "password",
+    //   label: "Password",
+    //   icon: "/sidebar/password_icon.svg",
+    //   component: <PasswordSettings />,
+    // },
     {
       key: "subscription",
       label: "Subscription & Billing",

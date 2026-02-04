@@ -60,17 +60,20 @@ function PageLayoutContent({
 
   return (
     <section className={className}>
-      <Box sx={{ flexGrow: 1 }} className="px-[100px] pt-[80px]">
+      <Box
+        sx={{ flexGrow: 1 }}
+        className="px-4 pt-4 sm:px-8 sm:pt-8 lg:px-[100px] lg:pt-[80px]"
+      >
         <Grid container spacing={2.5}>
-          <Grid size={{ xs: 2 }}>
+          <Grid size={{ xs: 12, md: 3, lg: 2 }}>
             <SidebarComponent
               items={items}
               activeKey={activeComponent}
               onItemClick={handleItemClick}
             />
           </Grid>
-          <Grid size={{ xs: 10 }}>
-            <Box className="bg-white rounded-[10px] h-full">
+          <Grid size={{ xs: 12, md: 9, lg: 10 }}>
+            <Box className="bg-white rounded-[10px] h-full mt-4 md:mt-0">
               <ContentDisplay component={currentComponent} />
             </Box>
           </Grid>
