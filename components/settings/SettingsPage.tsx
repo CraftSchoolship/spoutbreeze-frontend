@@ -6,7 +6,7 @@ import PageLayout, { PageItem } from "../common/PageLayout";
 import SettingsSidebar from "./SettingsSidebar";
 import DeleteAccount from "./deleteAccount/DeleteAccount";
 import AccountInfo from "./accountInfo/AccountInfo";
-import PasswordSettings from "./password/PasswordSettings";
+// import PasswordSettings from "./password/PasswordSettings";
 import AccessControl from "./accessControl/AccessControl";
 import Integrations from "./integrations/Integrations";
 import BillingSettings from "./BillingSettings";
