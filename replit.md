@@ -1,7 +1,13 @@
-# SpoutBreeze Frontend
+# BlueScale Frontend
 
 ## Overview
-SpoutBreeze is a professional platform for hosting, attending, and managing webinars. This is the Next.js 15 frontend application using Turbopack.
+BlueScale is a modern platform that makes hosting, attending, and managing webinars seamless. This is the Next.js 15 frontend application using Turbopack.
+
+## Branding & Design
+- **Brand Colors**: Sky blue (#0ea5e9), Teal (#06b6d4), Navy (#1e3a5f)
+- **Font**: Inter (modern, clean, professional)
+- **Design Language**: Modern, glassmorphism effects, gradient accents, rounded corners
+- **Logo**: Custom BlueScale logo at `/public/bluescale_logo.png`
 
 ## Project Architecture
 - **Framework**: Next.js 15 with App Router
@@ -37,4 +43,5 @@ Required environment variables (see `.env.local.example`):
 - `NEXT_PUBLIC_API_URL` - Backend API URL
 
 ## Recent Changes
+- 2026-02-04: Complete redesign with BlueScale branding - new logo, modern UI with trust/comfort colors
 - 2026-02-04: Initial Replit setup, configured dev server on port 5000

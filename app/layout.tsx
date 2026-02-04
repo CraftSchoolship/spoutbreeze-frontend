@@ -1,16 +1,16 @@
 import { Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import { Inter } from "next/font/google";
 import ClientThemeProvider from "@/components/ThemeProvider";
 import { SnackbarProvider } from '@/contexts/SnackbarContext';
 import "./globals.css";
 
-const montserrat = Montserrat({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SpoutBreeze",
-  description: "SpoutBreeze is a professional platform that simplifies hosting, attending, and managing webinars.",
+  title: "BlueScale - Where Ideas Scale to New Heights",
+  description: "BlueScale is a modern platform that makes hosting, attending, and managing webinars seamless. Deliver impactful virtual experiences with confidence.",
 };
 
 export default function RootLayout({
@@ -21,18 +21,18 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/spoutbreeze_icon.svg" />
+        <link rel="icon" href="/bluescale_logo.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>SpoutBreeze</title>
+        <meta name="theme-color" content="#0ea5e9" />
       </head>
-      <body className={`${montserrat.className} flex flex-col min-h-screen mx-auto max-w-screen-container`}>
+      <body className={`${inter.className} flex flex-col min-h-screen mx-auto max-w-screen-container bg-slate-50`}>
         <ClientThemeProvider>
           <nav>
-            <Suspense fallback={<div className="h-[80px] bg-white border-b border-[#E0E5EC]"></div>}>
+            <Suspense fallback={<div className="h-[72px] glass-effect border-b border-slate-100"></div>}>
               <Navbar />
             </Suspense>
           </nav>
-          <main className="pt-[80px]">
+          <main className="pt-[72px]">
             <SnackbarProvider>
               {children}
             </SnackbarProvider>

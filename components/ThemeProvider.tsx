@@ -3,30 +3,69 @@
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Montserrat } from "next/font/google";
+import { Inter } from "next/font/google";
 
-const montserrat = Montserrat({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] });
 
-// Create theme inside client component
 const theme = createTheme({
-  typography: {
-    fontFamily: montserrat.style.fontFamily,
-    allVariants: {
-      fontFamily: montserrat.style.fontFamily,
+  palette: {
+    primary: {
+      main: '#0ea5e9',
+      dark: '#0284c7',
+      light: '#38bdf8',
     },
+    secondary: {
+      main: '#1e3a5f',
+      dark: '#0f172a',
+      light: '#334155',
+    },
+    background: {
+      default: '#f8fafc',
+      paper: '#ffffff',
+    },
+    text: {
+      primary: '#0f172a',
+      secondary: '#64748b',
+    },
+  },
+  typography: {
+    fontFamily: inter.style.fontFamily,
+    allVariants: {
+      fontFamily: inter.style.fontFamily,
+    },
+    h1: {
+      fontWeight: 700,
+      letterSpacing: '-0.02em',
+    },
+    h2: {
+      fontWeight: 600,
+      letterSpacing: '-0.01em',
+    },
+  },
+  shape: {
+    borderRadius: 12,
   },
   components: {
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          fontFamily: montserrat.style.fontFamily,
+          fontFamily: inter.style.fontFamily,
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          fontWeight: 500,
+          borderRadius: '10px',
         },
       },
     },
     MuiDialog: {
       styleOverrides: {
         paper: {
-          borderRadius: "8px",
+          borderRadius: "16px",
         },
       },
     },
