@@ -44,7 +44,7 @@ export const revokeTwitchToken = () =>
     method: "DELETE",
   });
 
-export const startTwitchConnection = () =>
-  authFetch<{ connected: boolean }>(`${API_BASE}/api/auth/twitch/connect`, {
-    method: "POST",
-  });
+// export const startTwitchConnection = () =>
+//   authFetch<{ connected: boolean }>(`${API_BASE}/api/auth/twitch/connect`, {
+//     method: "POST",
+//   });

@@ -28,6 +28,8 @@ function stringAvatar(name: string) {
       bgcolor: stringToColor(name),
       width: 40,
       height: 40,
+      fontSize: '14px',
+      fontWeight: 600,
     },
     children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
   };
@@ -49,20 +51,14 @@ const Navbar: React.FC = () => {
 
   const handleLogoutClick = async () => {
     setLogoutLoading(true);
-    setAnchorEl(null); // Close menu immediately
+    setAnchorEl(null);
 
     try {
-      // Clear user state first to prevent UI flicker
       setUser(null);
-
-      // Call logout endpoint (clears HTTP-only cookies)
       await logout();
-
-      // Force hard redirect to trigger middleware and prevent loops
       window.location.href = "/";
     } catch (error) {
       console.error("Logout error:", error);
-      // Even if logout fails, clear user state and redirect
       setUser(null);
       window.location.href = "/";
     } finally {
@@ -85,7 +81,6 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      // Skip auth check on auth pages, join pages, and landing page
       if (
         pathname.includes("/auth/") ||
         pathname.includes("/join/") ||
@@ -97,7 +92,6 @@ const Navbar: React.FC = () => {
       }
 
       try {
-        // fetchCurrentUser automatically uses HTTP-only cookies via axiosInstance
         const userData = await fetchCurrentUser();
         setUser(userData);
       } catch (error) {
@@ -112,43 +106,59 @@ const Navbar: React.FC = () => {
   }, [pathname, searchParams, router]);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 flex items-center justify-between pt-[13px] pb-[17px] border-b border-[#E0E5EC] bg-white z-10">
-      <div className="ml-[100px]">
-        <Link href="/" className="">
+    <nav className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 sm:px-8 lg:px-24 py-4 glass-effect z-50 border-b border-slate-100">
+      <Link href="/" className="flex items-center gap-3 group">
+        <div className="relative">
           <Image
-            src="/spoutbreeze_icon.svg"
-            alt="Logo"
-            width={50}
-            height={50}
-            className="h-[30px] w-[30px] sm:h-[40px] sm:w-[40px] md:h-[50px] md:w-[50px] object-contain cursor-pointer"
+            src="/bluescale_logo.png"
+            alt="BlueScale"
+            width={44}
+            height={44}
+            className="object-contain transition-transform group-hover:scale-105"
+            priority
           />
-        </Link>
-      </div>
-      <div className="flex items-center justify-end mr-[100px]">
+        </div>
+        <span className="text-xl font-bold text-slate-800 hidden sm:block">
+          Blue<span className="text-sky-500">Scale</span>
+        </span>
+      </Link>
+      
+      <div className="flex items-center gap-4">
         {loading ? (
-          // Loading state
           <Box
-            sx={{ width: 120, height: 36, bgcolor: "#f0f0f0", borderRadius: 1 }}
+            sx={{ 
+              width: 100, 
+              height: 40, 
+              bgcolor: "#f1f5f9", 
+              borderRadius: 2,
+              animation: 'pulse 2s infinite',
+            }}
           />
         ) : user ? (
           <>
             <Stack
               direction="row"
-              spacing={1}
+              spacing={1.5}
               className="items-center"
               onClick={handleClick}
               sx={{
                 cursor: "pointer",
+                padding: '6px 12px',
+                borderRadius: '12px',
+                transition: 'all 0.2s',
+                '&:hover': {
+                  backgroundColor: '#f1f5f9',
+                },
               }}
             >
               <Avatar
                 {...stringAvatar(`${user.first_name} ${user.last_name}`)}
               />
-              <div className="flex flex-col">
-                <span className="text-[14px]">
+              <div className="flex flex-col hidden sm:flex">
+                <span className="text-sm font-medium text-slate-700">
                   {user.first_name} {user.last_name}
                 </span>
-                <span className="text-[13px] font-medium text-[#5B5D60]">
+                <span className="text-xs text-slate-400">
                   {getPrimaryRole(user)}
                 </span>
               </div>
@@ -170,25 +180,28 @@ const Navbar: React.FC = () => {
                   elevation: 0,
                   sx: {
                     overflow: "visible",
-                    filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                    boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
                     mt: 1.5,
-                    minWidth: "250px",
-                    borderRadius: "8px",
+                    minWidth: "260px",
+                    borderRadius: "16px",
+                    border: '1px solid #e2e8f0',
                     "& .MuiAvatar-root": {
-                      width: 40,
-                      height: 40,
+                      width: 44,
+                      height: 44,
                     },
                     "&::before": {
                       content: '""',
                       display: "block",
                       position: "absolute",
                       top: 0,
-                      right: 14,
-                      width: 10,
-                      height: 10,
+                      right: 20,
+                      width: 12,
+                      height: 12,
                       bgcolor: "background.paper",
                       transform: "translateY(-50%) rotate(45deg)",
                       zIndex: 0,
+                      borderTop: '1px solid #e2e8f0',
+                      borderLeft: '1px solid #e2e8f0',
                     },
                   },
                 },
@@ -196,75 +209,71 @@ const Navbar: React.FC = () => {
               transformOrigin={{ horizontal: "right", vertical: "top" }}
               anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             >
-              {/* User info section */}
-              <Box sx={{ pb: "14px", pl: "14px", pt: "14px" }}>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Box sx={{ p: 2, pb: 1.5 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                   <Avatar
                     {...stringAvatar(`${user.first_name} ${user.last_name}`)}
                   />
-                  <Box sx={{ ml: 1 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                  <Box>
+                    <Typography sx={{ fontWeight: 600, fontSize: '15px', color: '#1e293b' }}>
                       {user.first_name} {user.last_name}
                     </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ fontSize: "13px" }}
-                    >
+                    <Typography sx={{ fontSize: "13px", color: '#64748b' }}>
                       {user.email}
                     </Typography>
                   </Box>
                 </Box>
               </Box>
-              <Divider />
+              <Divider sx={{ borderColor: '#f1f5f9' }} />
 
-              {/* Menu options */}
               <MenuItem
                 onClick={handleSettingsClick}
-                disableGutters
-                dense
-                sx={{ pl: "14px", pt: "15px", pb: "15px" }}
+                sx={{ 
+                  py: 1.5, 
+                  px: 2,
+                  '&:hover': { backgroundColor: '#f8fafc' },
+                }}
               >
                 <ListItemIcon>
-                  <SettingsOutlinedIcon fontSize="small" />
+                  <SettingsOutlinedIcon fontSize="small" sx={{ color: '#64748b' }} />
                 </ListItemIcon>
-                Settings
+                <span className="text-slate-600">Settings</span>
               </MenuItem>
               <MenuItem
                 onClick={handleLogoutClick}
-                disableGutters
-                dense
-                sx={{ pl: "14px", pt: "15px", pb: "15px" }}
                 disabled={logoutLoading}
+                sx={{ 
+                  py: 1.5, 
+                  px: 2,
+                  '&:hover': { backgroundColor: '#fef2f2' },
+                }}
               >
                 <ListItemIcon>
-                  <LogoutOutlinedIcon fontSize="small" />
+                  <LogoutOutlinedIcon fontSize="small" sx={{ color: '#ef4444' }} />
                 </ListItemIcon>
-                {logoutLoading ? "Signing out..." : "Sign out"}
+                <span className="text-red-500">
+                  {logoutLoading ? "Signing out..." : "Sign out"}
+                </span>
               </MenuItem>
             </Menu>
           </>
         ) : (
           <Button
-            variant="outlined"
+            variant="contained"
             sx={{
-              padding: {
-                xs: "8px 8px",
-                sm: "10px 10px",
-                md: "12px 12px",
+              background: 'linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)',
+              padding: '10px 24px',
+              fontSize: '14px',
+              fontWeight: 600,
+              boxShadow: '0 2px 8px rgba(14, 165, 233, 0.3)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #0284c7 0%, #0891b2 100%)',
+                boxShadow: '0 4px 12px rgba(14, 165, 233, 0.4)',
               },
-              fontSize: {
-                xs: "12px",
-                sm: "12px",
-                md: "13px",
-              },
-              fontWeight: 500,
-              color: "#27AAFF",
-              borderColor: "#27AAFF",
             }}
             onClick={handleLogin}
           >
-            Sign in
+            Sign In
           </Button>
         )}
       </div>

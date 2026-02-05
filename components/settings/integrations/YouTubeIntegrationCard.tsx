@@ -22,7 +22,7 @@ import {
   getYouTubeAuthUrl,
   getYouTubeTokenStatus,
   revokeYouTubeToken,
-  startYouTubeConnection,
+  // startYouTubeConnection,
   YouTubeTokenStatus,
 } from "@/actions/youtubeIntegration";
 
@@ -120,19 +120,19 @@ const YouTubeIntegrationCard: React.FC = () => {
     }
   };
 
-  const handleStart = async () => {
-    setWorking(true);
-    setError(null);
-    try {
-      await startYouTubeConnection();
-      setSuccessMessage("Chat polling started successfully!");
-      setTimeout(() => setSuccessMessage(null), 3000);
-    } catch (e: any) {
-      setError(e?.message || "Failed to start YouTube chat polling");
-    } finally {
-      setWorking(false);
-    }
-  };
+  // const handleStart = async () => {
+  //   setWorking(true);
+  //   setError(null);
+  //   try {
+  //     await startYouTubeConnection();
+  //     setSuccessMessage("Chat polling started successfully!");
+  //     setTimeout(() => setSuccessMessage(null), 3000);
+  //   } catch (e: any) {
+  //     setError(e?.message || "Failed to start YouTube chat polling");
+  //   } finally {
+  //     setWorking(false);
+  //   }
+  // };
 
   const timeInfo = useMemo(() => {
     if (!status?.has_token || !status.expires_at) return null;
@@ -222,7 +222,31 @@ const YouTubeIntegrationCard: React.FC = () => {
         }
         subheader={
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            Link your YouTube channel to enable chat relay & interactions.
+            Link your YouTube channel to enable chat relay &amp; interactions.
+            <strong style={{ marginLeft: 4, fontWeight: 600 }}>
+              YouTube uses a daily API quota for chat and live features
+            </strong>
+            {" "}
+            (see
+            <a
+              href="https://developers.google.com/youtube/v3/determine_quota_cost"
+              target="_blank"
+              rel="noreferrer"
+              style={{ marginLeft: 4, color: BRAND_COLOR, textDecoration: "underline" }}
+            >
+              quota cost
+            </a>
+            
+            and
+            <a
+              href="https://developers.google.com/youtube/v3/guides/quota_and_compliance_audits"
+              target="_blank"
+              rel="noreferrer"
+              style={{ marginLeft: 4, color: BRAND_COLOR, textDecoration: "underline" }}
+            >
+              quota &amp; compliance
+            </a>
+            ).
           </Typography>
         }
       />
@@ -352,7 +376,7 @@ const YouTubeIntegrationCard: React.FC = () => {
               >
                 {working ? "Revoking..." : "Disconnect"}
               </Button>
-              <Button
+              {/* <Button
                 variant="contained"
                 onClick={handleStart}
                 disabled={working || status.is_expired}
@@ -364,7 +388,7 @@ const YouTubeIntegrationCard: React.FC = () => {
                 }}
               >
                 {working ? "Starting..." : "Start Chat Polling"}
-              </Button>
+              </Button> */}
               <Button
                 variant="text"
                 onClick={loadStatus}

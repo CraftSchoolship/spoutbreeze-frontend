@@ -144,13 +144,19 @@ const Endpoints: React.FC = () => {
   };
 
   return (
-    <div className="px-10 pt-10 h-screen overflow-y-auto">
-      <div className="flex justify-between items-center">
-        <h1 className="text-[18px] font-medium text-black mb-[20px]">
-          Endpoints
-        </h1>
+    <div className="px-4 pt-6 sm:px-6 sm:pt-8 lg:px-10 lg:pt-10 h-screen overflow-y-auto">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
+        <div>
+          <h1 className="text-[18px] font-medium text-black">
+            Endpoints
+          </h1>
+          <p className="mt-1 text-[13px] text-[#5B5D60] max-w-xl">
+            Add the RTMP URL and stream key of the platform (for example YouTube, Twitch, or another
+            RTMP service) you want to stream to (you can find them in the settings of the platform).
+          </p>
+        </div>
         <button
-          className="mb-[14px] font-medium text-[13px] border p-2.5 text-[#27AAFF] rounded-[2px] cursor-pointer"
+          className="mt-2 sm:mt-0 mb-[14px] font-medium text-[13px] border p-2.5 text-[#27AAFF] rounded-[2px] cursor-pointer self-start sm:self-auto"
           onClick={handleOpenModal}
         >
           + Add endpoint

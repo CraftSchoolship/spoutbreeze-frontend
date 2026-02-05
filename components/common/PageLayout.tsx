@@ -30,7 +30,7 @@ function PageLayoutContent({
   defaultSection,
   sectionParam = "section",
   sidebarComponent: SidebarComponent,
-  className = "bg-[#F6F6F6] min-h-screen pb-10",
+  className = "gradient-bg min-h-screen pb-10",
 }: PageLayoutProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -60,17 +60,20 @@ function PageLayoutContent({
 
   return (
     <section className={className}>
-      <Box sx={{ flexGrow: 1 }} className="px-[100px] pt-[80px]">
-        <Grid container spacing={2.5}>
-          <Grid size={{ xs: 2 }}>
+      <Box
+        sx={{ flexGrow: 1 }}
+        className="px-4 pt-6 sm:px-8 sm:pt-8 lg:px-24 lg:pt-10"
+      >
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 3, lg: 2.5 }}>
             <SidebarComponent
               items={items}
               activeKey={activeComponent}
               onItemClick={handleItemClick}
             />
           </Grid>
-          <Grid size={{ xs: 10 }}>
-            <Box className="bg-white rounded-[10px] h-full">
+          <Grid size={{ xs: 12, md: 9, lg: 9.5 }}>
+            <Box className="bg-white rounded-2xl shadow-sm border border-slate-100 h-full mt-4 md:mt-0">
               <ContentDisplay component={currentComponent} />
             </Box>
           </Grid>
@@ -82,7 +85,11 @@ function PageLayoutContent({
 
 const PageLayout: React.FC<PageLayoutProps> = (props) => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={
+      <div className="gradient-bg min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-3 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
       <PageLayoutContent {...props} />
     </Suspense>
   );
