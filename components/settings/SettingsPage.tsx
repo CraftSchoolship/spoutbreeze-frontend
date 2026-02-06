@@ -8,9 +8,11 @@ import AccountInfo from "./accountInfo/AccountInfo";
 import AccessControl from "./accessControl/AccessControl";
 import Integrations from "./integrations/Integrations";
 import BillingSettings from "./BillingSettings";
+import StreamingSettings from "./streamingSettings/StreamingSettings";
 import { fetchCurrentUser, User, isAdmin } from "@/actions/fetchUsers";
 import LinkIcon from "@mui/icons-material/Link";
 import PaymentIcon from "@mui/icons-material/Payment";
+import VideoSettingsIcon from "@mui/icons-material/VideoSettings";
 
 const SettingsPage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -54,6 +56,12 @@ const SettingsPage: React.FC = () => {
       label: "Subscription & Billing",
       icon: <PaymentIcon fontSize="small" />,
       component: <BillingSettings />,
+    },
+    {
+      key: "streaming",
+      label: "Streaming Settings",
+      icon: <VideoSettingsIcon fontSize="small" />,
+      component: <StreamingSettings />,
     },
     {
       key: "integrations",

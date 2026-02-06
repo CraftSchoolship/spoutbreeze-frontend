@@ -11,6 +11,8 @@ import {
   MenuItem,
   Select,
   Autocomplete,
+  CircularProgress,
+  SelectChangeEvent,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -19,22 +21,33 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-
 import { User, fetchCurrentUser } from "@/actions/fetchUsers";
 import OrganizerSelector from "./OrganizerSelector";
 import NavigateBeforeRoundedIcon from "@mui/icons-material/NavigateBeforeRounded";
+import { getUserResolution } from "@/actions/resolution";
+import axios from "@/lib/axios";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const timezones = Intl.supportedValuesOf("timeZone").sort();
 
+type Resolution = "360p" | "480p" | "720p" | "1080p" | "1440p" | "4K";
+
+const RESOLUTION_ORDER: Resolution[] = ["720p", "1080p", "1440p", "4K"];
+
+const getAllowedResolutions = (maxQuality: Resolution): Resolution[] => {
+  const maxIndex = RESOLUTION_ORDER.indexOf(maxQuality);
+  if (maxIndex === -1) return ["720p"];
+  return RESOLUTION_ORDER.slice(0, maxIndex + 1);
+};
+
 interface EventFormProps {
   channel?: ChannelWithUserName;
   onBack: () => void;
   onEventCreated?: () => void;
   onError?: (message: string) => void;
-  eventToEdit?: CreateEventReq;
+  eventToEdit?: CreateEventReq & { resolution?: string };
   onEventUpdated?: (eventId: string, data: Partial<CreateEventReq>) => void;
 }
 
@@ -54,8 +67,15 @@ const CreateEvent: React.FC<EventFormProps> = ({
 
   const [selectedTimezone, setSelectedTimezone] = useState(detectedTimezone);
   const [loading, setLoading] = useState(false);
+  const [resolutionLoading, setResolutionLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [titleError, setTitleError] = useState<string | null>(null);
+
+  // Resolution state
+  const [maxQuality, setMaxQuality] = useState<Resolution>("720p");
+  const [defaultResolution, setDefaultResolution] =
+    useState<Resolution>("720p");
+  const [resolution, setResolution] = useState<Resolution>("720p");
 
   const [formData, setFormData] = useState<CreateEventReq>({
     title: eventToEdit ? eventToEdit.title : "",
@@ -110,6 +130,53 @@ const CreateEvent: React.FC<EventFormProps> = ({
     }
   }, [channel, onError]);
 
+  // Fetch resolution settings
+  React.useEffect(() => {
+    async function fetchResolutionData() {
+      try {
+        setResolutionLoading(true);
+
+        // Fetch plan limits
+        const limitsRes = await axios.get("/api/payments/limits");
+        const planMax = (limitsRes.data?.max_quality || "720p") as Resolution;
+        setMaxQuality(planMax);
+
+        // Derive allowed resolutions from max_quality
+        const allowed = getAllowedResolutions(planMax);
+
+        if (eventToEdit?.resolution) {
+          const editRes = eventToEdit.resolution as Resolution;
+          setResolution(allowed.includes(editRes) ? editRes : planMax);
+          setDefaultResolution(editRes);
+        } else {
+          const resolutionResult = await getUserResolution();
+          if (
+            resolutionResult.success &&
+            resolutionResult.data?.default_resolution
+          ) {
+            const userDefault = resolutionResult.data.default_resolution as Resolution;
+            setDefaultResolution(userDefault);
+            setResolution(allowed.includes(userDefault) ? userDefault : planMax);
+          } else {
+            setDefaultResolution(planMax);
+            setResolution(planMax);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch resolution data:", error);
+        if (onError) {
+          onError("Failed to load resolution settings");
+        }
+      } finally {
+        setResolutionLoading(false);
+      }
+    }
+
+    fetchResolutionData();
+  }, [eventToEdit, onError]);
+
+  const allowedResolutions = getAllowedResolutions(maxQuality);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTitleError(null);
@@ -150,9 +217,10 @@ const CreateEvent: React.FC<EventFormProps> = ({
         .utc()
         .toDate();
 
-      const eventData: CreateEventReq = {
+      const eventData: CreateEventReq & { resolution?: string } = {
         ...formData,
         start_time: startTimeUTC,
+        resolution, // Include resolution in event data
       };
 
       if (eventToEdit && onEventUpdated) {
@@ -205,6 +273,10 @@ const CreateEvent: React.FC<EventFormProps> = ({
     if (name) {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
+  };
+
+  const handleResolutionChange = (event: SelectChangeEvent) => {
+    setResolution(event.target.value as Resolution);
   };
 
   return (
@@ -280,8 +352,12 @@ const CreateEvent: React.FC<EventFormProps> = ({
             }}
             sx={{
               borderRadius: "10px",
-              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#0ea5e9" },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#0ea5e9" },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#0ea5e9",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#0ea5e9",
+              },
             }}
           >
             <MenuItem value="once">Once</MenuItem>
@@ -343,6 +419,47 @@ const CreateEvent: React.FC<EventFormProps> = ({
             )}
           />
         </div>
+
+        {/* Resolution Selection */}
+        {resolutionLoading ? (
+          <div className="flex items-center justify-center py-4">
+            <CircularProgress size={24} sx={{ color: "#0ea5e9" }} />
+          </div>
+        ) : (
+          <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+            <FormControl fullWidth>
+              <InputLabel id="event-resolution-label">
+                Stream Resolution
+              </InputLabel>
+              <Select
+                labelId="event-resolution-label"
+                id="event-resolution-select"
+                value={resolution}
+                label="Stream Resolution"
+                onChange={handleResolutionChange}
+                sx={{
+                  borderRadius: "10px",
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#0ea5e9",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#0ea5e9",
+                  },
+                }}
+              >
+                {allowedResolutions.map((res) => (
+                  <MenuItem key={res} value={res}>
+                    {res}
+                  </MenuItem>
+                ))}
+              </Select>
+              <p className="text-xs text-slate-500 mt-2">
+                Default from settings: {defaultResolution}. Maximum for your
+                plan: {maxQuality}
+              </p>
+            </FormControl>
+          </div>
+        )}
 
         <OrganizerSelector
           organizer_ids={formData.organizer_ids}
@@ -454,7 +571,7 @@ const CreateEvent: React.FC<EventFormProps> = ({
                 boxShadow: "0 4px 12px rgba(14, 165, 233, 0.4)",
               },
             }}
-            disabled={loading}
+            disabled={loading || resolutionLoading}
           >
             {loading
               ? eventToEdit
