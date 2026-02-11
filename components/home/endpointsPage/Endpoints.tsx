@@ -28,6 +28,7 @@ const Endpoints: React.FC = () => {
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [endpointToDelete, setEndpointToDelete] = useState<string | null>(null);
+  const [showHelp, setShowHelp] = useState(false);
 
   const { showSnackbar } = useGlobalSnackbar();
 
@@ -143,9 +144,93 @@ const Endpoints: React.FC = () => {
           <h1 className="text-base sm:text-lg font-medium text-black">
             Endpoints
           </h1>
-          <p className="mt-1 text-xs sm:text-[13px] text-[#5B5D60] max-w-xl leading-relaxed">
-            Add the RTMP URL and stream key of the platform (e.g. YouTube, Twitch) you want to stream to.
-          </p>
+          <div className="mt-2 text-xs sm:text-[13px] text-[#5B5D60] max-w-3xl leading-relaxed space-y-4">
+            <button
+              onClick={() => setShowHelp(!showHelp)}
+              className="text-[#27AAFF] flex items-center gap-1.5 hover:underline font-medium focus:outline-none cursor-pointer"
+            >
+              <span className="text-lg leading-none">{showHelp ? "−" : "+"}</span>
+              {showHelp
+                ? "Hide instructions"
+                : "Need help finding your RTMP URL and Stream Key?"}
+            </button>
+
+            {showHelp && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl animate-in fade-in slide-in-from-top-2 duration-300">
+                {/* YouTube Guide */}
+                <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex gap-3 items-start group hover:border-red-200 transition-colors">
+                  <div className="bg-white p-2 rounded-lg shadow-sm shrink-0">
+                    <svg
+                      className="w-5 h-5 text-red-600"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 mb-1">
+                      YouTube Live
+                    </h3>
+                    <p className="text-xs text-gray-600 leading-relaxed mb-2">
+                      Go to <strong>YouTube Studio</strong> → click{" "}
+                      <strong>Go Live</strong> (top right) → copy from{" "}
+                      <strong>Stream Settings</strong>.
+                    </p>
+                    <a
+                      href="https://studio.youtube.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-medium text-red-600 hover:text-red-700 flex items-center gap-1"
+                    >
+                      Open YouTube Studio →
+                    </a>
+                  </div>
+                </div>
+
+                {/* Twitch Guide */}
+                <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 flex gap-3 items-start group hover:border-purple-200 transition-colors">
+                  <div className="bg-white p-2 rounded-lg shadow-sm shrink-0">
+                    <svg
+                      className="w-5 h-5 text-purple-600"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 mb-1">
+                      Twitch
+                    </h3>
+                    <p className="text-xs text-gray-600 leading-relaxed mb-2">
+                      <strong>Stream Key:</strong> Dashboard → Settings → Stream.
+                      <br />
+                      <strong>RTMP URL:</strong> Use a localized ingest server.
+                    </p>
+                    <div className="flex flex-col gap-1.5">
+                      <a
+                        href="https://dashboard.twitch.tv/settings/stream"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
+                      >
+                        Get Stream Key →
+                      </a>
+                      <a
+                        href="https://help.twitch.tv/s/twitch-ingest-recommendation"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
+                      >
+                        Get RTMP URL (Ingest) →
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <button
           className="mt-2 sm:mt-0 shrink-0 font-medium text-xs sm:text-[13px] border p-2 sm:p-2.5 text-[#27AAFF] rounded-[2px] cursor-pointer self-start sm:self-auto"

@@ -165,7 +165,11 @@ const AddEndpointModal: React.FC<AddEndpointModalProps> = ({
           value={formData.rtmp_url}
           onChange={handleChange}
           error={errors.rtmp_url}
-          helperText={errors.rtmp_url ? "URL is required" : ""}
+          helperText={
+            errors.rtmp_url
+              ? "URL is required"
+              : "Paste the Server URL/RTMP URL here"
+          }
         />
         {/* key field */}
         <TextField
@@ -180,7 +184,11 @@ const AddEndpointModal: React.FC<AddEndpointModalProps> = ({
           value={formData.stream_key}
           onChange={handleChange}
           error={errors.stream_key}
-          helperText={errors.stream_key ? "Key is required" : ""}
+          helperText={
+            errors.stream_key
+              ? "Key is required"
+              : "Paste the Stream Key here (keep this private)"
+          }
         />
       </DialogContent>
       <DialogActions
