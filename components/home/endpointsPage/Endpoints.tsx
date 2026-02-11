@@ -9,15 +9,7 @@ import {
   deleteStreamEndpoint,
   updateStreamEndpoint,
 } from "@/actions/streamEndpoints";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Box,
-} from "@mui/material";
+
 import Image from "next/image";
 import AddEndpointModal from "./AddEndpointModal";
 import DeleteConfirmationDialog from "@/components/common/DeleteConfirmationDialog";
@@ -144,111 +136,83 @@ const Endpoints: React.FC = () => {
   };
 
   return (
-    <div className="px-4 pt-6 sm:px-6 sm:pt-8 lg:px-10 lg:pt-10 h-screen overflow-y-auto">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
+    <div className="px-4 pt-6 pb-6 sm:px-6 sm:pt-8 lg:px-10 lg:pt-10 h-screen overflow-y-auto">
+      {/* Header */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-5">
         <div>
-          <h1 className="text-[18px] font-medium text-black">
+          <h1 className="text-base sm:text-lg font-medium text-black">
             Endpoints
           </h1>
-          <p className="mt-1 text-[13px] text-[#5B5D60] max-w-xl">
-            Add the RTMP URL and stream key of the platform (for example YouTube, Twitch, or another
-            RTMP service) you want to stream to (you can find them in the settings of the platform).
+          <p className="mt-1 text-xs sm:text-[13px] text-[#5B5D60] max-w-xl leading-relaxed">
+            Add the RTMP URL and stream key of the platform (e.g. YouTube, Twitch) you want to stream to.
           </p>
         </div>
         <button
-          className="mt-2 sm:mt-0 mb-[14px] font-medium text-[13px] border p-2.5 text-[#27AAFF] rounded-[2px] cursor-pointer self-start sm:self-auto"
+          className="mt-2 sm:mt-0 shrink-0 font-medium text-xs sm:text-[13px] border p-2 sm:p-2.5 text-[#27AAFF] rounded-[2px] cursor-pointer self-start sm:self-auto"
           onClick={handleOpenModal}
         >
           + Add endpoint
         </button>
       </div>
 
-      <TableContainer>
-        <Table>
-          <TableHead className="bg-[#F6F6F6]">
-            <TableRow sx={{ "& th": { py: "10px", borderBottom: "none" } }}>
-              <TableCell sx={{ color: "#5B5D60", fontWeight: 500 }}>
-                ID
-              </TableCell>
-              <TableCell sx={{ color: "#5B5D60", fontWeight: 500 }}>
-                TITLE
-              </TableCell>
-              <TableCell sx={{ color: "#5B5D60", fontWeight: 500 }}>
-                CREATED BY
-              </TableCell>
-              <TableCell sx={{ width: "7%" }}></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  align="center"
-                  sx={{ py: "15px", borderBottom: "none" }}
-                >
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : error ? (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  align="center"
-                  sx={{ py: "15px", borderBottom: "none" }}
-                >
-                  {error}
-                </TableCell>
-              </TableRow>
-            ) : streamEndpoints.length === 0 ? (
-              <TableRow
-                sx={{ "& td": { py: "15px", px: 0, borderBottom: "none" } }}
-              >
-                <TableCell colSpan={4} align="center">
-                  No stream endpoints available
-                </TableCell>
-              </TableRow>
-            ) : (
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              streamEndpoints.map((endpoint, index) => (
-                <TableRow
-                  key={endpoint.id}
-                  sx={{
-                    "&:nth-of-type(even)": {
-                      backgroundColor: "#F6F6F6",
-                    },
-                    "& td": { py: "15px", borderBottom: "none" },
-                  }}
-                >
-                  <TableCell>{endpoint.id.substring(0, 5)}...</TableCell>
-                  <TableCell>{endpoint.title}</TableCell>
-                  <TableCell>{endpoint.userName}</TableCell>
-                  <TableCell>
-                    <Box className="flex items-center justify-start">
-                      <Image
-                        src="/delete_icon_outlined.svg"
-                        alt="Delete"
-                        width={20}
-                        height={20}
-                        className="cursor-pointer mr-5"
-                        onClick={() => confirmDeleteEndpoint(endpoint.id)}
-                      />
-                      <Image
-                        src="/edit_icon_outlined.svg"
-                        alt="Edit"
-                        width={20}
-                        height={20}
-                        className="cursor-pointer"
-                        onClick={() => handleEditEndpoint(endpoint.id)}
-                      />
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {/* Loading / Error States */}
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <div className="w-7 h-7 border-2 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+      {error && (
+        <div className="flex items-center justify-center py-12">
+          <p className="text-red-500 text-sm">{error}</p>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && !error && streamEndpoints.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+          <p className="text-sm">No stream endpoints available</p>
+        </div>
+      )}
+
+      {/* ── Endpoint Cards ── */}
+      {!loading && !error && streamEndpoints.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {streamEndpoints.map((endpoint) => (
+            <div
+              key={endpoint.id}
+              className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200"
+            >
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <h3 className="text-sm font-semibold text-slate-800 truncate">
+                  {endpoint.title}
+                </h3>
+                <div className="flex items-center gap-3 shrink-0">
+                  <Image
+                    src="/edit_icon_outlined.svg"
+                    alt="Edit"
+                    width={18}
+                    height={18}
+                    className="cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+                    onClick={() => handleEditEndpoint(endpoint.id)}
+                  />
+                  <Image
+                    src="/delete_icon_outlined.svg"
+                    alt="Delete"
+                    width={18}
+                    height={18}
+                    className="cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+                    onClick={() => confirmDeleteEndpoint(endpoint.id)}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center justify-between text-xs text-slate-400">
+                <span>ID: {endpoint.id.substring(0, 8)}...</span>
+                <span className="text-slate-500">{endpoint.userName}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <DeleteConfirmationDialog
         open={deleteDialogOpen}
