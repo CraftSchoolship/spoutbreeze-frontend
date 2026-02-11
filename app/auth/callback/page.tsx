@@ -33,10 +33,10 @@ function CallbackContent() {
   return (
     <div className="flex items-center justify-center w-full h-screen">
       <Image
-        src="/loading_state.gif"
+        src="/bluescale_animated.gif"
         alt="Loading"
-        width={32}
-        height={32}
+        width={100}
+        height={100}
         unoptimized
       />
     </div>
@@ -49,10 +49,10 @@ export default function CallbackPage() {
       fallback={
         <div className="flex items-center justify-center w-full h-screen">
           <Image
-            src="/loading_state.gif"
+            src="/bluescale_animated.gif"
             alt="Loading"
-            width={32}
-            height={32}
+            width={100}
+            height={100}
             unoptimized
           />
         </div>
