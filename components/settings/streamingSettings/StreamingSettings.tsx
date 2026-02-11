@@ -68,7 +68,7 @@ const StreamingSettings: React.FC = () => {
     }
 
     fetchData();
-  }, []);
+  }, [showSnackbar]);
 
   const handleSaveResolution = async () => {
     try {
@@ -157,7 +157,7 @@ const StreamingSettings: React.FC = () => {
           </FormControl>
 
           <Alert severity="info" sx={{ borderRadius: "8px" }}>
-            Select your preferred resolution. You can choose any resolution up to your plan's maximum ({maxQuality}).
+            Select your preferred resolution. You can choose any resolution up to your plan&apos;s maximum ({maxQuality}).
           </Alert>
         </div>
 
