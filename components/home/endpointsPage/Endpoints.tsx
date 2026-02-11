@@ -9,15 +9,7 @@ import {
   deleteStreamEndpoint,
   updateStreamEndpoint,
 } from "@/actions/streamEndpoints";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Box,
-} from "@mui/material";
+
 import Image from "next/image";
 import AddEndpointModal from "./AddEndpointModal";
 import DeleteConfirmationDialog from "@/components/common/DeleteConfirmationDialog";
@@ -36,6 +28,7 @@ const Endpoints: React.FC = () => {
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [endpointToDelete, setEndpointToDelete] = useState<string | null>(null);
+  const [showHelp, setShowHelp] = useState(false);
 
   const { showSnackbar } = useGlobalSnackbar();
 
@@ -144,111 +137,167 @@ const Endpoints: React.FC = () => {
   };
 
   return (
-    <div className="px-4 pt-6 sm:px-6 sm:pt-8 lg:px-10 lg:pt-10 h-screen overflow-y-auto">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
+    <div className="px-4 pt-6 pb-6 sm:px-6 sm:pt-8 lg:px-10 lg:pt-10 h-screen overflow-y-auto">
+      {/* Header */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-5">
         <div>
-          <h1 className="text-[18px] font-medium text-black">
+          <h1 className="text-base sm:text-lg font-medium text-black">
             Endpoints
           </h1>
-          <p className="mt-1 text-[13px] text-[#5B5D60] max-w-xl">
-            Add the RTMP URL and stream key of the platform (for example YouTube, Twitch, or another
-            RTMP service) you want to stream to (you can find them in the settings of the platform).
-          </p>
+          <div className="mt-2 text-xs sm:text-[13px] text-[#5B5D60] max-w-3xl leading-relaxed space-y-4">
+            <button
+              onClick={() => setShowHelp(!showHelp)}
+              className="text-[#27AAFF] flex items-center gap-1.5 hover:underline font-medium focus:outline-none cursor-pointer"
+            >
+              <span className="text-lg leading-none">{showHelp ? "−" : "+"}</span>
+              {showHelp
+                ? "Hide instructions"
+                : "Need help finding your RTMP URL and Stream Key?"}
+            </button>
+
+            {showHelp && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl animate-in fade-in slide-in-from-top-2 duration-300">
+                {/* YouTube Guide */}
+                <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex gap-3 items-start group hover:border-red-200 transition-colors">
+                  <div className="bg-white p-2 rounded-lg shadow-sm shrink-0">
+                    <svg
+                      className="w-5 h-5 text-red-600"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 mb-1">
+                      YouTube Live
+                    </h3>
+                    <p className="text-xs text-gray-600 leading-relaxed mb-2">
+                      Go to <strong>YouTube Studio</strong> → click{" "}
+                      <strong>Go Live</strong> (top right) → copy from{" "}
+                      <strong>Stream Settings</strong>.
+                    </p>
+                    <a
+                      href="https://studio.youtube.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-medium text-red-600 hover:text-red-700 flex items-center gap-1"
+                    >
+                      Open YouTube Studio →
+                    </a>
+                  </div>
+                </div>
+
+                {/* Twitch Guide */}
+                <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 flex gap-3 items-start group hover:border-purple-200 transition-colors">
+                  <div className="bg-white p-2 rounded-lg shadow-sm shrink-0">
+                    <svg
+                      className="w-5 h-5 text-purple-600"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 mb-1">
+                      Twitch
+                    </h3>
+                    <p className="text-xs text-gray-600 leading-relaxed mb-2">
+                      <strong>Stream Key:</strong> Dashboard → Settings → Stream.
+                      <br />
+                      <strong>RTMP URL:</strong> Use a localized ingest server.
+                    </p>
+                    <div className="flex flex-col gap-1.5">
+                      <a
+                        href="https://dashboard.twitch.tv/settings/stream"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
+                      >
+                        Get Stream Key →
+                      </a>
+                      <a
+                        href="https://help.twitch.tv/s/twitch-ingest-recommendation"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
+                      >
+                        Get RTMP URL (Ingest) →
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <button
-          className="mt-2 sm:mt-0 mb-[14px] font-medium text-[13px] border p-2.5 text-[#27AAFF] rounded-[2px] cursor-pointer self-start sm:self-auto"
+          className="mt-2 sm:mt-0 shrink-0 font-medium text-xs sm:text-[13px] border p-2 sm:p-2.5 text-[#27AAFF] rounded-[2px] cursor-pointer self-start sm:self-auto"
           onClick={handleOpenModal}
         >
           + Add endpoint
         </button>
       </div>
 
-      <TableContainer>
-        <Table>
-          <TableHead className="bg-[#F6F6F6]">
-            <TableRow sx={{ "& th": { py: "10px", borderBottom: "none" } }}>
-              <TableCell sx={{ color: "#5B5D60", fontWeight: 500 }}>
-                ID
-              </TableCell>
-              <TableCell sx={{ color: "#5B5D60", fontWeight: 500 }}>
-                TITLE
-              </TableCell>
-              <TableCell sx={{ color: "#5B5D60", fontWeight: 500 }}>
-                CREATED BY
-              </TableCell>
-              <TableCell sx={{ width: "7%" }}></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  align="center"
-                  sx={{ py: "15px", borderBottom: "none" }}
-                >
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : error ? (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  align="center"
-                  sx={{ py: "15px", borderBottom: "none" }}
-                >
-                  {error}
-                </TableCell>
-              </TableRow>
-            ) : streamEndpoints.length === 0 ? (
-              <TableRow
-                sx={{ "& td": { py: "15px", px: 0, borderBottom: "none" } }}
-              >
-                <TableCell colSpan={4} align="center">
-                  No stream endpoints available
-                </TableCell>
-              </TableRow>
-            ) : (
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              streamEndpoints.map((endpoint, index) => (
-                <TableRow
-                  key={endpoint.id}
-                  sx={{
-                    "&:nth-of-type(even)": {
-                      backgroundColor: "#F6F6F6",
-                    },
-                    "& td": { py: "15px", borderBottom: "none" },
-                  }}
-                >
-                  <TableCell>{endpoint.id.substring(0, 5)}...</TableCell>
-                  <TableCell>{endpoint.title}</TableCell>
-                  <TableCell>{endpoint.userName}</TableCell>
-                  <TableCell>
-                    <Box className="flex items-center justify-start">
-                      <Image
-                        src="/delete_icon_outlined.svg"
-                        alt="Delete"
-                        width={20}
-                        height={20}
-                        className="cursor-pointer mr-5"
-                        onClick={() => confirmDeleteEndpoint(endpoint.id)}
-                      />
-                      <Image
-                        src="/edit_icon_outlined.svg"
-                        alt="Edit"
-                        width={20}
-                        height={20}
-                        className="cursor-pointer"
-                        onClick={() => handleEditEndpoint(endpoint.id)}
-                      />
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {/* Loading / Error States */}
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <div className="w-7 h-7 border-2 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+      {error && (
+        <div className="flex items-center justify-center py-12">
+          <p className="text-red-500 text-sm">{error}</p>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && !error && streamEndpoints.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+          <p className="text-sm">No stream endpoints available</p>
+        </div>
+      )}
+
+      {/* ── Endpoint Cards ── */}
+      {!loading && !error && streamEndpoints.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {streamEndpoints.map((endpoint) => (
+            <div
+              key={endpoint.id}
+              className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200"
+            >
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <h3 className="text-sm font-semibold text-slate-800 truncate">
+                  {endpoint.title}
+                </h3>
+                <div className="flex items-center gap-3 shrink-0">
+                  <Image
+                    src="/edit_icon_outlined.svg"
+                    alt="Edit"
+                    width={18}
+                    height={18}
+                    className="cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+                    onClick={() => handleEditEndpoint(endpoint.id)}
+                  />
+                  <Image
+                    src="/delete_icon_outlined.svg"
+                    alt="Delete"
+                    width={18}
+                    height={18}
+                    className="cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
+                    onClick={() => confirmDeleteEndpoint(endpoint.id)}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center justify-between text-xs text-slate-400">
+                <span>ID: {endpoint.id.substring(0, 8)}...</span>
+                <span className="text-slate-500">{endpoint.userName}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <DeleteConfirmationDialog
         open={deleteDialogOpen}

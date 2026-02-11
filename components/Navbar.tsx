@@ -107,14 +107,14 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 sm:px-8 lg:px-24 py-4 glass-effect z-50 border-b border-slate-100">
-      <Link href="/" className="flex items-center gap-3 group">
+      <Link href="/" className="flex items-center gap-2 group">
         <div className="relative">
           <Image
-            src="/bluescale_logo.png"
+            src="/bluescale_logo.svg"
             alt="BlueScale"
-            width={44}
-            height={44}
-            className="object-contain transition-transform group-hover:scale-105"
+            width={30}
+            height={30}
+            className="object-contain transition-transform group-hover:scale-105 bg-transparent"
             priority
           />
         </div>

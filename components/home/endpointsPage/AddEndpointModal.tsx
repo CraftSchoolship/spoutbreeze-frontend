@@ -5,6 +5,8 @@ import DialogActions from "@mui/material/DialogActions";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 import { createStreamEndpointReq } from "@/actions/streamEndpoints";
 import { StreamEndpointWithUserName } from "@/actions/streamEndpoints";
 
@@ -25,6 +27,9 @@ const AddEndpointModal: React.FC<AddEndpointModalProps> = ({
   isEditing = false,
   currentEndpoint,
 }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [formData, setFormData] = useState<createStreamEndpointReq>({
     title: "",
     rtmp_url: "",
@@ -112,9 +117,10 @@ const AddEndpointModal: React.FC<AddEndpointModalProps> = ({
       onClose={handleClose}
       fullWidth
       maxWidth="sm"
+      fullScreen={isMobile}
       PaperProps={{
         style: {
-          borderRadius: "10px",
+          borderRadius: isMobile ? "0px" : "10px",
         },
       }}
     >
@@ -130,7 +136,7 @@ const AddEndpointModal: React.FC<AddEndpointModalProps> = ({
       >
         <CloseIcon />
       </IconButton>
-      <DialogContent>
+      <DialogContent sx={{ pt: { xs: 6, sm: 3 }, px: { xs: 2.5, sm: 3 } }}>
         <TextField
           autoFocus
           required
@@ -159,7 +165,11 @@ const AddEndpointModal: React.FC<AddEndpointModalProps> = ({
           value={formData.rtmp_url}
           onChange={handleChange}
           error={errors.rtmp_url}
-          helperText={errors.rtmp_url ? "URL is required" : ""}
+          helperText={
+            errors.rtmp_url
+              ? "URL is required"
+              : "Paste the Server URL/RTMP URL here"
+          }
         />
         {/* key field */}
         <TextField
@@ -174,11 +184,15 @@ const AddEndpointModal: React.FC<AddEndpointModalProps> = ({
           value={formData.stream_key}
           onChange={handleChange}
           error={errors.stream_key}
-          helperText={errors.stream_key ? "Key is required" : ""}
+          helperText={
+            errors.stream_key
+              ? "Key is required"
+              : "Paste the Stream Key here (keep this private)"
+          }
         />
       </DialogContent>
       <DialogActions
-        sx={{ px: 3, py: 2, display: "flex", justifyContent: "center" }}
+        sx={{ px: { xs: 2.5, sm: 3 }, py: 2, display: "flex", justifyContent: "center" }}
       >
         <button
           onClick={handleSubmit}
@@ -186,7 +200,7 @@ const AddEndpointModal: React.FC<AddEndpointModalProps> = ({
             !formData.title || !formData.rtmp_url || !formData.stream_key
           }
           type="button"
-          className="border px-5 py-2.5 text-[#27AAFF] rounded-[2px] cursor-pointer"
+          className="border px-5 py-2.5 text-[#27AAFF] rounded-[2px] cursor-pointer w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {buttonText}
         </button>

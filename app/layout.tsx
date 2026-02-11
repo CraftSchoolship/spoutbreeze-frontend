@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/bluescale_logo.png" />
+        <link rel="icon" href="/bluescale_logo.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#0ea5e9" />
       </head>
