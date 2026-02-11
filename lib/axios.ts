@@ -12,6 +12,9 @@ const axiosInstance = axios.create({
 
 // Track if we're currently refreshing to prevent multiple refresh attempts
 let isRefreshing = false;
+// Cooldown: skip refresh attempts for a period after a failure
+let refreshFailedAt = 0;
+const REFRESH_COOLDOWN_MS = 10_000; // 10 seconds
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let failedQueue: any[] = [];
 
@@ -24,7 +27,7 @@ const processQueue = (error: any, token: string | null = null) => {
       resolve(token);
     }
   });
-  
+
   failedQueue = [];
 };
 
@@ -44,7 +47,18 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-  if (error.response?.status === 401 && !originalRequest._retry) {
+    // Never try to refresh the refresh endpoint itself
+    if (originalRequest?.url?.includes('/api/refresh')) {
+      return Promise.reject(error);
+    }
+
+    // If we recently failed a refresh, don't try again (cooldown)
+    const now = Date.now();
+    if (now - refreshFailedAt < REFRESH_COOLDOWN_MS) {
+      return Promise.reject(error);
+    }
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         // If we're already refreshing, queue this request
         return new Promise((resolve, reject) => {
@@ -66,8 +80,10 @@ axiosInstance.interceptors.response.use(
           processQueue(null);
           return axiosInstance(originalRequest);
         } else {
+          // Mark cooldown so no more refresh attempts for a while
+          refreshFailedAt = Date.now();
           processQueue(error, null);
-          
+
           // Only clear access token and redirect to home, not to Keycloak login
           if (!isServer) {
             document.cookie = 'access_token=; path=/; max-age=0';
@@ -76,12 +92,13 @@ axiosInstance.interceptors.response.use(
               window.location.href = '/';
             }
           }
-          
+
           return Promise.reject(error);
         }
       } catch (refreshError) {
+        refreshFailedAt = Date.now();
         processQueue(refreshError, null);
-        
+
         // Only clear access token and redirect to home
         if (!isServer) {
           document.cookie = 'access_token=; path=/; max-age=0';
@@ -90,7 +107,7 @@ axiosInstance.interceptors.response.use(
             window.location.href = '/';
           }
         }
-        
+
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
