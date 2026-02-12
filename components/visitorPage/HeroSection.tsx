@@ -1,16 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Button from "@mui/material/Button";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import { getLoginUrl } from "@/lib/auth";
+import VideoModal from "./VideoModal";
 
 const handleLogin = async () => {
   window.location.href = await getLoginUrl();
 };
 
 const HeroSection: React.FC = () => {
+  const [showVideo, setShowVideo] = useState(false);
+
   return (
     <section className="relative overflow-hidden gradient-bg pt-20 pb-32 px-6 sm:px-8 lg:px-24">
       <div className="absolute inset-0 overflow-hidden">
@@ -63,6 +67,8 @@ const HeroSection: React.FC = () => {
               <Button
                 variant="outlined"
                 size="large"
+                onClick={() => setShowVideo(true)}
+                startIcon={<PlayCircleOutlineIcon />}
                 sx={{
                   padding: '14px 32px',
                   fontSize: '16px',
@@ -97,6 +103,12 @@ const HeroSection: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <VideoModal
+        isOpen={showVideo}
+        onClose={() => setShowVideo(false)}
+        videoSrc="https://demo-video-firas.s3.us-west-2.amazonaws.com/Demo.mp4"
+      />
     </section>
   );
 };
