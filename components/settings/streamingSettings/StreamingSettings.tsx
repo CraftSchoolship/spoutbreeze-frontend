@@ -13,7 +13,7 @@ import {
   MenuItem,
   SelectChangeEvent,
 } from "@mui/material";
-import { useSnackbar } from "@/hooks/useSnackbar";
+import { useGlobalSnackbar } from "@/contexts/SnackbarContext";
 
 type Resolution = "720p" | "1080p" | "1440p" | "4K";
 
@@ -31,7 +31,7 @@ const StreamingSettings: React.FC = () => {
   const [resolution, setResolution] = useState<Resolution>("720p");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  const { showSnackbar } = useSnackbar();
+  const { showSnackbar } = useGlobalSnackbar();
 
   useEffect(() => {
     async function fetchData() {

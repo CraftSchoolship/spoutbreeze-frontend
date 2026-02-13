@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 interface UseSnackbarReturn {
   snackbarOpen: boolean;
@@ -20,24 +20,27 @@ export const useSnackbar = (): UseSnackbarReturn => {
     "success" | "error" | "info" | "warning"
   >("error");
 
-  const showSnackbar = (
-    message: string,
-    severity: "success" | "error" | "info" | "warning" = "error"
-  ) => {
-    setSnackbarMessage(message);
-    setSnackbarSeverity(severity);
-    setSnackbarOpen(true);
-  };
+  const showSnackbar = useCallback(
+    (
+      message: string,
+      severity: "success" | "error" | "info" | "warning" = "error"
+    ) => {
+      setSnackbarMessage(message);
+      setSnackbarSeverity(severity);
+      setSnackbarOpen(true);
+    },
+    []
+  );
 
-  const closeSnackbar = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setSnackbarOpen(false);
-  };
+  const closeSnackbar = useCallback(
+    (event?: React.SyntheticEvent | Event, reason?: string) => {
+      if (reason === "clickaway") {
+        return;
+      }
+      setSnackbarOpen(false);
+    },
+    []
+  );
 
   return {
     snackbarOpen,
