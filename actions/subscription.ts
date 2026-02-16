@@ -225,6 +225,40 @@ export async function getTransactions(): Promise<Transaction[]> {
   }
 }
 
+export interface UsageStats {
+  active_streams: number;
+  max_concurrent_streams: number | null;
+  current_plan: string;
+  plan_status: string;
+  trial_days_remaining: number | null;
+  max_quality: string;
+}
+
+/**
+ * Get current usage statistics
+ */
+export async function getUsageStats(): Promise<UsageStats | null> {
+  try {
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("access_token")?.value;
+
+    if (!accessToken) {
+      return null;
+    }
+
+    const response = await axiosInstance.get("/api/payments/usage", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Failed to get usage stats:", error);
+    return null;
+  }
+}
+
 /**
  * Get current user's plan limits
  */
