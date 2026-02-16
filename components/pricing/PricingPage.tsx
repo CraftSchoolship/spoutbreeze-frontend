@@ -22,8 +22,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  useTheme,
-  useMediaQuery,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import StarIcon from "@mui/icons-material/Star";
@@ -67,8 +65,8 @@ export default function PricingPage() {
   const [loading, setLoading] = useState(true);
   const [contactDialog, setContactDialog] = useState(false);
   const router = useRouter();
-  const theme = useTheme();
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  // const theme = useTheme();
+  // const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     loadData();
