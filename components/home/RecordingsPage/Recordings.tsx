@@ -14,10 +14,10 @@ const Recordings: React.FC = () => {
     const fetchRecordingsData = async () => {
       try {
         const data = await getRecordings();
-        
+
         // Normalize recordings data - handle different possible response structures
         let normalizedRecordings: Recording[] = [];
-        
+
         if (Array.isArray(data.recordings)) {
           normalizedRecordings = data.recordings;
         } else if (
@@ -31,7 +31,7 @@ const Recordings: React.FC = () => {
         ) {
           normalizedRecordings = (data.recordings as { recording: Recording[] }).recording;
         }
-        
+
         setRecordings(normalizedRecordings);
         setLoading(false);
       } catch (error) {
@@ -46,9 +46,9 @@ const Recordings: React.FC = () => {
   }, [showSnackbar]);
 
   return (
-    <div className="px-10 pt-10 h-screen overflow-y-auto">
-      <div className="flex justify-between items-center">
-        <h1 className="text-[18px] font-medium text-black mb-[20px]">
+    <div className="p-20 md:px-10 md:pt-10 h-full overflow-y-auto">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+        <h1 className="text-[18px] font-medium text-black mb-4 md:mb-[20px]">
           Recordings
         </h1>
       </div>

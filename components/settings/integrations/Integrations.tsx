@@ -7,7 +7,7 @@ import FacebookIntegrationCard from "./FacebookIntegrationCard";
 
 const Integrations: React.FC = () => {
   return (
-    <Box className="py-10 pl-10">
+    <Box className="p-4 md:py-10 md:pl-10">
       <Typography variant="h5" sx={{ fontWeight: 500 }}>
         Integrations
       </Typography>
@@ -40,7 +40,7 @@ const Integrations: React.FC = () => {
         </a>
         guides).
       </Typography>
-      <Stack spacing={3} sx={{ maxWidth: 720 }}>
+      <Stack spacing={3} sx={{ maxWidth: 720, width: "100%" }}>
         <TwitchIntegrationCard />
         <Divider flexItem />
         <YouTubeIntegrationCard />

@@ -30,7 +30,7 @@ function PageLayoutContent({
   defaultSection,
   sectionParam = "section",
   sidebarComponent: SidebarComponent,
-  className = "gradient-bg min-h-screen pb-10",
+  className = "gradient-bg min-h-[calc(100vh-72px)] pb-10",
 }: PageLayoutProps) {
   const router = useRouter();
   const searchParams = useSearchParams();

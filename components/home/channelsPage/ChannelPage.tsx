@@ -166,16 +166,16 @@ const ChannelPage: React.FC<ChannelPageProps> = ({
   };
 
   if (showEventForm) {
-    const eventToEdit = editingEventId 
+    const eventToEdit = editingEventId
       ? eventsData.events.find(event => event.id === editingEventId)
       : undefined;
 
-    const eventToEditReq = eventToEdit 
+    const eventToEditReq = eventToEdit
       ? convertEventToCreateEventReq(eventToEdit, channel.name)
       : undefined;
 
     return (
-      <section className="px-10 pt-10 h-screen overflow-y-auto">
+      <section className="p-4 md:px-10 md:pt-10 h-full overflow-y-auto">
         <CreateEvent
           channel={channel}
           onBack={handleBackToChannel}
@@ -193,37 +193,34 @@ const ChannelPage: React.FC<ChannelPageProps> = ({
   }
 
   return (
-    <section className="px-10 pt-10 h-screen overflow-y-auto">
+    <section className="p-4 md:px-10 md:pt-10 h-screen overflow-y-auto">
       {/* Channel header */}
-      <div className="flex justify-between items-center">
-        <div className="flex flex-col">
-          <button className="flex items-center font-medium text-[18px] -ml-1.5 mb-1.25">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
+        <div className="flex flex-col w-full md:w-auto">
+          <button className="flex items-center font-medium text-[16px] md:text-[18px] -ml-1.5 mb-1.25">
             <NavigateBeforeRoundedIcon
               onClick={onBack}
               sx={{ cursor: "pointer" }}
             />
             {channel.name}
           </button>
-          <span className="font-medium text-[13px] text-[#5B5D60]">
+          <span className="font-medium text-[12px] md:text-[13px] text-[#5B5D60]">
             {eventsData.total} Sessions | {recordingsData.total_recordings} Recordings
           </span>
         </div>
-        <div>
+        <div className="flex w-full md:w-auto gap-4">
           <button
-            className="mb-3.5 font-medium text-[13px] border p-2.5 text-[#27AAFF] rounded-xs cursor-pointer mr-4"
+            className="flex-1 md:flex-none mb-0 md:mb-3.5 font-medium text-[13px] border p-2.5 text-[#27AAFF] rounded-xs cursor-pointer text-center"
             onClick={handleCreateEvent}
           >
             Create Event
-          </button>
-          <button className="mb-3.5 font-medium text-[13px] border p-2.5 text-[#27AAFF] rounded-xs cursor-pointer">
-            Start Session
           </button>
         </div>
       </div>
 
       {/* Event list */}
-      <div className="h-[30vh] mt-10 overflow-y-auto">
-        <h1 className="text-[22px] text-[#262262] font-semibold mb-4 sticky top-0 bg-white pb-2 z-10">
+      <div className="h-[350px] mt-6 md:mt-10 overflow-y-auto">
+        <h1 className="text-[18px] md:text-[22px] text-[#262262] font-semibold mb-4 sticky top-0 bg-white pb-2 z-10">
           Upcoming events
         </h1>
         {!loading && !error && eventsData.events.length === 0 ? (
@@ -257,11 +254,11 @@ const ChannelPage: React.FC<ChannelPageProps> = ({
       </div>
 
       {/* Updated Recordings section */}
-      <div className="flex flex-col mt-6 h-[calc(50vh-80px)] overflow-y-auto">
-        <h1 className="text-[22px] text-[#262262] font-semibold mb-4 sticky top-0 bg-white pb-2 z-10">
+      <div className="flex flex-col mt-6 h-auto md:h-[calc(50vh-80px)] overflow-y-auto">
+        <h1 className="text-[18px] md:text-[22px] text-[#262262] font-semibold mb-4 sticky top-0 bg-white pb-2 z-10">
           Recordings ({recordingsData.total_recordings})
         </h1>
-        
+
         {recordingsData.recordings.length === 0 && !recordingsLoading && !recordingsError ? (
           <div className="flex flex-col items-center justify-center h-32 text-gray-500">
             <p className="text-lg mb-2">No recordings found</p>
@@ -270,7 +267,7 @@ const ChannelPage: React.FC<ChannelPageProps> = ({
             </p>
           </div>
         ) : (
-          <RecordingsTable 
+          <RecordingsTable
             recordings={recordingsData.recordings}
             loading={recordingsLoading}
             error={recordingsError}
