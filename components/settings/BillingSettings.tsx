@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useGlobalSnackbar } from "@/contexts/SnackbarContext";
 
 import {
   Box,
@@ -16,7 +18,6 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Snackbar,
   useTheme,
   useMediaQuery,
   Dialog,
@@ -33,9 +34,12 @@ import {
   getPlans,
   createCheckoutSession,
   createCustomerPortal,
+  cancelSubscription,
   Subscription,
   PlanInfo,
 } from "@/actions/subscription";
+import TransactionHistory from "./TransactionHistory";
+import UsageDashboard from "./UsageDashboard";
 
 export default function BillingSettings() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -46,12 +50,30 @@ export default function BillingSettings() {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [snackbar, setSnackbar] = useState({ open: false, message: "" });
+  const searchParams = useSearchParams();
+  const { showSnackbar } = useGlobalSnackbar();
+
   const [contactDialog, setContactDialog] = useState(false);
+  const [cancelDialog, setCancelDialog] = useState(false);
+  const [canceling, setCanceling] = useState(false);
 
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    const success = searchParams.get("success");
+    const canceled = searchParams.get("canceled");
+
+    if (success === "true") {
+      showSnackbar("Subscription activated successfully!", "success");
+      // Clean up URL params
+      window.history.replaceState({}, "", window.location.pathname + "?tab=subscription");
+    } else if (canceled === "true") {
+      showSnackbar("Checkout was canceled.", "info");
+      window.history.replaceState({}, "", window.location.pathname + "?tab=subscription");
+    }
+  }, [searchParams, showSnackbar]);
 
   const loadData = async () => {
     try {
@@ -93,9 +115,6 @@ export default function BillingSettings() {
     }
   };
 
-  const showSnackbar = (message: string) =>
-    setSnackbar({ open: true, message });
-
   const handleSubscribe = async (plan: PlanInfo) => {
     if (plan.plan_type === "free") return;
     if (plan.plan_type === "enterprise") {
@@ -115,6 +134,7 @@ export default function BillingSettings() {
     } catch (err) {
       showSnackbar(
         err instanceof Error ? err.message : "Failed to start checkout",
+        "error"
       );
       setProcessingPlan(null);
     }
@@ -134,6 +154,26 @@ export default function BillingSettings() {
           ? err.message
           : "Failed to open subscription management",
       );
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    try {
+      setCanceling(true);
+      await cancelSubscription(false);
+      showSnackbar(
+        "Subscription will cancel at the end of your billing period. You'll keep access until then.",
+        "success"
+      );
+      setCancelDialog(false);
+      await loadData();
+    } catch (err) {
+      showSnackbar(
+        err instanceof Error ? err.message : "Failed to cancel subscription",
+        "error"
+      );
+    } finally {
+      setCanceling(false);
     }
   };
 
@@ -165,6 +205,35 @@ export default function BillingSettings() {
 
   const isCurrentPlan = (planType: string) => {
     return subscription?.plan === planType;
+  };
+
+  /**
+   * Determine the free plan button label and disabled state.
+   * - Active trial → "Active" (disabled)
+   * - Expired / used trial → "Trial Used" (disabled)
+   * - User on a paid plan → cannot start free trial
+   */
+  const getFreePlanButton = (): { label: string; disabled: boolean } => {
+    if (!subscription) return { label: "Start Basic Plan", disabled: false };
+
+    if (subscription.plan === "free") {
+      if (
+        subscription.status === "trialing" &&
+        subscription.trial_end &&
+        new Date(subscription.trial_end) > new Date()
+      ) {
+        return { label: "✓ Active", disabled: true };
+      }
+      // expired or any non-active free state
+      return { label: "Trial Used", disabled: true };
+    }
+
+    // User has a paid plan or expired status
+    if (subscription.status === "expired") {
+      return { label: "Trial Used", disabled: true };
+    }
+
+    return { label: "Start Basic Plan", disabled: true };
   };
 
   const formatDate = (dateString: string | null) => {
@@ -292,27 +361,49 @@ export default function BillingSettings() {
                 />
               </Box>
               {subscription.plan !== "free" && (
-                <Button
-                  variant="contained"
-                  onClick={handleManageSubscription}
-                  sx={{
-                    bgcolor: "white",
-                    color: "#525cfa",
-                    fontWeight: 700,
-                    px: 3,
-                    py: 1.5,
-                    borderRadius: 2,
-                    boxShadow: "0 4px 14px rgba(0,0,0,0.15)",
-                    "&:hover": {
-                      bgcolor: "rgba(255, 255, 255, 0.95)",
-                      transform: "translateY(-2px)",
-                      boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
-                    },
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  Manage Billing
-                </Button>
+                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                  <Button
+                    variant="contained"
+                    onClick={handleManageSubscription}
+                    sx={{
+                      bgcolor: "white",
+                      color: "#525cfa",
+                      fontWeight: 700,
+                      px: 3,
+                      py: 1.5,
+                      borderRadius: 2,
+                      boxShadow: "0 4px 14px rgba(0,0,0,0.15)",
+                      "&:hover": {
+                        bgcolor: "rgba(255, 255, 255, 0.95)",
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
+                      },
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    Manage Billing
+                  </Button>
+                  {!subscription.cancel_at_period_end && (
+                    <Button
+                      variant="outlined"
+                      onClick={() => setCancelDialog(true)}
+                      sx={{
+                        borderColor: "rgba(255, 255, 255, 0.5)",
+                        color: "white",
+                        fontWeight: 600,
+                        px: 3,
+                        py: 1.5,
+                        borderRadius: 2,
+                        "&:hover": {
+                          borderColor: "white",
+                          bgcolor: "rgba(255, 255, 255, 0.1)",
+                        },
+                      }}
+                    >
+                      Cancel Subscription
+                    </Button>
+                  )}
+                </Box>
               )}
             </Stack>
 
@@ -504,19 +595,28 @@ export default function BillingSettings() {
                       : plan.is_popular
                         ? color
                         : "#fff",
-                    pointerEvents: isCurrent ? "none" : "auto",
+                    pointerEvents:
+                      isCurrent || (plan.plan_type === "free" && getFreePlanButton().disabled)
+                        ? "none"
+                        : "auto",
+                    ...(plan.plan_type === "free" && getFreePlanButton().disabled && !isCurrent
+                      ? { opacity: 0.7 }
+                      : {}),
                   }}
                   onClick={() => handleSubscribe(plan)}
-                  disabled={processingPlan === plan.plan_type}
+                  disabled={
+                    processingPlan === plan.plan_type ||
+                    (plan.plan_type === "free" && getFreePlanButton().disabled)
+                  }
                 >
-                  {isCurrent ? (
+                  {isCurrent && plan.plan_type !== "free" ? (
                     "✓ Current Plan"
+                  ) : plan.plan_type === "free" ? (
+                    getFreePlanButton().label
                   ) : processingPlan === plan.plan_type ? (
                     <CircularProgress size={22} sx={{ color: "#fff" }} />
                   ) : plan.plan_type === "enterprise" ? (
                     "Contact Sales"
-                  ) : plan.plan_type === "free" ? (
-                    `Start ${plan.name} Plan`
                   ) : (
                     `Upgrade to ${plan.name}`
                   )}
@@ -526,6 +626,9 @@ export default function BillingSettings() {
           );
         })}
       </Stack>
+
+      {/* Usage Dashboard */}
+      {subscription && <UsageDashboard />}
 
       {/* Info Section (More space, centered icons) */}
       <Box
@@ -555,14 +658,10 @@ export default function BillingSettings() {
         ))}
       </Box>
 
-      {/* Snackbars/Dialogs */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={5000}
-        onClose={() => setSnackbar({ open: false, message: "" })}
-        message={snackbar.message}
-      />
+      {/* Transaction History */}
+      <TransactionHistory />
 
+      {/* Dialogs */}
       <Dialog open={contactDialog} onClose={() => setContactDialog(false)}>
         <DialogTitle>Contact Sales for the Enterprise Plan</DialogTitle>
         <DialogContent>
@@ -575,6 +674,40 @@ export default function BillingSettings() {
         <DialogActions>
           <Button onClick={() => setContactDialog(false)} variant="contained">
             Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={cancelDialog} onClose={() => setCancelDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Cancel Subscription</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            Are you sure you want to cancel your subscription?
+          </Typography>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            <Typography variant="body2" fontWeight={600} gutterBottom>
+              No refund will be issued.
+            </Typography>
+            <Typography variant="body2">
+              Your plan will remain active until{" "}
+              <strong>
+                {subscription?.current_period_end
+                  ? formatDate(subscription.current_period_end)
+                  : "the end of your current billing period"}
+              </strong>
+              . After that date, you will lose access to paid features.
+            </Typography>
+          </Alert>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCancelDialog(false)}>Keep Subscription</Button>
+          <Button
+            onClick={handleCancelSubscription}
+            color="error"
+            variant="contained"
+            disabled={canceling}
+          >
+            {canceling ? <CircularProgress size={20} /> : "Confirm Cancellation"}
           </Button>
         </DialogActions>
       </Dialog>
