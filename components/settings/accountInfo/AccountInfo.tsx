@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { 
-  Typography, 
-  Box, 
-  TextField, 
-  CircularProgress, 
+import {
+  Typography,
+  Box,
+  TextField,
+  CircularProgress,
   Button,
   Alert,
   Snackbar
@@ -88,7 +88,7 @@ const AccountInfo: React.FC = () => {
       ...prev,
       [field]: event.target.value
     }));
-    
+
     // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors(prev => ({
@@ -122,10 +122,10 @@ const AccountInfo: React.FC = () => {
     }
 
     setUpdating(true);
-    
+
     try {
       const updateData: UpdateProfileRequest = {};
-      
+
       if (formData.first_name !== user?.first_name) {
         updateData.first_name = formData.first_name.trim();
       }
@@ -138,7 +138,7 @@ const AccountInfo: React.FC = () => {
 
       const updatedUser = await updateUserProfile(updateData);
       setUser(updatedUser);
-      
+
       setSnackbar({
         open: true,
         message: "Profile updated successfully",
@@ -146,9 +146,9 @@ const AccountInfo: React.FC = () => {
       });
     } catch (error: unknown) {
       console.error("Failed to update profile:", error);
-      
+
       let errorMessage = "Failed to update profile";
-      
+
       // Type guard for axios error
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: { detail?: string } }; message?: string };
@@ -160,7 +160,7 @@ const AccountInfo: React.FC = () => {
       } else if (error instanceof Error && error.message) {
         errorMessage = error.message;
       }
-      
+
       setSnackbar({
         open: true,
         message: errorMessage,
@@ -188,7 +188,7 @@ const AccountInfo: React.FC = () => {
 
   if (loading) {
     return (
-      <Box className="py-10 pl-10">
+      <Box className="p-4 md:py-10 md:pl-10">
         <Typography variant="h5" sx={{ fontWeight: 500 }}>
           Account Info
         </Typography>
@@ -200,7 +200,7 @@ const AccountInfo: React.FC = () => {
   }
 
   return (
-    <Box className="py-10 pl-10">
+    <Box className="p-4 md:py-10 md:pl-10">
       <Typography variant="h5" sx={{ fontWeight: 500 }}>
         Account Info
       </Typography>
@@ -208,7 +208,7 @@ const AccountInfo: React.FC = () => {
         Manage your account preferences and profile information.
       </Typography>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '400px' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%', maxWidth: '400px' }}>
         <TextField
           label="First Name"
           value={formData.first_name}
@@ -298,9 +298,9 @@ const AccountInfo: React.FC = () => {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert 
-          onClose={handleCloseSnackbar} 
-          severity={snackbar.severity} 
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
           sx={{ width: "100%" }}
         >
           {snackbar.message}

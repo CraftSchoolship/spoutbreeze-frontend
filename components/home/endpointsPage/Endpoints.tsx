@@ -137,7 +137,7 @@ const Endpoints: React.FC = () => {
   };
 
   return (
-    <div className="px-4 pt-6 pb-6 sm:px-6 sm:pt-8 lg:px-10 lg:pt-10 h-screen overflow-y-auto">
+    <div className="px-4 pt-6 pb-20 sm:px-6 sm:pt-8 lg:px-10 lg:pt-10 h-full overflow-y-auto">
       {/* Header */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-5">
         <div>

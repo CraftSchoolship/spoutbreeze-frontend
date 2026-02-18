@@ -84,7 +84,7 @@ const ChannelsComponent: React.FC = () => {
   const handleAddChannel = async (formData: CreateChannelReq) => {
     try {
       await createChannel(formData);
-      
+
       const updatedData = await fetchChannels();
       setChannelsData(updatedData);
       handleCloseModal();
@@ -143,7 +143,7 @@ const ChannelsComponent: React.FC = () => {
   }
 
   return (
-    <section className="px-6 py-8 sm:px-8 lg:px-10 h-screen flex flex-col">
+    <section className="px-6 py-8 pb-20 sm:px-8 lg:px-10 h-full flex flex-col">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
           <h1 className="text-xl font-semibold text-slate-800">
@@ -170,14 +170,14 @@ const ChannelsComponent: React.FC = () => {
           + Create Channel
         </button>
       </div>
-      
+
       {loading && (
         <div className="flex-1 flex items-center justify-center">
           <div className="w-8 h-8 border-3 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       )}
       {error && <div className="flex-1 flex items-center justify-center"><p className="text-red-500">{error}</p></div>}
-      
+
       {!loading && !error && channelsData.channels.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-slate-400">
           <Image
@@ -209,7 +209,7 @@ const ChannelsComponent: React.FC = () => {
               <div
                 key={channel.id}
                 className="h-28 rounded-2xl relative cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
-                style={{ 
+                style={{
                   background: `linear-gradient(135deg, ${getRandomColor(channel.id)} 0%, ${getRandomColor(channel.id)}cc 100%)`,
                   boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 }}
@@ -238,7 +238,7 @@ const ChannelsComponent: React.FC = () => {
           </div>
         )
       )}
-      
+
       <DeleteConfirmationDialog
         open={deleteDialogOpen}
         title="Delete Channel"

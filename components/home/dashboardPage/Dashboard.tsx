@@ -73,7 +73,7 @@ const Dashboard: React.FC = () => {
 
   if (showEventForm) {
     return (
-      <section className="px-6 py-8 sm:px-8 lg:px-10 h-screen overflow-y-auto">
+      <section className="px-6 py-8 sm:px-8 lg:px-10 h-full overflow-y-auto">
         <CreateEvent
           onBack={handleBackToChannel}
           onEventCreated={handleEventCreated}
@@ -84,7 +84,7 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <section className="px-6 py-8 sm:px-8 lg:px-10 h-screen flex flex-col">
+    <section className="px-6 py-8 pb-20 sm:px-8 lg:px-10 h-full flex flex-col">
       <div className="mb-6">
         <h1 className="text-xl font-semibold text-slate-800">Dashboard</h1>
         <p className="mt-2 text-sm text-slate-500 max-w-2xl leading-relaxed">

@@ -12,6 +12,8 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
+  Box,
+  Typography,
 } from "@mui/material";
 import { useGlobalSnackbar } from "@/contexts/SnackbarContext";
 
@@ -106,17 +108,17 @@ const StreamingSettings: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-semibold text-slate-800 mb-2">
+    <Box className="p-4 md:py-10 md:pl-10">
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h5" sx={{ fontWeight: 500, mb: 1 }}>
           Streaming Settings
-        </h2>
-        <p className="text-sm text-slate-600">
+        </Typography>
+        <Typography variant="body1" className="text-gray-600">
           Choose your preferred streaming resolution from the options available in your plan.
-        </p>
-      </div>
+        </Typography>
+      </Box>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
+      <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6 max-w-2xl">
         <div className="space-y-4">
           <div>
             <h3 className="text-base font-semibold text-slate-800 mb-1">
@@ -195,7 +197,7 @@ const StreamingSettings: React.FC = () => {
           </Button>
         </div>
       </div>
-    </div>
+    </Box>
   );
 };
 
