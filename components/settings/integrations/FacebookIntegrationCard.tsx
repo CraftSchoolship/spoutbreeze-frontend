@@ -15,19 +15,27 @@ import {
   Tooltip,
   Divider,
   Skeleton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import {
   getFacebookAuthUrl,
   getFacebookTokenStatus,
   revokeFacebookToken,
+  getFacebookPages,
   FacebookTokenStatus,
+  FacebookPage,
 } from "@/actions/facebookIntegration";
 import Image from "next/image";
+import PagesIcon from "@mui/icons-material/Flag";
 
 const BRAND_COLOR = "#1877F2";
 
 const FacebookIntegrationCard: React.FC = () => {
   const [status, setStatus] = useState<FacebookTokenStatus | null>(null);
+  const [pages, setPages] = useState<FacebookPage[]>([]);
   const [loading, setLoading] = useState(true);
   const [working, setWorking] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +47,19 @@ const FacebookIntegrationCard: React.FC = () => {
     try {
       const s = await getFacebookTokenStatus();
       setStatus(s);
+
+      // If connected, also load pages
+      if (s.has_token) {
+        try {
+          const pagesData = await getFacebookPages();
+          setPages(pagesData.pages || []);
+        } catch {
+          // Pages fetch may fail — not critical
+          setPages([]);
+        }
+      } else {
+        setPages([]);
+      }
     } catch (e: any) {
       setError(e?.message || "Failed to load Facebook status");
     } finally {
@@ -90,6 +111,7 @@ const FacebookIntegrationCard: React.FC = () => {
     try {
       await revokeFacebookToken();
       setJustRevoked(true);
+      setPages([]);
       await loadStatus();
     } catch (e: any) {
       setError(e?.message || "Failed to revoke token");
@@ -244,7 +266,7 @@ const FacebookIntegrationCard: React.FC = () => {
             <Stack spacing={0.5}>
               <Stack direction="row" spacing={1} alignItems="center">
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  Status:
+                  Profile:
                 </Typography>
                 <Typography variant="body2">
                   {status.is_expired
@@ -269,10 +291,6 @@ const FacebookIntegrationCard: React.FC = () => {
                   </Tooltip>
                 )}
               </Stack>
-              <Typography variant="body2">
-                Expires at:{" "}
-                <strong>{new Date(status.expires_at).toLocaleString()}</strong>
-              </Typography>
               {status.is_expired && (
                 <Typography
                   variant="caption"
@@ -284,6 +302,56 @@ const FacebookIntegrationCard: React.FC = () => {
                 </Typography>
               )}
             </Stack>
+          </Box>
+        )}
+
+        {/* Connected Pages */}
+        {!loading && status?.has_token && pages.length > 0 && (
+          <Box
+            sx={{
+              mb: 2,
+              p: 1.5,
+              border: "1px solid",
+              borderColor: "divider",
+              borderRadius: 2,
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 600, mb: 0.5 }}
+            >
+              Connected Pages
+            </Typography>
+            <List dense disablePadding>
+              {pages.map((page) => (
+                <ListItem key={page.page_id} disablePadding sx={{ py: 0.3 }}>
+                  <ListItemIcon sx={{ minWidth: 28 }}>
+                    <PagesIcon
+                      fontSize="small"
+                      sx={{ color: BRAND_COLOR }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Typography variant="body2">
+                        Page ID: {page.page_id}
+                      </Typography>
+                    }
+                    secondary={
+                      page.is_active
+                        ? "Active"
+                        : "Inactive"
+                    }
+                  />
+                  <Chip
+                    size="small"
+                    label={page.is_active ? "Ready" : "Inactive"}
+                    color={page.is_active ? "success" : "default"}
+                    sx={{ height: 20, fontSize: "0.7rem" }}
+                  />
+                </ListItem>
+              ))}
+            </List>
           </Box>
         )}
 

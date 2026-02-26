@@ -12,6 +12,13 @@ export interface FacebookTokenStatus {
     error?: string;
 }
 
+export interface FacebookPage {
+    page_id: string;
+    is_active: boolean;
+    is_expired: boolean;
+    created_at: string | null;
+}
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 async function authFetch<T>(url: string, options: RequestInit = {}): Promise<T> {
@@ -42,3 +49,8 @@ export const revokeFacebookToken = () =>
     authFetch<{ message: string }>(`${API_BASE}/api/auth/facebook/token`, {
         method: "DELETE",
     });
+
+export const getFacebookPages = () =>
+    authFetch<{ pages: FacebookPage[] }>(
+        `${API_BASE}/api/auth/facebook/pages`
+    );
