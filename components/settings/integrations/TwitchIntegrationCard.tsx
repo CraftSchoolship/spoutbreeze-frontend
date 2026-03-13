@@ -20,7 +20,6 @@ import {
   getTwitchAuthUrl,
   getTwitchTokenStatus,
   revokeTwitchToken,
-  // startTwitchConnection,
   TwitchTokenStatus,
 } from "@/actions/twitchIntegration";
 import Image from "next/image";
@@ -94,18 +93,6 @@ const TwitchIntegrationCard: React.FC = () => {
     }
   };
 
-  // const handleStartIrc = async () => {
-  //   setWorking(true);
-  //   setError(null);
-  //   try {
-  //     await startTwitchConnection();
-  //   } catch (e: any) {
-  //     setError(e?.message || "Failed to start Twitch connection");
-  //   } finally {
-  //     setWorking(false);
-  //   }
-  // };
-
   const timeInfo = useMemo(() => {
     if (!status?.has_token || !status.expires_at) return null;
     const expiry = new Date(status.expires_at).getTime();
@@ -123,8 +110,8 @@ const TwitchIntegrationCard: React.FC = () => {
     ? status.is_expired
       ? { label: "Expired", color: "error" as const }
       : status.expires_soon
-      ? { label: "Expires Soon", color: "warning" as const }
-      : { label: "Connected", color: "success" as const }
+        ? { label: "Expires Soon", color: "warning" as const }
+        : { label: "Connected", color: "success" as const }
     : null;
 
   return (
@@ -252,8 +239,8 @@ const TwitchIntegrationCard: React.FC = () => {
                   {status.is_expired
                     ? "Expired"
                     : status.expires_soon
-                    ? "Expires Soon"
-                    : "Active"}
+                      ? "Expires Soon"
+                      : "Active"}
                 </Typography>
                 {timeInfo && !status.is_expired && (
                   <Tooltip title="Approximate time remaining">
@@ -281,7 +268,8 @@ const TwitchIntegrationCard: React.FC = () => {
                   color="error"
                   sx={{ fontWeight: 500 }}
                 >
-                  Token expired. Disconnect & reconnect to refresh.
+                  Token could not be auto-refreshed. Please disconnect and
+                  reconnect.
                 </Typography>
               )}
             </Stack>
@@ -319,32 +307,6 @@ const TwitchIntegrationCard: React.FC = () => {
                 sx={{ textTransform: "none", fontWeight: 600 }}
               >
                 {working ? "Revoking..." : "Disconnect"}
-              </Button>
-              {/* <Button
-                variant="contained"
-                onClick={handleStartIrc}
-                disabled={working || status.is_expired}
-                sx={{
-                  backgroundColor: BRAND_COLOR,
-                  textTransform: "none",
-                  fontWeight: 600,
-                  "&:hover": { backgroundColor: "#159BEF" },
-                }}
-              >
-                {working ? "Starting..." : "Start IRC Session"}
-              </Button> */}
-              <Button
-                variant="text"
-                onClick={loadStatus}
-                disabled={working}
-                sx={{
-                  textTransform: "none",
-                  fontWeight: 500,
-                  color: BRAND_COLOR,
-                  "&:hover": { backgroundColor: "rgba(39,170,255,0.08)" },
-                }}
-              >
-                Refresh
               </Button>
             </>
           )}

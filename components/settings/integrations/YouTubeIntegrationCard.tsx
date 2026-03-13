@@ -22,7 +22,6 @@ import {
   getYouTubeAuthUrl,
   getYouTubeTokenStatus,
   revokeYouTubeToken,
-  // startYouTubeConnection,
   YouTubeTokenStatus,
 } from "@/actions/youtubeIntegration";
 
@@ -120,20 +119,6 @@ const YouTubeIntegrationCard: React.FC = () => {
     }
   };
 
-  // const handleStart = async () => {
-  //   setWorking(true);
-  //   setError(null);
-  //   try {
-  //     await startYouTubeConnection();
-  //     setSuccessMessage("Chat polling started successfully!");
-  //     setTimeout(() => setSuccessMessage(null), 3000);
-  //   } catch (e: any) {
-  //     setError(e?.message || "Failed to start YouTube chat polling");
-  //   } finally {
-  //     setWorking(false);
-  //   }
-  // };
-
   const timeInfo = useMemo(() => {
     if (!status?.has_token || !status.expires_at) return null;
     const expiry = new Date(status.expires_at).getTime();
@@ -151,8 +136,8 @@ const YouTubeIntegrationCard: React.FC = () => {
     ? status.is_expired
       ? { label: "Expired", color: "error" as const }
       : status.expires_soon
-      ? { label: "Expires Soon", color: "warning" as const }
-      : { label: "Connected", color: "success" as const }
+        ? { label: "Expires Soon", color: "warning" as const }
+        : { label: "Connected", color: "success" as const }
     : null;
 
   return (
@@ -236,7 +221,7 @@ const YouTubeIntegrationCard: React.FC = () => {
             >
               quota cost
             </a>
-            
+
             and
             <a
               href="https://developers.google.com/youtube/v3/guides/quota_and_compliance_audits"
@@ -310,8 +295,8 @@ const YouTubeIntegrationCard: React.FC = () => {
                   {status.is_expired
                     ? "Expired"
                     : status.expires_soon
-                    ? "Expires Soon"
-                    : "Active"}
+                      ? "Expires Soon"
+                      : "Active"}
                 </Typography>
                 {timeInfo && !status.is_expired && (
                   <Tooltip title="Approximate time remaining">
@@ -339,7 +324,8 @@ const YouTubeIntegrationCard: React.FC = () => {
                   color="error"
                   sx={{ fontWeight: 500 }}
                 >
-                  Token expired. Disconnect & reconnect to refresh.
+                  Token could not be auto-refreshed. Please disconnect and
+                  reconnect.
                 </Typography>
               )}
             </Stack>
@@ -375,32 +361,6 @@ const YouTubeIntegrationCard: React.FC = () => {
                 sx={{ textTransform: "none", fontWeight: 600 }}
               >
                 {working ? "Revoking..." : "Disconnect"}
-              </Button>
-              {/* <Button
-                variant="contained"
-                onClick={handleStart}
-                disabled={working || status.is_expired}
-                sx={{
-                  backgroundColor: BRAND_COLOR,
-                  textTransform: "none",
-                  fontWeight: 600,
-                  "&:hover": { backgroundColor: "#159BEF" },
-                }}
-              >
-                {working ? "Starting..." : "Start Chat Polling"}
-              </Button> */}
-              <Button
-                variant="text"
-                onClick={loadStatus}
-                disabled={working}
-                sx={{
-                  textTransform: "none",
-                  fontWeight: 500,
-                  color: BRAND_COLOR,
-                  "&:hover": { backgroundColor: "rgba(39,170,255,0.08)" },
-                }}
-              >
-                Refresh
               </Button>
             </>
           )}
