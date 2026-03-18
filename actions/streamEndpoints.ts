@@ -24,7 +24,7 @@ export interface createStreamEndpointReq {
 
 export const fetchStreamEndpoints = async (): Promise<StreamEndpointWithUserName[]> => {
   try {
-    const response = await axiosInstance.get("/api/stream-endpoint/all");
+    const response = await axiosInstance.get("/api/stream-endpoint/");
     console.log("Fetch stream endpoints response:", response.data);
 
     // Transform the response to include userName
