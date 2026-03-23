@@ -124,6 +124,12 @@ const Navbar: React.FC = () => {
       </Link>
       
       <div className="flex items-center gap-4">
+        <Link
+          href="/privacy-policy"
+          className="hidden sm:inline-block text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors"
+        >
+          Privacy
+        </Link>
         {loading ? (
           <Box
             sx={{ 
