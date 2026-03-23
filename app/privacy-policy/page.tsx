@@ -17,7 +17,7 @@ export default function PrivacyPolicyPage() {
         </h1>
         <p className="mt-3 text-sm text-slate-500">Effective date: {effectiveDate}</p>
         <p className="mt-6 text-slate-700 leading-7">
-          This Privacy Policy explains how BlueScale ("we", "us", "our")
+          This Privacy Policy explains how BlueScale (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;)
           collects, uses, discloses, and protects personal information when you
           use our platform, including web applications, integrations, and
           related services.
