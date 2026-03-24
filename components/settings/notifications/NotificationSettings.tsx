@@ -281,7 +281,7 @@ const NotificationSettings: React.FC = () => {
       )}
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 3, maxWidth: 720 }}>
-        {CATEGORIES.map((category, ci) => (
+        {CATEGORIES.map((category) => (
           <Paper
             key={category.label}
             elevation={0}

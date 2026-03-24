@@ -21,6 +21,8 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 
 import { logout } from "@/actions/logout";
+import NotificationBell from "@/components/notifications/NotificationBell";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 
 function stringAvatar(name: string) {
   return {
@@ -135,7 +137,11 @@ const Navbar: React.FC = () => {
             }}
           />
         ) : user ? (
-          <>
+          <Box className="flex items-center gap-2 sm:gap-3">
+            <NotificationProvider enabled>
+              <NotificationBell />
+            </NotificationProvider>
+
             <Stack
               direction="row"
               spacing={1.5}
@@ -256,7 +262,7 @@ const Navbar: React.FC = () => {
                 </span>
               </MenuItem>
             </Menu>
-          </>
+          </Box>
         ) : (
           <Button
             variant="contained"
