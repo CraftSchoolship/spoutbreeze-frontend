@@ -57,6 +57,26 @@ export const initializeMessaging = async (): Promise<Messaging | null> => {
 };
 
 /**
+ * Registers the Firebase messaging service worker with the Firebase config
+ * passed as query parameters, so the SW never needs hardcoded keys.
+ */
+const registerServiceWorker = async (): Promise<ServiceWorkerRegistration | undefined> => {
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return undefined;
+
+  const swParams = new URLSearchParams({
+    apiKey: firebaseConfig.apiKey ?? '',
+    authDomain: firebaseConfig.authDomain ?? '',
+    projectId: firebaseConfig.projectId ?? '',
+    messagingSenderId: firebaseConfig.messagingSenderId ?? '',
+    appId: firebaseConfig.appId ?? '',
+  });
+
+  return navigator.serviceWorker.register(
+    `/firebase-messaging-sw.js?${swParams.toString()}`
+  );
+};
+
+/**
  * Retrieves the FCM device token if notification permissions are granted.
  */
 export const getFCMToken = async (): Promise<string | null> => {
@@ -77,8 +97,13 @@ export const getFCMToken = async (): Promise<string | null> => {
       return null;
     }
 
-    const currentToken = await getToken(msg, { vapidKey });
-    
+    const swRegistration = await registerServiceWorker();
+
+    const currentToken = await getToken(msg, {
+      vapidKey,
+      serviceWorkerRegistration: swRegistration,
+    });
+
     if (currentToken) {
       return currentToken;
     } else {
