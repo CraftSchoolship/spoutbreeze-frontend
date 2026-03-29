@@ -98,6 +98,9 @@ const NotificationBell: React.FC = () => {
     clearAllRead,
     loadMore,
     refresh,
+    pushSupported,
+    pushPermission,
+    requestPushPermission,
   } = useNotifications();
 
   const anchorRef = useRef<HTMLButtonElement>(null);
@@ -259,6 +262,51 @@ const NotificationBell: React.FC = () => {
                       )}
                     </Box>
                   </Box>
+
+                  {/* Push Notifications Opt-In Promo */}
+                  {pushSupported && pushPermission === "default" && (
+                    <Box
+                      sx={{
+                        px: 2,
+                        py: 1.5,
+                        backgroundColor: "#f0fdf4",
+                        borderBottom: "1px solid #e2e8f0",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Box>
+                        <Typography sx={{ fontSize: "13px", fontWeight: 600, color: "#166534" }}>
+                          Don't miss a beat!
+                        </Typography>
+                        <Typography sx={{ fontSize: "12px", color: "#15803d" }}>
+                          Enable desktop notifications.
+                        </Typography>
+                      </Box>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        onClick={requestPushPermission}
+                        sx={{
+                          backgroundColor: "#22c55e",
+                          color: "white",
+                          fontSize: "12px",
+                          textTransform: "none",
+                          boxShadow: "none",
+                          minWidth: "auto",
+                          px: 2,
+                          "&:hover": {
+                            backgroundColor: "#16a34a",
+                            boxShadow: "none",
+                          },
+                        }}
+                      >
+                        Enable
+                      </Button>
+                    </Box>
+                  )}
 
                   {/* Body */}
                   <Box

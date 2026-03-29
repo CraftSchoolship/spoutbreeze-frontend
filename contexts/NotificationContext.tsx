@@ -18,6 +18,7 @@ import {
   deleteAllReadNotifications,
 } from "@/lib/notificationApi";
 import { useNotificationSocket } from "@/hooks/useNotificationSocket";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 const PAGE_SIZE = 20;
 
@@ -45,6 +46,11 @@ interface NotificationContextValue {
   /** Whether notification bell tab is open (controls dropdown) */
   panelOpen: boolean;
   setPanelOpen: (open: boolean) => void;
+
+  /** Push Notification state from FCM */
+  pushSupported: boolean;
+  pushPermission: NotificationPermission;
+  requestPushPermission: () => Promise<void>;
 }
 
 const NotificationContext = createContext<NotificationContextValue | undefined>(
@@ -77,6 +83,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   const [hasMore, setHasMore] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const initializedRef = useRef(false);
+
+  // Initialize push notification hook
+  const {
+    isSupported: pushSupported,
+    permission: pushPermission,
+    requestPermission: requestPushPermission,
+  } = usePushNotifications();
 
   // -------------------------------------------------------------------------
   // HTTP data fetching
@@ -244,6 +257,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     clearAllRead,
     panelOpen,
     setPanelOpen,
+    pushSupported,
+    pushPermission,
+    requestPushPermission,
   };
 
   return (
