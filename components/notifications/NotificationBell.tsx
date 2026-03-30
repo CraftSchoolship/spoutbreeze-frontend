@@ -279,7 +279,7 @@ const NotificationBell: React.FC = () => {
                     >
                       <Box>
                         <Typography sx={{ fontSize: "13px", fontWeight: 600, color: "#166534" }}>
-                          Don't miss a beat!
+                          Don&apos;t miss a beat!
                         </Typography>
                         <Typography sx={{ fontSize: "12px", color: "#15803d" }}>
                           Enable desktop notifications.
