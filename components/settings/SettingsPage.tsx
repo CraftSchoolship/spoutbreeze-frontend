@@ -9,10 +9,12 @@ import AccessControl from "./accessControl/AccessControl";
 import Integrations from "./integrations/Integrations";
 import BillingSettings from "./BillingSettings";
 import StreamingSettings from "./streamingSettings/StreamingSettings";
+import NotificationSettings from "./notifications/NotificationSettings";
 import { fetchCurrentUser, User, isAdmin } from "@/actions/fetchUsers";
 import LinkIcon from "@mui/icons-material/Link";
 import PaymentIcon from "@mui/icons-material/Payment";
 import VideoSettingsIcon from "@mui/icons-material/VideoSettings";
+import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 
 const SettingsPage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -62,6 +64,12 @@ const SettingsPage: React.FC = () => {
       label: "Streaming Settings",
       icon: <VideoSettingsIcon fontSize="small" />,
       component: <StreamingSettings />,
+    },
+    {
+      key: "notifications",
+      label: "Notifications",
+      icon: <NotificationsOutlinedIcon fontSize="small" />,
+      component: <NotificationSettings />,
     },
     {
       key: "integrations",

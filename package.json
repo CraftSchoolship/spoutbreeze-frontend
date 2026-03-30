@@ -23,6 +23,7 @@
     "cookies-next": "^5.1.0",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "firebase": "^12.11.0",
     "jose": "^6.0.10",
     "next": "15",
     "next-auth": "^4.24.11",
