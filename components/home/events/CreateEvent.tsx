@@ -2,7 +2,10 @@
 
 import React, { useState } from "react";
 import { createEvent, CreateEventReq } from "@/actions/events";
-import { ChannelWithUserName, fetchChannels } from "@/actions/channels";
+import {
+  ChannelWithUserName,
+  fetchCurrentUserChannels,
+} from "@/actions/channels";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import {
@@ -89,6 +92,18 @@ const CreateEvent: React.FC<EventFormProps> = ({
     channel_name: channel ? channel.name : "",
   });
 
+  const availableChannelNames = React.useMemo(
+    () =>
+      Array.from(
+        new Set(
+          availableChannels
+            .map((availableChannel) => availableChannel.name.trim())
+            .filter(Boolean)
+        )
+      ),
+    [availableChannels]
+  );
+
   React.useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -116,7 +131,7 @@ const CreateEvent: React.FC<EventFormProps> = ({
     if (!channel) {
       const loadChannels = async () => {
         try {
-          const channelsResult = await fetchChannels();
+          const channelsResult = await fetchCurrentUserChannels();
           setAvailableChannels(channelsResult.channels);
         } catch (error) {
           console.error("Error fetching channels:", error);
@@ -552,7 +567,7 @@ const CreateEvent: React.FC<EventFormProps> = ({
               <Autocomplete
                 fullWidth
                 freeSolo
-                options={availableChannels.map((channel) => channel.name)}
+                options={availableChannelNames}
                 value={formData.channel_name}
                 onChange={(event, newValue) => {
                   setFormData((prev) => ({
