@@ -58,6 +58,38 @@ export const fetchChannels = async (): Promise<Channels> => {
   }
 };
 
+export const fetchCurrentUserChannels = async (): Promise<Channels> => {
+  try {
+    const response = await axiosInstance.get("/api/channels/");
+
+    const channelsWithUserName: ChannelWithUserName[] = response.data.channels.map(
+      (channel: Channel) => ({
+        ...channel,
+        creator_name: `${channel.creator_first_name} ${channel.creator_last_name}`,
+      })
+    );
+
+    return {
+      channels: channelsWithUserName,
+      total: response.data.total,
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const status = error.response.status;
+
+      // Backend returns 404 when user has no channels; treat as empty state.
+      if (status === 404) {
+        return { channels: [], total: 0 };
+      }
+
+      if (status === 500) {
+        throw new Error("SERVER_ERROR");
+      }
+    }
+    throw error;
+  }
+};
+
 export const createChannel = async (
   data: CreateChannelReq
 ): Promise<Channel> => {
