@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import Button from "@mui/material/Button";
+import CostCalculator from "./CostCalculator";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import { getLoginUrl } from "@/lib/auth";
@@ -87,19 +87,7 @@ const HeroSection: React.FC = () => {
           </div>
 
           <div className="flex-1 flex justify-center">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-sky-400/20 to-teal-400/20 rounded-3xl blur-2xl transform rotate-6"></div>
-              <div className="relative bg-white rounded-3xl shadow-xl shadow-sky-200/50 p-8 border border-sky-100">
-                <Image
-                  src="/bluescale_logo.png"
-                  alt="BlueScale"
-                  width={280}
-                  height={280}
-                  className="object-contain"
-                  priority
-                />
-              </div>
-            </div>
+            <CostCalculator />
           </div>
         </div>
       </div>
