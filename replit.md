@@ -1,7 +1,7 @@
 # BlueScale Frontend
 
 ## Overview
-BlueScale is a modern platform that makes hosting, attending, and managing webinars seamless. This is the Next.js 15 frontend application using Turbopack.
+BlueScale is a modern platform that makes hosting, attending, and managing webinars seamless. This is the Next.js 15 frontend application.
 
 ## Branding & Design
 - **Brand Colors**: Sky blue (#0ea5e9), Teal (#06b6d4), Navy (#1e3a5f)
@@ -14,7 +14,7 @@ BlueScale is a modern platform that makes hosting, attending, and managing webin
 - **UI Libraries**: MUI (Material UI), Joy UI, Tailwind CSS
 - **Authentication**: NextAuth.js with Keycloak integration
 - **Payments**: Stripe integration
-- **Build Tool**: Turbopack
+- **CSS**: Tailwind CSS v3 (downgraded from v4 for Next.js webpack compatibility)
 
 ## Directory Structure
 - `app/` - Next.js App Router pages and layouts
@@ -43,6 +43,7 @@ Required environment variables (see `.env.local.example`):
 - `NEXT_PUBLIC_API_URL` - Backend API URL
 
 ## Recent Changes
+- 2026-04-29: Migrated to Replit — installed npm dependencies, downgraded Tailwind CSS from v4 to v3 (fixes webpack css module resolution bug), removed Turbopack flag from dev script, created tailwind.config.ts and postcss.config.cjs
 - 2026-02-04: Updated all internal pages (Dashboard, Settings, Channels, Events, Join) with BlueScale design
 - 2026-02-04: Complete redesign with BlueScale branding - new logo, modern UI with trust/comfort colors
 - 2026-02-04: Initial Replit setup, configured dev server on port 5000
