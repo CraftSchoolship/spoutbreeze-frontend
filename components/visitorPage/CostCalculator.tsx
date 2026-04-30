@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Image from "next/image";
 import { getLoginUrl } from "@/lib/auth";
 import DesktopWindowsIcon from '@mui/icons-material/DesktopWindows';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import DownloadIcon from '@mui/icons-material/Download';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 // Cost model constants
@@ -365,7 +365,7 @@ export default function CostCalculator() {
             {/* Header */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 flex items-center justify-center overflow-hidden">
-                <img src="/bluescale_logo.svg" alt="BlueScale logo" className="w-full h-full object-contain" />
+                <Image src="/bluescale_logo.svg" alt="BlueScale logo" width={40} height={40} className="w-full h-full object-contain" />
               </div>
               <div>
                 <p className="font-bold text-slate-900">BlueScale Savings Report</p>
