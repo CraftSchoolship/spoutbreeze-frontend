@@ -2,6 +2,11 @@
 
 import React, { useState, useMemo } from "react";
 import { getLoginUrl } from "@/lib/auth";
+import DesktopWindowsIcon from '@mui/icons-material/DesktopWindows';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import DownloadIcon from '@mui/icons-material/Download';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 // Cost model constants
 const VCPU_MONTHLY_RATE = 10;
@@ -47,7 +52,8 @@ function generateReportHTML(
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; padding: 40px; }
     .header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #e0f2fe; }
-    .logo-box { background: linear-gradient(135deg, #0ea5e9, #06b6d4); border-radius: 12px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; font-weight: 800; }
+    .logo-box { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
+    .logo-box img { width: 48px; height: 48px; object-fit: contain; display: block; }
     .brand { font-size: 24px; font-weight: 800; background: linear-gradient(135deg, #0ea5e9, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .tagline { font-size: 12px; color: #64748b; margin-top: 2px; }
     .meta { margin-left: auto; text-align: right; font-size: 12px; color: #64748b; }
@@ -85,7 +91,7 @@ function generateReportHTML(
 </head>
 <body>
   <div class="header">
-    <div class="logo-box">B</div>
+    <div class="logo-box"><img src="/bluescale_logo.svg" alt="BlueScale logo" /></div>
     <div>
       <div class="brand">BlueScale</div>
       <div class="tagline">Scale your virtual events effortlessly</div>
@@ -216,7 +222,7 @@ export default function CostCalculator() {
 
           {/* Header */}
           <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-slate-800">💰 Savings Calculator</span>
+            <span className="text-lg font-bold text-slate-800 flex items-center gap-2"><AttachMoneyIcon fontSize="small" />Savings Calculator</span>
             <span className="text-xs bg-teal-50 text-teal-600 border border-teal-100 rounded-full px-2 py-0.5 font-medium">Live</span>
           </div>
           <p className="text-xs text-slate-500 -mt-2">
@@ -239,17 +245,17 @@ export default function CostCalculator() {
           <div className="rounded-2xl overflow-hidden border border-slate-100">
             <div className="flex items-center justify-between bg-red-50 px-4 py-2.5">
               <div>
-                <p className="text-xs text-slate-500 font-medium">Traditional BBB</p>
+                <p className="text-xs text-slate-500 font-medium flex items-center gap-2">Traditional BBB</p>
                 <p className="text-sm font-bold text-red-500">{fmt(costs.traditional)}<span className="text-xs font-normal text-slate-400"> /mo</span></p>
               </div>
-              <span className="text-xl">🖥️</span>
+              <span className="text-xl"><DesktopWindowsIcon /></span>
             </div>
             <div className="flex items-center justify-between bg-teal-50 px-4 py-2.5">
               <div>
-                <p className="text-xs text-slate-500 font-medium">With BlueScale</p>
+                <p className="text-xs text-slate-500 font-medium flex items-center gap-2">With BlueScale</p>
                 <p className="text-sm font-bold text-teal-600">{fmt(costs.blueScale)}<span className="text-xs font-normal text-slate-400"> /mo</span></p>
               </div>
-              <span className="text-xl">🚀</span>
+              <span className="text-xl"><RocketLaunchIcon /></span>
             </div>
           </div>
 
@@ -269,10 +275,10 @@ export default function CostCalculator() {
           {/* CTA */}
           <button
             onClick={() => setStep("email")}
-            className="w-full py-3 rounded-2xl font-semibold text-sm text-white transition-all"
+            className="w-full py-3 rounded-2xl font-semibold text-sm text-white transition-all flex items-center justify-center gap-2"
             style={{ background: "linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)", boxShadow: "0 4px 14px rgba(14,165,233,0.35)" }}
           >
-            📄 Get My Free Savings Report
+            <InsertDriveFileIcon /> Get My Free Savings Report
           </button>
 
           <p className="text-center text-xs text-slate-400 -mt-1">
@@ -299,11 +305,11 @@ export default function CostCalculator() {
           {/* Preview strip */}
           <div className="bg-gradient-to-r from-sky-50 to-teal-50 border border-sky-100 rounded-2xl px-5 py-4 mb-5 flex justify-between">
             <div className="text-center">
-              <p className="text-xs text-slate-500">Traditional</p>
+              <p className="text-xs text-slate-500 flex items-center justify-center gap-2"><DesktopWindowsIcon fontSize="small" />Traditional</p>
               <p className="text-base font-bold text-red-500">{fmt(costs.traditional)}<span className="text-xs text-slate-400">/mo</span></p>
             </div>
             <div className="text-center">
-              <p className="text-xs text-slate-500">BlueScale</p>
+              <p className="text-xs text-slate-500 flex items-center justify-center gap-2"><RocketLaunchIcon fontSize="small" />BlueScale</p>
               <p className="text-base font-bold text-teal-600">{fmt(costs.blueScale)}<span className="text-xs text-slate-400">/mo</span></p>
             </div>
             <div className="text-center">
@@ -339,10 +345,10 @@ export default function CostCalculator() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3 rounded-xl font-semibold text-sm text-white mt-1 transition-all disabled:opacity-70"
+              className="w-full py-3 rounded-xl font-semibold text-sm text-white mt-1 transition-all disabled:opacity-70 flex items-center justify-center gap-2"
               style={{ background: "linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)", boxShadow: "0 4px 14px rgba(14,165,233,0.3)" }}
             >
-              {submitting ? "Generating report…" : "📄 Generate My Report"}
+              {submitting ? "Generating report…" : <><InsertDriveFileIcon /> Generate My Report</>}
             </button>
           </form>
 
@@ -358,8 +364,9 @@ export default function CostCalculator() {
           <div className="flex flex-col gap-5">
             {/* Header */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-lg"
-                style={{ background: "linear-gradient(135deg, #0ea5e9, #06b6d4)" }}>B</div>
+              <div className="w-10 h-10 flex items-center justify-center overflow-hidden">
+                <img src="/bluescale_logo.svg" alt="BlueScale logo" className="w-full h-full object-contain" />
+              </div>
               <div>
                 <p className="font-bold text-slate-900">BlueScale Savings Report</p>
                 <p className="text-xs text-slate-500">Prepared for {name || email}</p>
@@ -386,7 +393,9 @@ export default function CostCalculator() {
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Cost Breakdown</p>
               <div className="rounded-2xl border border-slate-100 overflow-hidden text-sm">
                 <div className="grid grid-cols-3 bg-slate-50 px-4 py-2 font-semibold text-xs text-slate-500">
-                  <span>Item</span><span className="text-center">Traditional BBB</span><span className="text-center">BlueScale</span>
+                  <span>Item</span>
+                  <span className="text-center flex items-center justify-center gap-2"><DesktopWindowsIcon fontSize="small" />Traditional BBB</span>
+                  <span className="text-center flex items-center justify-center gap-2"><RocketLaunchIcon fontSize="small" />BlueScale</span>
                 </div>
                 <div className="grid grid-cols-3 px-4 py-2.5 border-t border-slate-100">
                   <span className="text-slate-600">BBB Server ({calcCores(attendees + moderators)} → {calcCores(moderators)} vCPUs)</span>
@@ -450,7 +459,7 @@ export default function CostCalculator() {
                 className="flex-1 py-3 rounded-xl font-semibold text-sm text-white transition-all"
                 style={{ background: "linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)", boxShadow: "0 4px 14px rgba(14,165,233,0.35)" }}
               >
-                🚀 Create Account &amp; Start Saving
+                <RocketLaunchIcon fontSize="small" /> Create Account &amp; Start Saving
               </button>
             </div>
 
