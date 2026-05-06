@@ -5,15 +5,13 @@ import { getLoginUrl } from "@/lib/auth";
 
 // ─── Cost model ───────────────────────────────────────────────────────────────
 // $50 per every 20 moderators, × parallel sessions running concurrently
-const UNIT_COST = 50;     // $ per billing unit
-const UNIT_SIZE = 20;     // users per billing unit
+const UNIT_COST = 50;
+const UNIT_SIZE = 20;
 
 function units(users: number) {
   return Math.max(1, Math.ceil(users / UNIT_SIZE));
 }
 
-// BlueScale: only moderators on BBB. Attendees watch free streaming platforms (YouTube/Twitch).
-// Traditional: every attendee AND moderator counts toward BBB server sizing.
 function calcCosts(attendees: number, moderators: number, parallelSessions: number) {
   const blueScale = units(moderators) * UNIT_COST * parallelSessions;
   const traditional = units(attendees + moderators) * UNIT_COST * parallelSessions;
@@ -22,7 +20,6 @@ function calcCosts(attendees: number, moderators: number, parallelSessions: numb
   return { traditional, blueScale, savings, savingsPct };
 }
 
-// Three attendee tiers to show the flat-vs-growing curve
 function scaleTiers(attendees: number, moderators: number, parallelSessions: number) {
   const levels = [
     Math.max(20, Math.round(attendees * 0.25)),
@@ -79,7 +76,6 @@ function generateReportHTML(
     .highlight-row td { background: #f0fdf4; font-weight: 700; }
     .savings-box { background: linear-gradient(135deg, #0ea5e9, #06b6d4); border-radius: 16px; padding: 28px 32px; color: white; display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
     .savings-amount { font-size: 42px; font-weight: 800; line-height: 1.1; }
-    .savings-year { font-size: 14px; opacity: 0.75; margin-top: 4px; }
     .savings-pct { background: rgba(255,255,255,0.2); border-radius: 12px; padding: 16px 24px; text-align: center; }
     .savings-pct-num { font-size: 36px; font-weight: 800; }
     .benefits { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
@@ -87,10 +83,8 @@ function generateReportHTML(
     .benefit:last-child { margin-bottom: 0; }
     .check { color: #0d9488; font-weight: 700; }
     .formula-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; font-size: 13px; }
-    .formula-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 8px; }
+    .formula-row { display: flex; gap: 8px; margin-bottom: 8px; }
     .formula-row:last-child { margin-bottom: 0; }
-    .formula-label { font-weight: 600; width: 120px; }
-    .formula-val { font-family: monospace; font-size: 12px; color: #475569; }
     .diff-table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
     .diff-table th { background: #f1f5f9; padding: 10px 14px; font-size: 11px; text-align: left; }
     .diff-table td { padding: 12px 14px; font-size: 13px; border-top: 1px solid #f1f5f9; vertical-align: top; }
@@ -133,14 +127,14 @@ function generateReportHTML(
     <div class="section-title">Pricing Formula</div>
     <div class="formula-box">
       <div class="formula-row">
-        <span class="formula-label" style="color:#ef4444">Traditional:</span>
-        <span class="formula-val">\u230a(${attendees.toLocaleString()} attendees + ${moderators} mods) \u00f7 20\u230b \u00d7 $50 \u00d7 ${parallelSessions} sessions = <strong>${fmt(costs.traditional)}/mo</strong></span>
+        <span style="font-weight:600;color:#ef4444;width:120px;flex-shrink:0">Traditional:</span>
+        <span style="font-family:monospace;font-size:12px;color:#475569">ceil((${attendees.toLocaleString()} + ${moderators}) / 20) x $50 x ${parallelSessions} sessions = <strong>${fmt(costs.traditional)}/mo</strong></span>
       </div>
       <div class="formula-row">
-        <span class="formula-label" style="color:#0d9488">BlueScale:</span>
-        <span class="formula-val">\u230a${moderators} mods \u00f7 20\u230b \u00d7 $50 \u00d7 ${parallelSessions} sessions = <strong>${fmt(costs.blueScale)}/mo</strong></span>
+        <span style="font-weight:600;color:#0d9488;width:120px;flex-shrink:0">BlueScale:</span>
+        <span style="font-family:monospace;font-size:12px;color:#475569">ceil(${moderators} / 20) x $50 x ${parallelSessions} sessions = <strong>${fmt(costs.blueScale)}/mo</strong></span>
       </div>
-      <p style="font-size:12px;color:#64748b;margin-top:10px;">BlueScale only charges for moderators because attendees watch via free streaming platforms (YouTube/Twitch). Your BBB server never sees the audience.</p>
+      <p style="font-size:12px;color:#64748b;margin-top:10px;">BlueScale only charges for moderators — attendees watch via free streaming platforms (YouTube/Twitch).</p>
     </div>
   </div>
 
@@ -148,7 +142,7 @@ function generateReportHTML(
     <div>
       <div style="font-size:13px;opacity:0.85;font-weight:500;">Your estimated monthly savings</div>
       <div class="savings-amount">${fmt(costs.savings)}</div>
-      <div class="savings-year">${fmt(costs.savings * 12)} per year \u00b7 ${costs.savingsPct}% cheaper</div>
+      <div style="font-size:14px;opacity:0.75;margin-top:4px">${fmt(costs.savings * 12)} per year &middot; ${costs.savingsPct}% cheaper</div>
     </div>
     <div class="savings-pct">
       <div class="savings-pct-num">${costs.savingsPct}%</div>
@@ -157,7 +151,7 @@ function generateReportHTML(
   </div>
 
   <div class="section">
-    <div class="section-title">Cost at Scale \u2014 The Flat Line Advantage</div>
+    <div class="section-title">Cost at Scale &mdash; The Flat Line Advantage</div>
     <table>
       <tr>
         <th>Attendees per session</th>
@@ -167,13 +161,13 @@ function generateReportHTML(
       </tr>
       ${tiers.map((t, i) => `
       <tr ${i === 1 ? 'class="highlight-row"' : ''}>
-        <td>${t.attendees.toLocaleString()}${i === 1 ? " \u2190 your setup" : ""}</td>
+        <td>${t.attendees.toLocaleString()}${i === 1 ? " &larr; your setup" : ""}</td>
         <td class="cost-red">${fmt(t.traditional)}/mo</td>
         <td class="cost-teal">${fmt(t.blueScale)}/mo</td>
         <td>${fmt(t.savings)}/mo</td>
       </tr>`).join("")}
     </table>
-    <p style="font-size:12px;color:#64748b;margin-top:8px;">BlueScale's cost only moves when you cross a 20-moderator threshold \u2014 adding thousands of attendees costs nothing extra.</p>
+    <p style="font-size:12px;color:#64748b;margin-top:8px;">BlueScale cost only moves when moderators cross a multiple of 20 &mdash; audience size never affects your bill.</p>
   </div>
 
   <div class="section">
@@ -181,19 +175,19 @@ function generateReportHTML(
     <table class="diff-table">
       <tr><th style="width:20%">Dimension</th><th style="width:40%">Traditional</th><th style="width:40%">BlueScale</th></tr>
       <tr>
-        <td><strong>\ud83d\udda5\ufe0f Infrastructure</strong></td>
-        <td class="bad">Scales with every user. Each attendee adds CPU and memory \u2014 a 10,000-person webinar needs a massive server.</td>
-        <td class="good">Completely flat. Same server for 10 or 10,000 attendees because viewers never touch BBB. Cost doubles only after 20 more moderators.</td>
+        <td><strong>Infrastructure</strong></td>
+        <td class="bad">Scales with every user. Each attendee adds CPU and memory pressure.</td>
+        <td class="good">Completely flat. Same server for 10 or 10,000 attendees. Cost doubles only after 20 more moderators.</td>
       </tr>
       <tr>
-        <td><strong>\u26a1 Setup time</strong></td>
-        <td class="bad">Days of server provisioning, BBB tuning, load-balancer setup and monitoring configuration.</td>
-        <td class="good">Live in minutes \u2014 connect your BBB instance, link your streaming platform, done.</td>
+        <td><strong>Setup time</strong></td>
+        <td class="bad">Days of server provisioning, BBB tuning, and load-balancer configuration.</td>
+        <td class="good">Live in minutes &mdash; connect BBB, link your streaming platform, done.</td>
       </tr>
       <tr>
-        <td><strong>\ud83d\udcac Interactivity</strong></td>
-        <td class="bad">Moderators must manually monitor BBB, streaming chat and multiple dashboards \u2014 manually copying and relaying questions.</td>
-        <td class="good">Automatic bidirectional chat sync \u2014 viewer messages appear in BBB instantly, moderator replies stream back in seconds. No manual juggling.</td>
+        <td><strong>Chat sync</strong></td>
+        <td class="bad">Moderators manually juggle BBB, streaming chat, and multiple dashboards.</td>
+        <td class="good">Automatic bidirectional chat sync &mdash; viewer messages in BBB instantly, replies stream back in seconds.</td>
       </tr>
     </table>
   </div>
@@ -201,11 +195,11 @@ function generateReportHTML(
   <div class="section">
     <div class="section-title">How It Works</div>
     <div class="benefits">
-      <div class="benefit"><span class="check">\u2713</span> BBB runs with only ${moderators} moderator(s) \u2014 billed as ${units(moderators)} unit(s) of $50 regardless of audience size</div>
-      <div class="benefit"><span class="check">\u2713</span> ${attendees.toLocaleString()} viewers watch via live stream (YouTube, Twitch or RTMP) \u2014 zero BBB load added</div>
-      <div class="benefit"><span class="check">\u2713</span> Chat messages from all viewers relay into BBB in real time \u2014 moderators see every question in one place</div>
-      <div class="benefit"><span class="check">\u2713</span> Moderator replies push back to the streaming platform within seconds \u2014 no manual copy-paste between tabs</div>
-      <div class="benefit"><span class="check">\u2713</span> Cost only changes when you add more than 20 moderators \u2014 audience size never affects your bill</div>
+      <div class="benefit"><span class="check">&#10003;</span> BBB runs with only ${moderators} moderator(s) &mdash; billed as ${units(moderators)} unit(s) of $50 regardless of audience size</div>
+      <div class="benefit"><span class="check">&#10003;</span> ${attendees.toLocaleString()} viewers watch via live stream (YouTube, Twitch or RTMP) &mdash; zero BBB load added</div>
+      <div class="benefit"><span class="check">&#10003;</span> Chat messages from all viewers relay into BBB in real time &mdash; moderators see every question in one place</div>
+      <div class="benefit"><span class="check">&#10003;</span> Moderator replies push back to the streaming platform within seconds &mdash; no manual copy-paste</div>
+      <div class="benefit"><span class="check">&#10003;</span> Cost only changes when moderators cross a multiple of 20 &mdash; audience size never affects your bill</div>
     </div>
   </div>
 
@@ -214,7 +208,7 @@ function generateReportHTML(
     <div style="font-size:13px;color:#0ea5e9;">Create your free account at bluescale.io</div>
   </div>
 
-  <div class="footer">Pricing formula: $50 per 20 users/session \u00d7 parallel sessions. BlueScale counts only moderators; traditional solutions count all users. Free streaming delivery via YouTube/Twitch.</div>
+  <div class="footer">Pricing: $50 per 20 users/session x parallel sessions. BlueScale counts only moderators; traditional solutions count all users. Free streaming via YouTube/Twitch.</div>
 </body>
 </html>`;
 }
@@ -273,11 +267,11 @@ export default function CostCalculator() {
 
           {/* Header */}
           <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-slate-800">\ud83d\udcb0 Savings Calculator</span>
+            <span className="text-lg font-bold text-slate-800">💰 Savings Calculator</span>
             <span className="text-xs bg-teal-50 text-teal-600 border border-teal-100 rounded-full px-2 py-0.5 font-medium">Live</span>
           </div>
           <p className="text-xs text-slate-500 -mt-2">
-            BlueScale bills only for <strong className="text-teal-600">moderators</strong> \u2014 attendees watch free streams.
+            BlueScale bills only for <strong className="text-teal-600">moderators</strong> — attendees watch free streams.
             Traditional solutions bill for <strong className="text-red-400">every user</strong>.
           </p>
 
@@ -297,14 +291,16 @@ export default function CostCalculator() {
           <div className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5 text-xs text-slate-500 leading-relaxed">
             <div className="flex gap-2 mb-1">
               <span className="font-semibold text-red-400 w-20 shrink-0">Traditional:</span>
-              <span>\u230a({attendees.toLocaleString()} + {moderators}) \u00f7 20\u230b \u00d7 $50 \u00d7 {parallelSessions} =
-                <strong className="text-red-500 ml-1">{fmt(costs.traditional)}/mo</strong>
+              <span>
+                ceil(({attendees.toLocaleString()} + {moderators}) / 20) &times; $50 &times; {parallelSessions} =&nbsp;
+                <strong className="text-red-500">{fmt(costs.traditional)}/mo</strong>
               </span>
             </div>
             <div className="flex gap-2">
               <span className="font-semibold text-teal-600 w-20 shrink-0">BlueScale:</span>
-              <span>\u230a{moderators} \u00f7 20\u230b \u00d7 $50 \u00d7 {parallelSessions} =
-                <strong className="text-teal-600 ml-1">{fmt(costs.blueScale)}/mo</strong>
+              <span>
+                ceil({moderators} / 20) &times; $50 &times; {parallelSessions} =&nbsp;
+                <strong className="text-teal-600">{fmt(costs.blueScale)}/mo</strong>
               </span>
             </div>
           </div>
@@ -327,14 +323,14 @@ export default function CostCalculator() {
                     {t.attendees >= 1000
                       ? `${(t.attendees / 1000).toFixed(t.attendees % 1000 === 0 ? 0 : 1)}k`
                       : t.attendees}
-                    {i === 1 && <span className="ml-1 text-teal-400">\u25c4</span>}
+                    {i === 1 && <span className="ml-1 text-teal-400">&#9664;</span>}
                   </span>
                   <span className="text-center font-bold text-red-500">{fmt(t.traditional)}</span>
                   <span className="text-center font-bold text-teal-600">{fmt(t.blueScale)}</span>
                 </div>
               ))}
               <div className="px-3 py-1.5 bg-teal-600 flex justify-between items-center">
-                <span className="text-xs text-white/90 font-medium">BlueScale flat \u2194 Traditional grows \u2191</span>
+                <span className="text-xs text-white/90 font-medium">BlueScale flat &harr; Traditional grows &uarr;</span>
                 <span className="text-xs text-white font-bold">{costs.savingsPct}% saved</span>
               </div>
             </div>
@@ -343,9 +339,9 @@ export default function CostCalculator() {
           {/* 3 differentiators */}
           <div className="flex flex-col gap-1.5">
             {[
-              { icon: "\ud83d\udda5\ufe0f", label: "Infrastructure", bad: "Grows with every user", good: "Fixed regardless of audience" },
-              { icon: "\u26a1", label: "Setup time",     bad: "Days of configuration",  good: "Live in minutes" },
-              { icon: "\ud83d\udcac", label: "Chat sync",      bad: "Manual juggling",         good: "Auto bidirectional sync" },
+              { icon: "🖥️", label: "Infrastructure", bad: "Grows with every user", good: "Fixed regardless of audience" },
+              { icon: "⚡", label: "Setup time",     bad: "Days of configuration",  good: "Live in minutes" },
+              { icon: "💬", label: "Chat sync",      bad: "Manual juggling",         good: "Auto bidirectional sync" },
             ].map((d) => (
               <div key={d.label} className="flex items-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2">
                 <span className="text-base w-5 shrink-0">{d.icon}</span>
@@ -377,20 +373,20 @@ export default function CostCalculator() {
             className="w-full py-3 rounded-2xl font-semibold text-sm text-white transition-all"
             style={{ background: "linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)", boxShadow: "0 4px 14px rgba(14,165,233,0.35)" }}
           >
-            \ud83d\udcc4 Get My Free Savings Report
+            📄 Get My Free Savings Report
           </button>
           <p className="text-center text-xs text-slate-400 -mt-1">
-            Free streaming via YouTube / Twitch \u00b7 Cost doubles only past 20 mods
+            Free streaming via YouTube / Twitch &middot; Cost doubles only past 20 mods
           </p>
         </div>
       </div>
 
-      {/* Email capture modal */}
+      {/* ── Email capture modal ── */}
       {step === "email" && (
         <Modal onClose={() => setStep("calc")}>
           <div className="flex flex-col items-center gap-1 mb-5">
             <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl mb-1"
-              style={{ background: "linear-gradient(135deg, #0ea5e9, #06b6d4)" }}>\ud83d\udcca</div>
+              style={{ background: "linear-gradient(135deg, #0ea5e9, #06b6d4)" }}>📊</div>
             <h2 className="text-xl font-bold text-slate-900">Your Savings Report is Ready</h2>
             <p className="text-sm text-slate-500 text-center">
               Enter your details to receive a full PDF showing your{" "}
@@ -419,14 +415,14 @@ export default function CostCalculator() {
             <button type="submit" disabled={submitting}
               className="w-full py-3 rounded-xl font-semibold text-sm text-white mt-1 transition-all disabled:opacity-70"
               style={{ background: "linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)", boxShadow: "0 4px 14px rgba(14,165,233,0.3)" }}>
-              {submitting ? "Generating report\u2026" : "\ud83d\udcc4 Generate My Report"}
+              {submitting ? "Generating report..." : "📄 Generate My Report"}
             </button>
           </form>
           <p className="text-xs text-slate-400 text-center mt-3">No spam. Report delivered instantly. Unsubscribe any time.</p>
         </Modal>
       )}
 
-      {/* Report modal */}
+      {/* ── Report modal ── */}
       {step === "report" && (
         <Modal onClose={() => setStep("calc")} wide>
           <div className="flex flex-col gap-5">
@@ -455,20 +451,22 @@ export default function CostCalculator() {
               </div>
             </div>
 
+            {/* Formula */}
             <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-xs text-slate-500 leading-relaxed">
               <p className="font-semibold text-slate-600 mb-1.5">Pricing formula</p>
               <div className="flex gap-2 mb-1">
                 <span className="font-semibold text-red-400 w-24 shrink-0">Traditional:</span>
-                <span>\u230a({attendees.toLocaleString()} + {moderators}) \u00f7 20\u230b \u00d7 $50 \u00d7 {parallelSessions} sessions = <strong className="text-red-500">{fmt(costs.traditional)}/mo</strong></span>
+                <span>ceil(({attendees.toLocaleString()} + {moderators}) / 20) &times; $50 &times; {parallelSessions} sessions = <strong className="text-red-500">{fmt(costs.traditional)}/mo</strong></span>
               </div>
               <div className="flex gap-2">
                 <span className="font-semibold text-teal-600 w-24 shrink-0">BlueScale:</span>
-                <span>\u230a{moderators} \u00f7 20\u230b \u00d7 $50 \u00d7 {parallelSessions} sessions = <strong className="text-teal-600">{fmt(costs.blueScale)}/mo</strong></span>
+                <span>ceil({moderators} / 20) &times; $50 &times; {parallelSessions} sessions = <strong className="text-teal-600">{fmt(costs.blueScale)}/mo</strong></span>
               </div>
             </div>
 
+            {/* Cost at scale */}
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Cost at Scale \u2014 BlueScale stays flat</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Cost at Scale — BlueScale stays flat</p>
               <div className="rounded-2xl border border-slate-100 overflow-hidden text-sm">
                 <div className="grid grid-cols-4 bg-slate-50 px-4 py-2 font-semibold text-xs text-slate-500">
                   <span>Attendees</span>
@@ -479,7 +477,7 @@ export default function CostCalculator() {
                 {tiers.map((t, i) => (
                   <div key={i} className={`grid grid-cols-4 px-4 py-2.5 border-t text-xs ${i === 1 ? "bg-teal-50 border-teal-100 font-bold" : "border-slate-100"}`}>
                     <span className={i === 1 ? "text-teal-700" : "text-slate-600"}>
-                      {t.attendees.toLocaleString()}{i === 1 ? " \u2605" : ""}
+                      {t.attendees.toLocaleString()}{i === 1 ? " ★" : ""}
                     </span>
                     <span className="text-center text-red-500">{fmt(t.traditional)}/mo</span>
                     <span className="text-center text-teal-600">{fmt(t.blueScale)}/mo</span>
@@ -487,16 +485,17 @@ export default function CostCalculator() {
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-slate-400 mt-1.5">\u2605 Your current setup \u00b7 BlueScale cost only rises when moderators cross a multiple of 20.</p>
+              <p className="text-xs text-slate-400 mt-1.5">★ Your current setup · BlueScale cost only rises when moderators cross a multiple of 20.</p>
             </div>
 
+            {/* 3 differentiators */}
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">3 More Reasons BlueScale Wins</p>
               <div className="flex flex-col gap-2">
                 {[
-                  { icon: "\ud83d\udda5\ufe0f", label: "Infrastructure", bad: "Every attendee adds server load \u2014 massive machines for large crowds", good: "Fixed cost. Attendees never touch BBB. Cost only doubles past 20 moderators." },
-                  { icon: "\u26a1", label: "Setup time", bad: "Days of server provisioning, BBB tuning, load-balancer config", good: "Live in minutes \u2014 connect BBB, link streaming platform, done" },
-                  { icon: "\ud83d\udcac", label: "Chat sync", bad: "Moderators manually juggle BBB, streaming chat and multiple tabs", good: "Automatic bidirectional sync \u2014 viewer messages in BBB instantly, replies stream back" },
+                  { icon: "🖥️", label: "Infrastructure", bad: "Every attendee adds server load — massive machines for large crowds", good: "Fixed cost. Attendees never touch BBB. Cost only doubles past 20 moderators." },
+                  { icon: "⚡", label: "Setup time", bad: "Days of server provisioning, BBB tuning, load-balancer config", good: "Live in minutes — connect BBB, link streaming platform, done" },
+                  { icon: "💬", label: "Chat sync", bad: "Moderators manually juggle BBB, streaming chat and multiple tabs", good: "Automatic bidirectional sync — viewer messages in BBB instantly, replies stream back" },
                 ].map((d) => (
                   <div key={d.label} className="grid grid-cols-3 gap-2 text-xs rounded-xl overflow-hidden border border-slate-100">
                     <div className="bg-slate-50 px-3 py-2.5 flex items-start gap-1.5 font-semibold text-slate-600">
@@ -509,6 +508,7 @@ export default function CostCalculator() {
               </div>
             </div>
 
+            {/* Config params */}
             <div className="grid grid-cols-4 gap-2">
               {[
                 ["Attendees", attendees.toLocaleString()],
@@ -523,20 +523,21 @@ export default function CostCalculator() {
               ))}
             </div>
 
+            {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={handleDownloadPDF}
                 className="flex-1 py-3 rounded-xl font-semibold text-sm border-2 border-sky-200 text-sky-600 hover:bg-sky-50 transition-all">
-                \u2b07 Download PDF Report
+                &#8659; Download PDF Report
               </button>
               <button onClick={handleSignUp}
                 className="flex-1 py-3 rounded-xl font-semibold text-sm text-white transition-all"
                 style={{ background: "linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)", boxShadow: "0 4px 14px rgba(14,165,233,0.35)" }}>
-                \ud83d\ude80 Create Account &amp; Start Saving
+                🚀 Create Account &amp; Start Saving
               </button>
             </div>
 
             <p className="text-xs text-center text-slate-400">
-              $50 per 20 users/session \u00d7 parallel sessions \u00b7 Free streaming via YouTube/Twitch
+              $50 per 20 users/session &times; parallel sessions &middot; Free streaming via YouTube/Twitch
             </p>
           </div>
         </Modal>
@@ -554,7 +555,7 @@ function Modal({ children, onClose, wide }: { children: React.ReactNode; onClose
         style={{ maxWidth: wide ? 640 : 440, maxHeight: "90vh" }}>
         <button onClick={onClose}
           className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 text-sm transition-all z-10">
-          \u2715
+          &#10005;
         </button>
         <div className="p-6 sm:p-8">{children}</div>
       </div>
