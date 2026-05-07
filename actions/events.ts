@@ -265,13 +265,24 @@ export const createEvent = async (data: CreateEventReq): Promise<Event | null> =
   }
 };
 
-export const startEvent = async (eventId: string): Promise<string | null> => {
+export const startEvent = async (eventId: string): Promise<string> => {
   try {
     const response = await axiosInstance.post(`/api/events/${eventId}/start`);
     return response.data.join_url;
   } catch (error) {
     console.error("Error starting event:", error);
-    return null;
+    if (axios.isAxiosError(error) && error.response) {
+      const detail: string = error.response.data?.detail ?? "";
+      if (error.response.status === 403) {
+        throw new Error("EVENT_FORBIDDEN");
+      }
+      if (error.response.status === 404) {
+        throw new Error("EVENT_NOT_FOUND");
+      }
+      // Surface the backend detail (e.g. "Failed to create meeting: internalError")
+      throw new Error(detail || "START_EVENT_FAILED");
+    }
+    throw error;
   }
 };
 
@@ -361,11 +372,15 @@ export const deleteEvent = async (eventId: string): Promise<void> => {
     if (axios.isAxiosError(error)) {
       console.error("API Error Response:", error.response?.data);
       console.error("API Error Status:", error.response?.status);
-      
+
+      if (error.response?.status === 403) {
+        throw new Error("EVENT_FORBIDDEN");
+      }
+
       if (error.response?.status === 404) {
         throw new Error("EVENT_NOT_FOUND");
       }
-      
+
       if (error.response?.status === 500) {
         throw new Error("SERVER_ERROR");
       }
