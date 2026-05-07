@@ -3,8 +3,6 @@ import {
   startEvent,
   deleteEvent,
   updateEvent,
-  getJoinUrl,
-  JoinUrls,
   CreateEventReq,
 } from "@/actions/events";
 
@@ -79,7 +77,16 @@ export const useEventManagement = (options?: UseEventManagementOptions) => {
       options?.onDeleteSuccess?.();
       return true;
     } catch (error) {
-      const errorMessage = "Failed to delete the event. Please try again.";
+      let errorMessage = "Failed to delete the event. Please try again.";
+      if (error instanceof Error) {
+        if (error.message === "EVENT_FORBIDDEN") {
+          errorMessage = "Only the event creator can delete this event.";
+        } else if (error.message === "EVENT_NOT_FOUND") {
+          errorMessage = "This event no longer exists.";
+        } else if (error.message === "SERVER_ERROR") {
+          errorMessage = "A server error occurred while deleting the event. Please try again later.";
+        }
+      }
       setEventError(errorMessage);
       options?.onDeleteError?.(errorMessage);
       console.error("Error deleting event:", error);
@@ -91,20 +98,24 @@ export const useEventManagement = (options?: UseEventManagementOptions) => {
   const handleStartEvent = async (eventId: string) => {
     try {
       const joinUrl = await startEvent(eventId);
-      if (joinUrl) {
-        console.log("Join URL:", joinUrl);
-        window.open(joinUrl, "_blank");
-        options?.onStartSuccess?.();
-        return true;
-      } else {
-        const errorMessage =
-          "Failed to start the event. Join URL not available.";
-        setEventError(errorMessage);
-        options?.onStartError?.(errorMessage);
-        return false;
-      }
+      console.log("Join URL:", joinUrl);
+      window.open(joinUrl, "_blank");
+      options?.onStartSuccess?.();
+      return true;
     } catch (error) {
-      const errorMessage = "Failed to start the event. Please try again.";
+      let errorMessage = "Failed to start the event. Please try again.";
+      if (error instanceof Error) {
+        if (error.message === "EVENT_FORBIDDEN") {
+          errorMessage = "Only the event creator can start this event.";
+        } else if (error.message === "EVENT_NOT_FOUND") {
+          errorMessage = "This event no longer exists.";
+        } else if (error.message === "START_EVENT_FAILED") {
+          errorMessage = "Failed to start the event. Please try again.";
+        } else if (error.message) {
+          // Show the backend detail directly (e.g. "Failed to create meeting: internalError")
+          errorMessage = error.message;
+        }
+      }
       setEventError(errorMessage);
       options?.onStartError?.(errorMessage);
       console.error("Error starting event:", error);
@@ -113,7 +124,7 @@ export const useEventManagement = (options?: UseEventManagementOptions) => {
   };
 
   // Simplify the get join URL function since we don't need to call the API
-  const handleGetJoinUrl = async (eventId: string): Promise<void> => {
+  const handleGetJoinUrl = async (_eventId: string): Promise<void> => {
     // No need to make API call anymore, just pass the eventId to the dialog
     // The dialog will generate shareable URLs using getShareableJoinUrl
     return Promise.resolve();
