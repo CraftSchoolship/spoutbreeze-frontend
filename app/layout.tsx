@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import ClientThemeProvider from "@/components/ThemeProvider";
 import { SnackbarProvider } from '@/contexts/SnackbarContext';
 import "./globals.css";
@@ -38,6 +39,18 @@ export default function RootLayout({
             </SnackbarProvider>
           </main>
         </ClientThemeProvider>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-P5EWGYMTHK"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-P5EWGYMTHK');
+          `}
+        </Script>
       </body>
     </html>
   );
