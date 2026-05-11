@@ -90,9 +90,28 @@ async function refreshAccessToken(request: NextRequest): Promise<Response | null
 }
 
 // Define protected and public routes
-const protectedRoutes = ['/home', '/settings']
+const protectedRoutes = ['/home', '/settings', '/admin']
+const adminRoutes = ['/admin']
 const authRoutes = ['/auth/callback']
 const publicRoutes = ['/']
+
+// Extract roles from a Keycloak access token payload.
+// Keycloak stores realm roles under realm_access.roles.
+function extractRolesFromToken(token: string): string[] {
+  const payload = decodeJwtPayload(token)
+  if (!payload) return []
+  const realmRoles = payload?.realm_access?.roles
+  if (Array.isArray(realmRoles)) {
+    return realmRoles.filter((r: unknown): r is string => typeof r === 'string')
+  }
+  return []
+}
+
+function hasSuperAdminRole(request: NextRequest): boolean {
+  const accessToken = request.cookies.get('access_token')?.value
+  if (!accessToken) return false
+  return extractRolesFromToken(accessToken).includes('super_admin')
+}
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -184,6 +203,18 @@ export async function middleware(request: NextRequest) {
       const response = NextResponse.redirect(redirectUrl)
       response.headers.set('x-middleware-redirect-reason', 'unauthenticated')
       
+      return response
+    }
+
+    // For admin routes, also require the 'super_admin' realm role.
+    // Page-level check stays as defense in depth.
+    const isAdminRoute = adminRoutes.some(
+      route => pathname.startsWith(route) || pathname === route
+    )
+    if (isAdminRoute && !hasSuperAdminRole(request)) {
+      const redirectUrl = new URL('/home', request.url)
+      const response = NextResponse.redirect(redirectUrl)
+      response.headers.set('x-middleware-redirect-reason', 'forbidden-not-super-admin')
       return response
     }
 
