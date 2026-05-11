@@ -34,6 +34,13 @@ export const isAdmin = (user: User): boolean => {
   return hasRole(user, 'admin');
 };
 
+// Platform-wide back-office role. Gates admin analytics, cross-tenant user
+// management, infra controls. The bare `admin` role is reserved for the
+// future organization-scoped tier.
+export const isSuperAdmin = (user: User): boolean => {
+  return hasRole(user, 'super_admin');
+};
+
 export const isModerator = (user: User): boolean => {
   return hasRole(user, 'moderator');
 };
@@ -41,11 +48,12 @@ export const isModerator = (user: User): boolean => {
 export const getPrimaryRole = (user: User): string => {
   const roles = getUserRoles(user);
   if (roles.length === 0) return 'User';
-  
+
   // Prioritize roles based on hierarchy
+  if (roles.includes('super_admin')) return 'Super Admin';
   if (roles.includes('admin')) return 'Admin';
   if (roles.includes('moderator')) return 'Moderator';
-  
+
   // Return the first role if no priority roles found
   return roles[0].charAt(0).toUpperCase() + roles[0].slice(1);
 };

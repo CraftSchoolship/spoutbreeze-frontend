@@ -8,7 +8,7 @@ import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import { getLoginUrl } from "@/lib/auth";
-import { User, fetchCurrentUser, getPrimaryRole } from "@/actions/fetchUsers";
+import { User, fetchCurrentUser, getPrimaryRole, isSuperAdmin } from "@/actions/fetchUsers";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { stringToColor } from "@/utils/userAvatarColor";
 import Menu from "@mui/material/Menu";
@@ -126,6 +126,14 @@ const Navbar: React.FC = () => {
       </Link>
       
       <div className="flex items-center gap-4">
+        {user && isSuperAdmin(user) && (
+          <Link
+            href="/admin"
+            className="hidden sm:inline-block text-sm font-semibold text-sky-600 hover:text-sky-700 transition-colors"
+          >
+            Admin
+          </Link>
+        )}
         <Link
           href="/privacy-policy"
           className="hidden sm:inline-block text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors"
@@ -238,19 +246,21 @@ const Navbar: React.FC = () => {
               </Box>
               <Divider sx={{ borderColor: '#f1f5f9' }} />
 
-              <MenuItem
-                onClick={handleSettingsClick}
-                sx={{ 
-                  py: 1.5, 
-                  px: 2,
-                  '&:hover': { backgroundColor: '#f8fafc' },
-                }}
-              >
-                <ListItemIcon>
-                  <SettingsOutlinedIcon fontSize="small" sx={{ color: '#64748b' }} />
-                </ListItemIcon>
-                <span className="text-slate-600">Settings</span>
-              </MenuItem>
+              {!isSuperAdmin(user) && (
+                <MenuItem
+                  onClick={handleSettingsClick}
+                  sx={{
+                    py: 1.5,
+                    px: 2,
+                    '&:hover': { backgroundColor: '#f8fafc' },
+                  }}
+                >
+                  <ListItemIcon>
+                    <SettingsOutlinedIcon fontSize="small" sx={{ color: '#64748b' }} />
+                  </ListItemIcon>
+                  <span className="text-slate-600">Settings</span>
+                </MenuItem>
+              )}
               <MenuItem
                 onClick={handleLogoutClick}
                 disabled={logoutLoading}
