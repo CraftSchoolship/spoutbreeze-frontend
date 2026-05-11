@@ -206,15 +206,26 @@ export async function middleware(request: NextRequest) {
       return response
     }
 
-    // For admin routes, also require the 'super_admin' realm role.
-    // Page-level check stays as defense in depth.
     const isAdminRoute = adminRoutes.some(
       route => pathname.startsWith(route) || pathname === route
     )
-    if (isAdminRoute && !hasSuperAdminRole(request)) {
+    const userIsSuperAdmin = hasSuperAdminRole(request)
+
+    // Non-super-admin trying to enter the admin section.
+    if (isAdminRoute && !userIsSuperAdmin) {
       const redirectUrl = new URL('/home', request.url)
       const response = NextResponse.redirect(redirectUrl)
       response.headers.set('x-middleware-redirect-reason', 'forbidden-not-super-admin')
+      return response
+    }
+
+    // Super admin is a back-office user — bounce them out of the product UI
+    // into the admin dashboard. They keep auth, but can't browse /home,
+    // /settings, etc.
+    if (!isAdminRoute && userIsSuperAdmin) {
+      const redirectUrl = new URL('/admin', request.url)
+      const response = NextResponse.redirect(redirectUrl)
+      response.headers.set('x-middleware-redirect-reason', 'super-admin-redirected-to-admin')
       return response
     }
 
@@ -225,7 +236,9 @@ export async function middleware(request: NextRequest) {
   if (isPublicRoute) {
     // Public route (/) accessed by authenticated user
     if (isAuth) {
-      const redirectUrl = new URL('/home', request.url)
+      // Super admins go straight to the back office; everyone else to /home.
+      const landing = hasSuperAdminRole(request) ? '/admin' : '/home'
+      const redirectUrl = new URL(landing, request.url)
       const response = NextResponse.redirect(redirectUrl)
       response.headers.set('x-middleware-redirect-reason', 'already-authenticated')
       return response

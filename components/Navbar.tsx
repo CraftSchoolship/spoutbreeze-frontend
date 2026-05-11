@@ -246,19 +246,21 @@ const Navbar: React.FC = () => {
               </Box>
               <Divider sx={{ borderColor: '#f1f5f9' }} />
 
-              <MenuItem
-                onClick={handleSettingsClick}
-                sx={{
-                  py: 1.5,
-                  px: 2,
-                  '&:hover': { backgroundColor: '#f8fafc' },
-                }}
-              >
-                <ListItemIcon>
-                  <SettingsOutlinedIcon fontSize="small" sx={{ color: '#64748b' }} />
-                </ListItemIcon>
-                <span className="text-slate-600">Settings</span>
-              </MenuItem>
+              {!isSuperAdmin(user) && (
+                <MenuItem
+                  onClick={handleSettingsClick}
+                  sx={{
+                    py: 1.5,
+                    px: 2,
+                    '&:hover': { backgroundColor: '#f8fafc' },
+                  }}
+                >
+                  <ListItemIcon>
+                    <SettingsOutlinedIcon fontSize="small" sx={{ color: '#64748b' }} />
+                  </ListItemIcon>
+                  <span className="text-slate-600">Settings</span>
+                </MenuItem>
+              )}
               <MenuItem
                 onClick={handleLogoutClick}
                 disabled={logoutLoading}
