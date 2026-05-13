@@ -6,6 +6,7 @@ import GroupIcon from "@mui/icons-material/Group";
 import EventIcon from "@mui/icons-material/Event";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import PaidIcon from "@mui/icons-material/Paid";
+import ApartmentIcon from "@mui/icons-material/Apartment";
 
 import type { PageItem } from "@/components/common/PageLayout";
 
@@ -14,6 +15,7 @@ const iconMap: Record<string, React.ReactNode> = {
   events: <EventIcon fontSize="small" />,
   streaming: <VideocamIcon fontSize="small" />,
   revenue: <PaidIcon fontSize="small" />,
+  organizations: <ApartmentIcon fontSize="small" />,
 };
 
 interface AdminSidebarProps {

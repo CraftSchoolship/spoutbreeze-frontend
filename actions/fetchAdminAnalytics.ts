@@ -77,12 +77,25 @@ export interface RevenueStats {
   latest_transactions: RecentTransaction[];
 }
 
+export interface OrganizationStats {
+  id: string | null;
+  name: string;
+  user_count: number;
+  active_users: number;
+  events_total: number;
+  bbb_meetings_total: number;
+  streams_30d: number;
+  active_subscriptions: number;
+  revenue_30d_usd: number;
+}
+
 export interface AnalyticsOverview {
   generated_at: string;
   users: UsersStats;
   events: EventsStats;
   streaming: StreamingStats;
   revenue: RevenueStats;
+  organizations: OrganizationStats[];
 }
 
 export const fetchAdminAnalyticsOverview = async (): Promise<AnalyticsOverview> => {
