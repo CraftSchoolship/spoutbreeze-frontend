@@ -38,7 +38,7 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 
 import KpiCard from "./KpiCard";
-import type { UsersStats } from "@/actions/fetchAdminAnalytics";
+import type { OrgFilterValue, UsersStats } from "@/actions/fetchAdminAnalytics";
 import { deleteUser, fetchUsers, getUserRoles, User } from "@/actions/fetchUsers";
 import {
   Organization,
@@ -51,9 +51,14 @@ const formatDate = (iso: string) => new Date(iso).toLocaleString();
 interface UsersAnalyticsProps {
   stats: UsersStats;
   currentUser: User | null;
+  orgFilter?: OrgFilterValue;
 }
 
-const UsersAnalytics: React.FC<UsersAnalyticsProps> = ({ stats, currentUser }) => {
+const UsersAnalytics: React.FC<UsersAnalyticsProps> = ({
+  stats,
+  currentUser,
+  orgFilter = null,
+}) => {
   const adminCount = stats.by_role["admin"] ?? 0;
 
   const [users, setUsers] = useState<User[] | null>(null);
@@ -96,9 +101,15 @@ const UsersAnalytics: React.FC<UsersAnalyticsProps> = ({ stats, currentUser }) =
 
   const filtered = useMemo(() => {
     if (!users) return [];
+    let pool = users;
+    if (orgFilter === "unassigned") {
+      pool = pool.filter((u) => u.organization_id === null);
+    } else if (orgFilter) {
+      pool = pool.filter((u) => u.organization_id === orgFilter);
+    }
     const q = search.trim().toLowerCase();
-    if (!q) return users;
-    return users.filter((u) => {
+    if (!q) return pool;
+    return pool.filter((u) => {
       const orgName = u.organization_id ? orgsById.get(u.organization_id)?.name ?? "" : "";
       return (
         u.username.toLowerCase().includes(q) ||
@@ -107,7 +118,13 @@ const UsersAnalytics: React.FC<UsersAnalyticsProps> = ({ stats, currentUser }) =
         orgName.toLowerCase().includes(q)
       );
     });
-  }, [users, search, orgsById]);
+  }, [users, search, orgsById, orgFilter]);
+
+  useEffect(() => {
+    // Reset to first page whenever the org filter changes so the user isn't
+    // stuck on an empty page number after switching scopes.
+    setPage(0);
+  }, [orgFilter]);
 
   const paginated = useMemo(
     () => filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),

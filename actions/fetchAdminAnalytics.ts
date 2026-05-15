@@ -98,9 +98,19 @@ export interface AnalyticsOverview {
   organizations: OrganizationStats[];
 }
 
-export const fetchAdminAnalyticsOverview = async (): Promise<AnalyticsOverview> => {
+// Filter value passed to fetchAdminAnalyticsOverview:
+//   null         -> platform-wide (no filter)
+//   "unassigned" -> users with no organization
+//   <org uuid>   -> scope to that organization
+export type OrgFilterValue = string | null;
+
+export const fetchAdminAnalyticsOverview = async (
+  organizationId: OrgFilterValue = null
+): Promise<AnalyticsOverview> => {
+  const params = organizationId ? { organization_id: organizationId } : undefined;
   const response = await axiosInstance.get<AnalyticsOverview>(
-    "/api/admin/analytics/overview"
+    "/api/admin/analytics/overview",
+    { params }
   );
   return response.data;
 };
