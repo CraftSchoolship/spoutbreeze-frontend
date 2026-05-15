@@ -5,26 +5,25 @@ import PageLayout, { PageItem } from "../common/PageLayout";
 import SettingsSidebar from "./SettingsSidebar";
 import DeleteAccount from "./deleteAccount/DeleteAccount";
 import AccountInfo from "./accountInfo/AccountInfo";
-import AccessControl from "./accessControl/AccessControl";
 import Integrations from "./integrations/Integrations";
 import BillingSettings from "./BillingSettings";
 import StreamingSettings from "./streamingSettings/StreamingSettings";
 import NotificationSettings from "./notifications/NotificationSettings";
-import { fetchCurrentUser, User, isAdmin } from "@/actions/fetchUsers";
+import { fetchCurrentUser } from "@/actions/fetchUsers";
 import LinkIcon from "@mui/icons-material/Link";
 import PaymentIcon from "@mui/icons-material/Payment";
 import VideoSettingsIcon from "@mui/icons-material/VideoSettings";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
+import ApartmentIcon from "@mui/icons-material/Apartment";
+import OrganizationInfo from "./organization/OrganizationInfo";
 
 const SettingsPage: React.FC = () => {
-  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const userData = await fetchCurrentUser();
-        setUser(userData);
+        await fetchCurrentUser();
       } catch (error) {
         console.error("Failed to load user data:", error);
       } finally {
@@ -77,20 +76,16 @@ const SettingsPage: React.FC = () => {
       icon: <LinkIcon fontSize="small" />,
       component: <Integrations />,
     },
-  ];
-
-  const adminItems: PageItem[] = user && isAdmin(user) ? [
     {
-      key: "access control",
-      label: "Access Control",
-      icon: "/sidebar/accessControl_icon.svg",
-      component: <AccessControl />,
+      key: "organization",
+      label: "Organization",
+      icon: <ApartmentIcon fontSize="small" />,
+      component: <OrganizationInfo />,
     },
-  ] : [];
+  ];
 
   const settingsItems: PageItem[] = [
     ...baseItems,
-    ...adminItems,
     {
       key: "delete account",
       label: "Delete Account",
