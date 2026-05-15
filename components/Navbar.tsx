@@ -8,7 +8,7 @@ import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import { getLoginUrl } from "@/lib/auth";
-import { User, fetchCurrentUser, getPrimaryRole, isSuperAdmin } from "@/actions/fetchUsers";
+import { User, fetchCurrentUser, getPrimaryRole, hasRole, isSuperAdmin } from "@/actions/fetchUsers";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { stringToColor } from "@/utils/userAvatarColor";
 import Menu from "@mui/material/Menu";
@@ -132,6 +132,14 @@ const Navbar: React.FC = () => {
             className="hidden sm:inline-block text-sm font-semibold text-sky-600 hover:text-sky-700 transition-colors"
           >
             Admin
+          </Link>
+        )}
+        {user && !isSuperAdmin(user) && hasRole(user, "admin") && (
+          <Link
+            href="/my-org"
+            className="hidden sm:inline-block text-sm font-semibold text-sky-600 hover:text-sky-700 transition-colors"
+          >
+            My Organization
           </Link>
         )}
         <Link
