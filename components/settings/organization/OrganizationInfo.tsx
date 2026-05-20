@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Alert,
   Box,
+  Button,
   Card,
   CardContent,
   Chip,
@@ -13,7 +13,9 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import AddBusinessIcon from "@mui/icons-material/AddBusiness";
 import ApartmentIcon from "@mui/icons-material/Apartment";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import NextLink from "next/link";
 
@@ -71,12 +73,55 @@ const OrganizationInfo: React.FC = () => {
       </Box>
 
       {!org ? (
-        <Alert severity="info" icon={<ApartmentIcon />}>
-          You are not assigned to an organization. A platform administrator can
-          assign you, or your account will be auto-assigned the next time you
-          sign in with an email address whose domain is registered to an
-          organization.
-        </Alert>
+        <Card sx={{ borderRadius: 3, border: "1px solid #e2e8f0", boxShadow: "none" }}>
+          <CardContent>
+            <Stack spacing={2}>
+              <Stack direction="row" spacing={1.5} alignItems="center">
+                <ApartmentIcon sx={{ color: "#0ea5e9" }} />
+                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                  No organization yet
+                </Typography>
+              </Stack>
+              <Typography variant="body2" sx={{ color: "#64748b" }}>
+                You aren&apos;t currently assigned to an organization. Create
+                one yourself and verify your domain via DNS, or join an
+                existing organization with an invite link from your org admin.
+              </Typography>
+
+              <Divider />
+
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={2}
+                alignItems="stretch"
+              >
+                <Button
+                  variant="contained"
+                  startIcon={<AddBusinessIcon />}
+                  component={NextLink}
+                  href="/onboarding?mode=create"
+                  sx={{ flex: 1 }}
+                >
+                  Create an organization
+                </Button>
+                <Button
+                  variant="outlined"
+                  startIcon={<GroupAddIcon />}
+                  component={NextLink}
+                  href="/onboarding?mode=join"
+                  sx={{ flex: 1 }}
+                >
+                  Join with a code
+                </Button>
+              </Stack>
+
+              <Typography variant="caption" sx={{ color: "#94a3b8" }}>
+                If your email matches an organization&apos;s registered
+                domain, you&apos;ll be auto-attached on your next sign-in.
+              </Typography>
+            </Stack>
+          </CardContent>
+        </Card>
       ) : (
         <Card sx={{ borderRadius: 3, border: "1px solid #e2e8f0", boxShadow: "none" }}>
           <CardContent>
