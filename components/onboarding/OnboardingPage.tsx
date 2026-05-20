@@ -34,8 +34,20 @@ const OnboardingPage: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialCode = searchParams.get("code") ?? "";
+  const initialModeParam = searchParams.get("mode");
 
-  const [mode, setMode] = useState<Mode>(initialCode ? "join" : "choose");
+  // Accept ?mode=create|join from external entry points (e.g. Settings →
+  // Organization sends unassigned users here with an explicit hint).
+  // ?code=<code> still wins if both are present.
+  const initialMode: Mode = initialCode
+    ? "join"
+    : initialModeParam === "create"
+      ? "create"
+      : initialModeParam === "join"
+        ? "join"
+        : "choose";
+
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [authChecked, setAuthChecked] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -61,8 +73,10 @@ const OnboardingPage: React.FC = () => {
         router.replace("/");
         return;
       }
-      if (u.has_completed_onboarding) {
-        // Already onboarded — bounce to home (or to /my-org if they're an org admin).
+      // Bounce only if they already belong to an org. Users who completed
+      // onboarding but landed in Unassigned (chose Skip, or were unassigned
+      // by a super-admin) can return here from Settings to set up later.
+      if (u.organization_id) {
         router.replace("/home");
         return;
       }
