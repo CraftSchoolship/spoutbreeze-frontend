@@ -1,11 +1,20 @@
 import axiosInstance from "@/lib/axios";
 import { AxiosError } from "axios";
 
+export interface EmailDomainDetail {
+  domain: string;
+  verified: boolean;
+  verified_at: string | null;
+  verification_record_name: string | null;
+  verification_record_value: string | null;
+}
+
 export interface Organization {
   id: string;
   name: string;
   is_active: boolean;
   email_domains: string[];
+  email_domain_details: EmailDomainDetail[];
   created_at: string;
   updated_at: string;
 }

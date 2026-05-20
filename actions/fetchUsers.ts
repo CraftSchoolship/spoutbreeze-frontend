@@ -13,6 +13,7 @@ export interface User {
   created_at: string;
   is_active: boolean;
   organization_id: string | null;
+  has_completed_onboarding: boolean;
 }
 
 // Helper functions to work with roles
@@ -92,6 +93,23 @@ export const fetchUsers = async (
   } catch (error) {
     console.error("Error fetching users:", error);
     return [];
+  }
+};
+
+export type AssignableRole = "super_admin" | "admin" | "moderator";
+
+export const updateUserRole = async (
+  userId: string,
+  role: AssignableRole
+): Promise<{ success: boolean; error?: string }> => {
+  try {
+    await axiosInstance.put(`/api/users/${userId}/role`, { role });
+    return { success: true };
+  } catch (error) {
+    const ax = error as AxiosError<{ detail?: string }>;
+    const message = ax.response?.data?.detail ?? ax.message ?? "Failed to update role";
+    console.error("Error updating user role:", message);
+    return { success: false, error: message };
   }
 };
 
