@@ -23,6 +23,8 @@ interface PageLayoutProps {
     onItemClick: (key: string) => void;
   }>;
   className?: string;
+  // Optional page-level header rendered above the sidebar+content grid.
+  header?: React.ReactNode;
 }
 
 function PageLayoutContent({
@@ -31,6 +33,7 @@ function PageLayoutContent({
   sectionParam = "section",
   sidebarComponent: SidebarComponent,
   className = "gradient-bg min-h-[calc(100vh-72px)] pb-10",
+  header,
 }: PageLayoutProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -64,6 +67,7 @@ function PageLayoutContent({
         sx={{ flexGrow: 1 }}
         className="px-4 pt-6 sm:px-8 sm:pt-8 lg:px-24 lg:pt-10"
       >
+        {header && <Box sx={{ mb: 3 }}>{header}</Box>}
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 3, lg: 2.5 }}>
             <SidebarComponent

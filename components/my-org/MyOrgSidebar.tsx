@@ -2,33 +2,27 @@
 
 import React from "react";
 import { Box } from "@mui/material";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import DnsIcon from "@mui/icons-material/Dns";
 import GroupIcon from "@mui/icons-material/Group";
-import EventIcon from "@mui/icons-material/Event";
-import VideocamIcon from "@mui/icons-material/Videocam";
-import PaidIcon from "@mui/icons-material/Paid";
-import ApartmentIcon from "@mui/icons-material/Apartment";
+import LinkIcon from "@mui/icons-material/Link";
 
 import type { PageItem } from "@/components/common/PageLayout";
 
 const iconMap: Record<string, React.ReactNode> = {
-  users: <GroupIcon fontSize="small" />,
-  events: <EventIcon fontSize="small" />,
-  streaming: <VideocamIcon fontSize="small" />,
-  revenue: <PaidIcon fontSize="small" />,
-  organizations: <ApartmentIcon fontSize="small" />,
+  overview: <DashboardIcon fontSize="small" />,
+  members: <GroupIcon fontSize="small" />,
+  domains: <DnsIcon fontSize="small" />,
+  invite: <LinkIcon fontSize="small" />,
 };
 
-interface AdminSidebarProps {
+interface MyOrgSidebarProps {
   items: PageItem[];
   activeKey: string;
   onItemClick: (key: string) => void;
 }
 
-const AdminSidebar: React.FC<AdminSidebarProps> = ({
-  items,
-  activeKey,
-  onItemClick,
-}) => {
+const MyOrgSidebar: React.FC<MyOrgSidebarProps> = ({ items, activeKey, onItemClick }) => {
   return (
     <div className="flex flex-row sm:flex-col bg-white rounded-2xl shadow-sm border border-slate-100 overflow-x-auto sm:overflow-visible">
       {items.map((item, index) => {
@@ -73,4 +67,4 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
   );
 };
 
-export default AdminSidebar;
+export default MyOrgSidebar;

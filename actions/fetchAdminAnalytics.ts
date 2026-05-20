@@ -77,17 +77,40 @@ export interface RevenueStats {
   latest_transactions: RecentTransaction[];
 }
 
+export interface OrganizationStats {
+  id: string | null;
+  name: string;
+  user_count: number;
+  active_users: number;
+  events_total: number;
+  bbb_meetings_total: number;
+  streams_30d: number;
+  active_subscriptions: number;
+  revenue_30d_usd: number;
+}
+
 export interface AnalyticsOverview {
   generated_at: string;
   users: UsersStats;
   events: EventsStats;
   streaming: StreamingStats;
   revenue: RevenueStats;
+  organizations: OrganizationStats[];
 }
 
-export const fetchAdminAnalyticsOverview = async (): Promise<AnalyticsOverview> => {
+// Filter value passed to fetchAdminAnalyticsOverview:
+//   null         -> platform-wide (no filter)
+//   "unassigned" -> users with no organization
+//   <org uuid>   -> scope to that organization
+export type OrgFilterValue = string | null;
+
+export const fetchAdminAnalyticsOverview = async (
+  organizationId: OrgFilterValue = null
+): Promise<AnalyticsOverview> => {
+  const params = organizationId ? { organization_id: organizationId } : undefined;
   const response = await axiosInstance.get<AnalyticsOverview>(
-    "/api/admin/analytics/overview"
+    "/api/admin/analytics/overview",
+    { params }
   );
   return response.data;
 };

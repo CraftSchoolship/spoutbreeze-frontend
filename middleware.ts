@@ -90,27 +90,51 @@ async function refreshAccessToken(request: NextRequest): Promise<Response | null
 }
 
 // Define protected and public routes
-const protectedRoutes = ['/home', '/settings', '/admin']
+const protectedRoutes = ['/home', '/settings', '/admin', '/my-org', '/onboarding']
 const adminRoutes = ['/admin']
+// /my-org is an "elevated" route for the organization-scoped admin tier. It is
+// NOT in adminRoutes — that array is reserved for super-admin gating, and
+// super admins are also bounced out of non-/admin routes into /admin.
+const orgAdminRoutes = ['/my-org']
 const authRoutes = ['/auth/callback']
 const publicRoutes = ['/']
 
 // Extract roles from a Keycloak access token payload.
-// Keycloak stores realm roles under realm_access.roles.
+// Keycloak puts realm roles under realm_access.roles and per-client roles
+// under resource_access.<client_id>.roles. The backend's source of truth is
+// the client role list (see extract_keycloak_roles in auth_controller.py),
+// so we must read both: realm roles for legacy compatibility and every
+// client's roles to match the backend.
 function extractRolesFromToken(token: string): string[] {
   const payload = decodeJwtPayload(token)
   if (!payload) return []
+  const out: string[] = []
   const realmRoles = payload?.realm_access?.roles
   if (Array.isArray(realmRoles)) {
-    return realmRoles.filter((r: unknown): r is string => typeof r === 'string')
+    for (const r of realmRoles) if (typeof r === 'string') out.push(r)
   }
-  return []
+  const resourceAccess = payload?.resource_access
+  if (resourceAccess && typeof resourceAccess === 'object') {
+    for (const client of Object.values(resourceAccess)) {
+      const clientRoles = (client as { roles?: unknown })?.roles
+      if (Array.isArray(clientRoles)) {
+        for (const r of clientRoles) if (typeof r === 'string') out.push(r)
+      }
+    }
+  }
+  return out
 }
 
 function hasSuperAdminRole(request: NextRequest): boolean {
   const accessToken = request.cookies.get('access_token')?.value
   if (!accessToken) return false
   return extractRolesFromToken(accessToken).includes('super_admin')
+}
+
+function hasOrgAdminRole(request: NextRequest): boolean {
+  const accessToken = request.cookies.get('access_token')?.value
+  if (!accessToken) return false
+  return extractRolesFromToken(accessToken).includes('admin')
 }
 
 export async function middleware(request: NextRequest) {
@@ -209,9 +233,13 @@ export async function middleware(request: NextRequest) {
     const isAdminRoute = adminRoutes.some(
       route => pathname.startsWith(route) || pathname === route
     )
+    const isOrgAdminRoute = orgAdminRoutes.some(
+      route => pathname.startsWith(route) || pathname === route
+    )
     const userIsSuperAdmin = hasSuperAdminRole(request)
+    const userIsOrgAdmin = hasOrgAdminRole(request)
 
-    // Non-super-admin trying to enter the admin section.
+    // Non-super-admin trying to enter the super-admin section.
     if (isAdminRoute && !userIsSuperAdmin) {
       const redirectUrl = new URL('/home', request.url)
       const response = NextResponse.redirect(redirectUrl)
@@ -220,12 +248,20 @@ export async function middleware(request: NextRequest) {
     }
 
     // Super admin is a back-office user — bounce them out of the product UI
-    // into the admin dashboard. They keep auth, but can't browse /home,
-    // /settings, etc.
+    // (including /my-org) into the admin dashboard. They keep auth, but
+    // can't browse /home, /settings, /my-org, etc.
     if (!isAdminRoute && userIsSuperAdmin) {
       const redirectUrl = new URL('/admin', request.url)
       const response = NextResponse.redirect(redirectUrl)
       response.headers.set('x-middleware-redirect-reason', 'super-admin-redirected-to-admin')
+      return response
+    }
+
+    // Non-org-admin trying to enter /my-org.
+    if (isOrgAdminRoute && !userIsOrgAdmin) {
+      const redirectUrl = new URL('/home', request.url)
+      const response = NextResponse.redirect(redirectUrl)
+      response.headers.set('x-middleware-redirect-reason', 'forbidden-not-org-admin')
       return response
     }
 

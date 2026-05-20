@@ -12,6 +12,8 @@ export interface User {
   roles: string;
   created_at: string;
   is_active: boolean;
+  organization_id: string | null;
+  has_completed_onboarding: boolean;
 }
 
 // Helper functions to work with roles
@@ -82,12 +84,46 @@ export const fetchUserById = async (userId: string): Promise<User | null> => {
   }
 };
 
-export const fetchUsers = async (): Promise<User[]> => {
+export const fetchUsers = async (
+  params: { skip?: number; limit?: number } = {}
+): Promise<User[]> => {
   try {
-    const response = await axiosInstance.get("/api/users");
+    const response = await axiosInstance.get("/api/users", { params });
     return response.data;
   } catch (error) {
     console.error("Error fetching users:", error);
     return [];
+  }
+};
+
+export type AssignableRole = "super_admin" | "admin" | "moderator";
+
+export const updateUserRole = async (
+  userId: string,
+  role: AssignableRole
+): Promise<{ success: boolean; error?: string }> => {
+  try {
+    await axiosInstance.put(`/api/users/${userId}/role`, { role });
+    return { success: true };
+  } catch (error) {
+    const ax = error as AxiosError<{ detail?: string }>;
+    const message = ax.response?.data?.detail ?? ax.message ?? "Failed to update role";
+    console.error("Error updating user role:", message);
+    return { success: false, error: message };
+  }
+};
+
+export const deleteUser = async (
+  userId: string
+): Promise<{ success: boolean; error?: string }> => {
+  try {
+    await axiosInstance.delete(`/api/users/${userId}`);
+    return { success: true };
+  } catch (error) {
+    const ax = error as AxiosError<{ detail?: string }>;
+    const message =
+      ax.response?.data?.detail ?? ax.message ?? "Failed to delete user";
+    console.error("Error deleting user:", message);
+    return { success: false, error: message };
   }
 };

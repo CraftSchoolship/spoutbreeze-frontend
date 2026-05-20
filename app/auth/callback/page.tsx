@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { exchangeCodeForToken } from "@/lib/auth";
+import { fetchCurrentUser, isSuperAdmin } from "@/actions/fetchUsers";
 
 function CallbackContent() {
   const router = useRouter();
@@ -22,8 +23,19 @@ function CallbackContent() {
 
     if (code && typeof code === "string") {
       exchangeCodeForToken(code)
-        .then(() => {
-          router.push("/home"); // Redirect to your app's main page
+        .then(async () => {
+          // Route based on the freshly-authed user's state:
+          //  - super_admin  → /admin (back office)
+          //  - !onboarded   → /onboarding
+          //  - otherwise    → /home
+          const user = await fetchCurrentUser();
+          if (user && isSuperAdmin(user)) {
+            router.push("/admin");
+          } else if (user && !user.has_completed_onboarding) {
+            router.push("/onboarding");
+          } else {
+            router.push("/home");
+          }
         })
         .catch((err) => {
           console.error(err);
