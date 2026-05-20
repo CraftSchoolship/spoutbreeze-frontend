@@ -121,21 +121,35 @@ const OrganizationInfo: React.FC = () => {
                 <Typography variant="body2" sx={{ color: "#64748b", mb: 0.5 }}>
                   Registered email domains
                 </Typography>
-                {org.email_domains.length === 0 ? (
+                {org.email_domain_details.length === 0 ? (
                   <Typography variant="body2" sx={{ color: "#94a3b8", fontStyle: "italic" }}>
                     No email domains registered. New signups must be assigned by
                     a platform admin.
                   </Typography>
                 ) : (
                   <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                    {org.email_domains.map((d) => (
+                    {org.email_domain_details.map((detail) => (
                       <Chip
-                        key={d}
-                        label={d}
+                        key={detail.domain}
+                        label={
+                          detail.verified
+                            ? detail.domain
+                            : `${detail.domain} · pending verification`
+                        }
                         size="small"
                         variant="outlined"
-                        icon={d === matchingDomain ? <VerifiedIcon /> : undefined}
-                        color={d === matchingDomain ? "success" : "default"}
+                        icon={
+                          detail.domain === matchingDomain && detail.verified
+                            ? <VerifiedIcon />
+                            : undefined
+                        }
+                        color={
+                          detail.verified
+                            ? detail.domain === matchingDomain
+                              ? "success"
+                              : "default"
+                            : "warning"
+                        }
                       />
                     ))}
                   </Stack>
