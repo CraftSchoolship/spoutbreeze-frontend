@@ -39,7 +39,14 @@ import HowToRegIcon from "@mui/icons-material/HowToReg";
 
 import KpiCard from "./KpiCard";
 import type { OrgFilterValue, UsersStats } from "@/actions/fetchAdminAnalytics";
-import { deleteUser, fetchUsers, getUserRoles, User } from "@/actions/fetchUsers";
+import {
+  AssignableRole,
+  deleteUser,
+  fetchUsers,
+  getUserRoles,
+  updateUserRole,
+  User,
+} from "@/actions/fetchUsers";
 import {
   Organization,
   assignUserOrganization,
@@ -70,6 +77,7 @@ const UsersAnalytics: React.FC<UsersAnalyticsProps> = ({
   const [toDelete, setToDelete] = useState<User | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [orgUpdatingFor, setOrgUpdatingFor] = useState<string | null>(null);
+  const [roleUpdatingFor, setRoleUpdatingFor] = useState<string | null>(null);
   const [toast, setToast] = useState<{ msg: string; severity: "success" | "error" } | null>(null);
 
   useEffect(() => {
@@ -136,6 +144,31 @@ const UsersAnalytics: React.FC<UsersAnalyticsProps> = ({
     if (u.id === currentUser.id) return false;
     if (getUserRoles(u).includes("super_admin")) return false;
     return true;
+  };
+
+  // The role-update endpoint replaces the user's roles string with a single
+  // value, so we treat one role as primary. Priority mirrors getPrimaryRole.
+  const primaryRole = (u: User): AssignableRole => {
+    const roles = getUserRoles(u);
+    if (roles.includes("super_admin")) return "super_admin";
+    if (roles.includes("admin")) return "admin";
+    return "moderator";
+  };
+
+  const handleRoleChange = async (user: User, newRole: AssignableRole) => {
+    if (primaryRole(user) === newRole) return;
+    if (currentUser && user.id === currentUser.id) return;
+    setRoleUpdatingFor(user.id);
+    const { success, error } = await updateUserRole(user.id, newRole);
+    setRoleUpdatingFor(null);
+    if (success) {
+      setUsers((prev) =>
+        prev ? prev.map((u) => (u.id === user.id ? { ...u, roles: newRole } : u)) : prev
+      );
+      setToast({ msg: `Set ${user.username} to ${newRole}.`, severity: "success" });
+    } else {
+      setToast({ msg: error ?? "Failed to update role.", severity: "error" });
+    }
   };
 
   const handleOrgChange = async (user: User, newOrgId: string | null) => {
@@ -308,10 +341,33 @@ const UsersAnalytics: React.FC<UsersAnalyticsProps> = ({
                         <TableRow key={u.id} hover>
                           <TableCell>{u.username}</TableCell>
                           <TableCell>{u.email}</TableCell>
-                          <TableCell>
-                            <Typography variant="body2" sx={{ color: "#475569" }}>
-                              {u.roles || "—"}
-                            </Typography>
+                          <TableCell sx={{ minWidth: 160 }}>
+                            <Tooltip
+                              title={
+                                currentUser && u.id === currentUser.id
+                                  ? "You cannot change your own role"
+                                  : "Change role"
+                              }
+                            >
+                              <span>
+                                <Select
+                                  size="small"
+                                  value={primaryRole(u)}
+                                  onChange={(e) =>
+                                    handleRoleChange(u, e.target.value as AssignableRole)
+                                  }
+                                  disabled={
+                                    roleUpdatingFor === u.id ||
+                                    Boolean(currentUser && u.id === currentUser.id)
+                                  }
+                                  sx={{ minWidth: 140, fontSize: "0.85rem" }}
+                                >
+                                  <MenuItem value="moderator">Moderator</MenuItem>
+                                  <MenuItem value="admin">Org admin</MenuItem>
+                                  <MenuItem value="super_admin">Super admin</MenuItem>
+                                </Select>
+                              </span>
+                            </Tooltip>
                           </TableCell>
                           <TableCell sx={{ minWidth: 200 }}>
                             <Select
