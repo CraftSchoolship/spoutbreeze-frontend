@@ -90,7 +90,7 @@ async function refreshAccessToken(request: NextRequest): Promise<Response | null
 }
 
 // Define protected and public routes
-const protectedRoutes = ['/home', '/settings', '/admin', '/my-org']
+const protectedRoutes = ['/home', '/settings', '/admin', '/my-org', '/onboarding']
 const adminRoutes = ['/admin']
 // /my-org is an "elevated" route for the organization-scoped admin tier. It is
 // NOT in adminRoutes — that array is reserved for super-admin gating, and
