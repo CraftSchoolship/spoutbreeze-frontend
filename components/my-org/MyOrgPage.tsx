@@ -8,6 +8,8 @@ import PageLayout, { PageItem } from "@/components/common/PageLayout";
 import MyOrgSidebar from "./MyOrgSidebar";
 import MyOrgOverview from "./MyOrgOverview";
 import MyOrgMembers from "./MyOrgMembers";
+import MyOrgInvite from "./MyOrgInvite";
+import MyOrgDomains from "./MyOrgDomains";
 import {
   fetchMyOrganization,
   fetchMyOrgOverview,
@@ -89,16 +91,31 @@ const MyOrgPage: React.FC = () => {
     );
   }
 
+  const refreshOrg = async () => {
+    const fresh = await fetchMyOrganization();
+    if (fresh) setOrg(fresh);
+  };
+
   const items: PageItem[] = [
     {
       key: "overview",
       label: "Overview",
-      component: <MyOrgOverview org={org} data={overview} />,
+      component: <MyOrgOverview org={org} data={overview} onDomainVerified={refreshOrg} />,
     },
     {
       key: "members",
       label: "Members",
       component: <MyOrgMembers currentUser={user} />,
+    },
+    {
+      key: "domains",
+      label: "Domains",
+      component: <MyOrgDomains org={org} onChanged={refreshOrg} />,
+    },
+    {
+      key: "invite",
+      label: "Invite",
+      component: <MyOrgInvite />,
     },
   ];
 

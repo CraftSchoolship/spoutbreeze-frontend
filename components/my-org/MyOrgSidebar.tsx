@@ -3,13 +3,17 @@
 import React from "react";
 import { Box } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import DnsIcon from "@mui/icons-material/Dns";
 import GroupIcon from "@mui/icons-material/Group";
+import LinkIcon from "@mui/icons-material/Link";
 
 import type { PageItem } from "@/components/common/PageLayout";
 
 const iconMap: Record<string, React.ReactNode> = {
   overview: <DashboardIcon fontSize="small" />,
   members: <GroupIcon fontSize="small" />,
+  domains: <DnsIcon fontSize="small" />,
+  invite: <LinkIcon fontSize="small" />,
 };
 
 interface MyOrgSidebarProps {

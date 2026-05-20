@@ -8,19 +8,24 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import PaidIcon from "@mui/icons-material/Paid";
 
 import KpiCard from "@/components/admin/KpiCard";
+import DomainVerificationBanner from "./DomainVerificationBanner";
 import type { AnalyticsOverview } from "@/actions/fetchAdminAnalytics";
 import type { Organization } from "@/actions/fetchOrganizations";
 
 interface MyOrgOverviewProps {
   org: Organization;
   data: AnalyticsOverview;
+  onDomainVerified?: () => void;
 }
 
 const formatCurrency = (n: number): string =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD" });
 
-const MyOrgOverview: React.FC<MyOrgOverviewProps> = ({ org, data }) => {
+const MyOrgOverview: React.FC<MyOrgOverviewProps> = ({ org, data, onDomainVerified }) => {
   const rollup = data.organizations[0];
+  const pending = org.email_domain_details.find(
+    (d) => !d.verified && d.verification_record_name && d.verification_record_value
+  );
 
   return (
     <Stack spacing={3} sx={{ p: { xs: 2, sm: 3 } }}>
@@ -33,6 +38,15 @@ const MyOrgOverview: React.FC<MyOrgOverviewProps> = ({ org, data }) => {
           membership is managed by platform administrators.
         </Typography>
       </Box>
+
+      {pending && pending.verification_record_name && pending.verification_record_value && (
+        <DomainVerificationBanner
+          pendingDomain={pending.domain}
+          recordName={pending.verification_record_name}
+          recordValue={pending.verification_record_value}
+          onVerified={() => onDomainVerified?.()}
+        />
+      )}
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 6, md: 3 }}>
