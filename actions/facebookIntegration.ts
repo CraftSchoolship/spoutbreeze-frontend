@@ -14,6 +14,7 @@ export interface FacebookTokenStatus {
 
 export interface FacebookPage {
     page_id: string;
+    page_name: string | null;
     is_active: boolean;
     is_expired: boolean;
     created_at: string | null;
