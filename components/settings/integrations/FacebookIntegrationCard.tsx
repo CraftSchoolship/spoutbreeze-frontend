@@ -334,7 +334,7 @@ const FacebookIntegrationCard: React.FC = () => {
                   <ListItemText
                     primary={
                       <Typography variant="body2">
-                        Page ID: {page.page_id}
+                        {page.page_name || `Page ID: ${page.page_id}`}
                       </Typography>
                     }
                     secondary={
