@@ -1,4 +1,4 @@
-import { clearTokens } from "@/lib/auth";
+import { firebaseSignOut } from "@/lib/auth";
 import axiosInstance from "@/lib/axios";
 
 export interface LogoutResponse {
@@ -8,21 +8,21 @@ export interface LogoutResponse {
 
 export const logout = async (): Promise<LogoutResponse> => {
   try {
-    // Backend gets refresh_token from cookies automatically
+    // Backend revokes the Firebase refresh tokens and clears the session cookie.
     const response = await axiosInstance.post("/api/logout");
 
-    // Clear sessionStorage (cookies are already cleared by backend)
-    clearTokens();
-    window.location.href = '/';
+    // Sign out of the Firebase SDK session locally, then redirect.
+    await firebaseSignOut();
+    window.location.href = "/";
 
     return response.data;
   } catch (error) {
     console.error("Error logging out:", error);
-    
-    // Even if logout fails, clear sessionStorage and redirect
-    clearTokens();
-    window.location.href = '/';
-    
+
+    // Even if the backend call fails, clear the local Firebase session.
+    await firebaseSignOut();
+    window.location.href = "/";
+
     return {
       message: "Logout completed (with errors)",
       statusCode: 500,

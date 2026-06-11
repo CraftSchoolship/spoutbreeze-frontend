@@ -5,11 +5,10 @@ import Button from "@mui/material/Button";
 import CostCalculator from "./CostCalculator";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
-import { getLoginUrl } from "@/lib/auth";
 import VideoModal from "./VideoModal";
 
 const handleLogin = async () => {
-  window.location.href = await getLoginUrl();
+  window.location.href = "/auth/signin";
 };
 
 const HeroSection: React.FC = () => {
