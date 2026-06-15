@@ -168,17 +168,24 @@ function ResetPassword({ oobCode }: { oobCode: string }) {
 }
 
 function VerifyEmail({ oobCode }: { oobCode: string }) {
+  const router = useRouter();
   const [status, setStatus] = useState<"working" | "done" | "error">("working");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     applyEmailActionCode(oobCode)
-      .then(() => setStatus("done"))
+      .then(() => {
+        setStatus("done");
+        // Onboarding is the next step after sign-up. If this tab still has the
+        // session (same browser as sign-up), it lands there directly; if not,
+        // the middleware bounces to sign-in and then on to onboarding.
+        setTimeout(() => router.push("/onboarding"), 2000);
+      })
       .catch((err) => {
         setError(friendlyError(err));
         setStatus("error");
       });
-  }, [oobCode]);
+  }, [oobCode, router]);
 
   if (status === "working") {
     return <p className="text-slate-500 text-center">Confirming…</p>;
@@ -189,13 +196,15 @@ function VerifyEmail({ oobCode }: { oobCode: string }) {
         {status === "done" ? "Email verified" : "Verification failed"}
       </h1>
       <p className="text-slate-500 mb-6">
-        {status === "done" ? "Your email address has been confirmed." : error}
+        {status === "done"
+          ? "Your email address has been confirmed. Taking you to onboarding…"
+          : error}
       </p>
       <Link
-        href="/auth/signin"
+        href={status === "done" ? "/onboarding" : "/auth/signin"}
         className="block w-full text-center rounded-lg bg-sky-500 text-white font-medium py-2.5 hover:bg-sky-600 transition"
       >
-        Go to sign in
+        {status === "done" ? "Continue" : "Go to sign in"}
       </Link>
     </>
   );

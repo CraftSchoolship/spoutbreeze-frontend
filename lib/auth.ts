@@ -11,6 +11,8 @@ import {
   applyActionCode,
   confirmPasswordReset,
   createUserWithEmailAndPassword,
+  sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
@@ -72,7 +74,25 @@ export const signUpWithEmail = async (
     await updateProfile(cred.user, { displayName });
   }
 
-  return establishSession(cred.user, { firstName, lastName });
+  const result = await establishSession(cred.user, { firstName, lastName });
+  // Fire a verification email (best-effort) now that the session cookie is set.
+  await sendVerificationEmail();
+  return result;
+};
+
+/**
+ * Send an email-verification link to the currently signed-in user via Firebase.
+ * With the project's custom action URL configured, the link lands on our
+ * /auth/action page. Best-effort — the user can re-request later.
+ */
+export const sendVerificationEmail = async () => {
+  const user = getFirebaseAuth().currentUser;
+  if (!user) return;
+  try {
+    await sendEmailVerification(user);
+  } catch {
+    // non-fatal
+  }
 };
 
 /** Google sign-in via popup. */
@@ -85,17 +105,13 @@ export const signInWithGoogle = async () => {
 };
 
 /**
- * Request a password-reset email. Goes through our backend, which generates
- * the Firebase reset code and emails a link to our own /auth/action page via
- * the app's SMTP relay (so we don't depend on the Firebase-hosted handler).
- * Always resolves without revealing whether the email is registered.
+ * Send a password-reset email via Firebase. With the project's custom action
+ * URL configured (Console → Templates), the link lands on our /auth/action
+ * page. Firebase doesn't reveal whether the email exists.
  */
 export const sendResetPasswordEmail = async (email: string) => {
-  await fetch(`${NEXT_PUBLIC_API_URL}/api/password-reset`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: email.trim() }),
-  });
+  const auth = getFirebaseAuth();
+  await sendPasswordResetEmail(auth, email.trim());
 };
 
 /**
@@ -129,6 +145,22 @@ export const refreshSession = async () => {
   const user = auth.currentUser;
   if (!user) return null;
   return establishSession(user);
+};
+
+/** Email of the currently signed-in Firebase user, or null. */
+export const getCurrentUserEmail = (): string | null => {
+  return getFirebaseAuth().currentUser?.email ?? null;
+};
+
+/**
+ * Reload the current Firebase user from the server and report whether their
+ * email is now verified. Returns false if no user is signed in.
+ */
+export const reloadEmailVerified = async (): Promise<boolean> => {
+  const user = getFirebaseAuth().currentUser;
+  if (!user) return false;
+  await user.reload();
+  return user.emailVerified;
 };
 
 /** Sign out of Firebase locally (the backend clears the cookie separately). */
