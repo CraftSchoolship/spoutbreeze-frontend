@@ -472,7 +472,7 @@ const UsersAnalytics: React.FC<UsersAnalyticsProps> = ({
         <DialogContent>
           <DialogContentText>
             This will permanently delete <strong>{toDelete?.username}</strong> ({toDelete?.email})
-            from Keycloak and the database, cancel any active subscription, and remove all related
+            from Firebase and the database, cancel any active subscription, and remove all related
             data. This cannot be undone.
           </DialogContentText>
         </DialogContent>

@@ -1,5 +1,6 @@
 import axiosInstance from "@/lib/axios";
 import { AxiosError } from "axios";
+import { refreshSession } from "@/lib/auth";
 
 import type { Organization } from "@/actions/fetchOrganizations";
 import type { AnalyticsOverview } from "@/actions/fetchAdminAnalytics";
@@ -76,6 +77,9 @@ export interface DomainVerificationStatus {
 export interface CreateMyOrgResponse {
   organization: Organization;
   verification: DomainVerificationStatus;
+  // Backend granted the `admin` role as a Firebase custom claim; the client
+  // must re-establish its session to pick it up.
+  session_refresh_required?: boolean;
 }
 
 export interface OrganizationInviteResponse {
@@ -96,6 +100,16 @@ export const createMyOrganization = async (
       "/api/me/organization/create",
       { name, email_domain: emailDomain }
     );
+    // The backend just granted the `admin` role as a Firebase custom claim,
+    // but our current session cookie predates it. Re-mint the session so the
+    // new role is reflected before navigating to /my-org.
+    if (response.data?.session_refresh_required) {
+      try {
+        await refreshSession();
+      } catch {
+        // Non-fatal — user can sign out/in to pick up the role manually.
+      }
+    }
     return { data: response.data };
   } catch (error) {
     return { error: extractError(error, "Failed to create organization") };

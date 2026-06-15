@@ -7,7 +7,6 @@ import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
-import { getLoginUrl } from "@/lib/auth";
 import { User, fetchCurrentUser, getPrimaryRole, hasRole, isSuperAdmin } from "@/actions/fetchUsers";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { stringToColor } from "@/utils/userAvatarColor";
@@ -38,7 +37,7 @@ function stringAvatar(name: string) {
 }
 
 const handleLogin = async () => {
-  window.location.href = await getLoginUrl();
+  window.location.href = "/auth/signin";
 };
 
 const Navbar: React.FC = () => {

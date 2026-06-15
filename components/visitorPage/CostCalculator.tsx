@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { getLoginUrl } from "@/lib/auth";
 
 // ─── Cost model ───────────────────────────────────────────────────────────────
 // $50 per every 20 moderators, × parallel sessions running concurrently
@@ -256,7 +255,7 @@ export default function CostCalculator() {
   };
 
   const handleSignUp = async () => {
-    window.location.href = await getLoginUrl();
+    window.location.href = "/auth/signin";
   };
 
   return (

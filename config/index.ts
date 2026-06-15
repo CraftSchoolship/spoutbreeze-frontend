@@ -1,7 +1,2 @@
 // config/index.ts
-export const KEYCLOAK_SERVER_URL = process.env.NEXT_PUBLIC_KEYCLOAK_SERVER_URL;
-export const KEYCLOAK_REALM = process.env.NEXT_PUBLIC_KEYCLOAK_REALM;
-export const KEYCLOAK_CLIENT_ID = process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID;
-export const KEYCLOAK_REDIRECT_URI = process.env.NEXT_PUBLIC_KEYCLOAK_REDIRECT_URI;
-export const KEYCLOAK_CLIENT_SECRET = process.env.KEYCLOAK_CLIENT_SECRET;
 export const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;

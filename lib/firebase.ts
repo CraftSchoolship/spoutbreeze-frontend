@@ -1,6 +1,7 @@
 // lib/firebase.ts
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getMessaging, Messaging, getToken, isSupported } from 'firebase/messaging';
+import { getAuth, Auth } from 'firebase/auth';
 
 // Firebase configuration from environment variables
 const firebaseConfig = {
@@ -13,6 +14,7 @@ const firebaseConfig = {
 
 let app: FirebaseApp;
 let messaging: Messaging | null = null;
+let auth: Auth | null = null;
 
 // Initialize Firebase only on the client side
 if (typeof window !== 'undefined') {
@@ -21,7 +23,19 @@ if (typeof window !== 'undefined') {
   } else {
     app = getApp();
   }
+  auth = getAuth(app);
 }
+
+/**
+ * Returns the Firebase Auth instance (client-only). Throws on the server so
+ * callers don't silently get a null and skip auth.
+ */
+export const getFirebaseAuth = (): Auth => {
+  if (!auth) {
+    throw new Error('Firebase Auth is only available in the browser');
+  }
+  return auth;
+};
 
 /**
  * Validates that all required Firebase Web credentials are present.
@@ -116,4 +130,4 @@ export const getFCMToken = async (): Promise<string | null> => {
   }
 };
 
-export { app, messaging };
+export { app, messaging, auth };

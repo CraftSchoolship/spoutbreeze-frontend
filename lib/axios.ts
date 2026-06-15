@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { refreshToken } from './auth'
+import { refreshSession } from './auth'
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -7,114 +7,96 @@ const axiosInstance = axios.create({
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Essential: always send cookies
+  withCredentials: true, // Essential: always send the session cookie
 })
 
-// Track if we're currently refreshing to prevent multiple refresh attempts
-let isRefreshing = false;
-// Cooldown: skip refresh attempts for a period after a failure
-let refreshFailedAt = 0;
-const REFRESH_COOLDOWN_MS = 10_000; // 10 seconds
+// Prevent stampedes of concurrent re-auth attempts.
+let isRefreshing = false
+let refreshFailedAt = 0
+const REFRESH_COOLDOWN_MS = 10_000
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let failedQueue: any[] = [];
+let failedQueue: any[] = []
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: any) => {
   failedQueue.forEach(({ resolve, reject }) => {
-    if (error) {
-      reject(error);
-    } else {
-      resolve(token);
-    }
-  });
+    if (error) reject(error)
+    else resolve(null)
+  })
+  failedQueue = []
+}
 
-  failedQueue = [];
-};
+// Paths where a 401 should NOT bounce the user to sign-in.
+const publicPaths = ['/', '/auth/', '/join/']
+const isPublicPath = (pathname: string) => publicPaths.some(p => pathname.includes(p))
 
-// List of paths where 401 should NOT trigger redirect to login
-const publicPaths = ['/', '/auth/', '/join/'];
+const isServer = typeof window === 'undefined'
 
-const isPublicPath = (pathname: string) => {
-  return publicPaths.some(path => pathname.includes(path));
-};
-
-// Detect server environment
-const isServer = typeof window === 'undefined';
-
-// Simplified response interceptor with loop prevention
+// On 401, try to silently re-establish the backend session from the live
+// Firebase SDK session (it refreshes ID tokens on its own). If the Firebase
+// session is also gone, bounce to the sign-in page.
 axiosInstance.interceptors.response.use(
   (res) => res,
   async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config
 
-    // Never try to refresh the refresh endpoint itself
-    if (originalRequest?.url?.includes('/api/refresh')) {
-      return Promise.reject(error);
+    // Never retry the session endpoint itself.
+    if (originalRequest?.url?.includes('/api/session')) {
+      return Promise.reject(error)
     }
 
-    // If we recently failed a refresh, don't try again (cooldown)
-    const now = Date.now();
+    const now = Date.now()
     if (now - refreshFailedAt < REFRESH_COOLDOWN_MS) {
-      return Promise.reject(error);
+      return Promise.reject(error)
     }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
-        // If we're already refreshing, queue this request
         return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        }).then(() => {
-          return axiosInstance(originalRequest);
-        }).catch(err => {
-          return Promise.reject(err);
-        });
+          failedQueue.push({ resolve, reject })
+        })
+          .then(() => axiosInstance(originalRequest))
+          .catch(err => Promise.reject(err))
       }
 
-      originalRequest._retry = true;
-      isRefreshing = true;
+      originalRequest._retry = true
+      isRefreshing = true
 
       try {
-        const refreshSuccess = await refreshToken();
+        const result = isServer ? null : await refreshSession()
 
-        if (refreshSuccess) {
-          processQueue(null);
-          return axiosInstance(originalRequest);
-        } else {
-          // Mark cooldown so no more refresh attempts for a while
-          refreshFailedAt = Date.now();
-          processQueue(error, null);
-
-          // Only clear access token and redirect to home, not to Keycloak login
-          if (!isServer) {
-            document.cookie = 'access_token=; path=/; max-age=0';
-            const pathname = window.location?.pathname || '/';
-            if (!isPublicPath(pathname)) {
-              window.location.href = '/';
-            }
-          }
-
-          return Promise.reject(error);
+        if (result) {
+          processQueue(null)
+          return axiosInstance(originalRequest)
         }
-      } catch (refreshError) {
-        refreshFailedAt = Date.now();
-        processQueue(refreshError, null);
 
-        // Only clear access token and redirect to home
+        refreshFailedAt = Date.now()
+        processQueue(error)
+
         if (!isServer) {
-          document.cookie = 'access_token=; path=/; max-age=0';
-          const pathname = window.location?.pathname || '/';
+          const pathname = window.location?.pathname || '/'
           if (!isPublicPath(pathname)) {
-            window.location.href = '/';
+            window.location.href = '/auth/signin'
           }
         }
+        return Promise.reject(error)
+      } catch (refreshError) {
+        refreshFailedAt = Date.now()
+        processQueue(refreshError)
 
-        return Promise.reject(refreshError);
+        if (!isServer) {
+          const pathname = window.location?.pathname || '/'
+          if (!isPublicPath(pathname)) {
+            window.location.href = '/auth/signin'
+          }
+        }
+        return Promise.reject(refreshError)
       } finally {
-        isRefreshing = false;
+        isRefreshing = false
       }
     }
 
-    return Promise.reject(error);
+    return Promise.reject(error)
   }
 )
 
