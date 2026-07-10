@@ -346,9 +346,9 @@ const MyOrgDomains: React.FC<MyOrgDomainsProps> = ({ org, onChanged }) => {
                   <Alert severity="info" sx={{ mt: 2 }}>
                     Some DNS providers (OVH, Route 53) want only the prefix
                     in the Name field (e.g. <code>_bluescale-verify</code>) —
-                    they auto-append the parent domain. Others (Cloudflare)
-                    want the full name. If you&apos;re unsure, save the record
-                    then run{" "}
+                    they auto-append the parent domain. Others (Namecheap,
+                    Cloudflare) want the full name shown above. If you&apos;re
+                    unsure, save the record then run{" "}
                     <code>
                       dig TXT {detailDialog.verification_record_name} @8.8.8.8
                     </code>{" "}
