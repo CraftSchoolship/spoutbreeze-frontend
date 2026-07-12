@@ -304,37 +304,6 @@ export default function CostCalculator() {
             </div>
           </div>
 
-          {/* Cost at scale */}
-          <div>
-            <p className="text-xs font-semibold text-slate-500 mb-1.5">Cost as your audience grows</p>
-            <div className="rounded-2xl overflow-hidden border border-slate-100">
-              <div className="grid grid-cols-3 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-400">
-                <span>Attendees</span>
-                <span className="text-center text-red-400">Traditional</span>
-                <span className="text-center text-teal-500">BlueScale</span>
-              </div>
-              {tiers.map((t, i) => (
-                <div
-                  key={i}
-                  className={`grid grid-cols-3 px-3 py-2 text-xs border-t ${i === 1 ? "bg-teal-50 border-teal-100" : "border-slate-100"}`}
-                >
-                  <span className={`font-medium ${i === 1 ? "text-teal-700" : "text-slate-500"}`}>
-                    {t.attendees >= 1000
-                      ? `${(t.attendees / 1000).toFixed(t.attendees % 1000 === 0 ? 0 : 1)}k`
-                      : t.attendees}
-                    {i === 1 && <span className="ml-1 text-teal-400">&#9664;</span>}
-                  </span>
-                  <span className="text-center font-bold text-red-500">{fmt(t.traditional)}</span>
-                  <span className="text-center font-bold text-teal-600">{fmt(t.blueScale)}</span>
-                </div>
-              ))}
-              <div className="px-3 py-1.5 bg-teal-600 flex justify-between items-center">
-                <span className="text-xs text-white/90 font-medium">BlueScale flat &harr; Traditional grows &uarr;</span>
-                <span className="text-xs text-white font-bold">{costs.savingsPct}% saved</span>
-              </div>
-            </div>
-          </div>
-
           {/* 3 differentiators */}
           <div className="flex flex-col gap-1.5">
             {[

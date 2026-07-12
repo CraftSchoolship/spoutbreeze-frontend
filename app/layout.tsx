@@ -10,8 +10,36 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "BlueScale - Where Ideas Scale to New Heights",
-  description: "BlueScale is a modern platform that makes hosting, attending, and managing webinars seamless. Deliver impactful virtual experiences with confidence.",
+  title: "BlueScale — Flat-Rate Webinar Platform (Pay Per Moderator)",
+  description: "BlueScale is a webinar platform with flat pricing: pay only for moderators while attendees watch free via YouTube or Twitch. Save up to 99% vs Zoom or Livestorm.",
+  alternates: {
+    canonical: "https://bluescale.craftschoolship.com/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    "max-image-preview": "large",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "BlueScale",
+    title: "BlueScale — Flat-Rate Webinar Platform (Pay Per Moderator)",
+    description: "Webinar platform with flat pricing: pay only for moderators, attendees watch free via YouTube/Twitch. Save up to 99% vs traditional tools.",
+    url: "https://bluescale.craftschoolship.com/",
+    images: [
+      {
+        url: "https://bluescale.craftschoolship.com/og-image.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BlueScale — Flat-Rate Webinar Platform",
+    description: "Pay per moderator, not per attendee. Save up to 99% vs Zoom/Livestorm.",
+    images: ["https://bluescale.craftschoolship.com/og-image.png"],
+  },
 };
 
 export default function RootLayout({
