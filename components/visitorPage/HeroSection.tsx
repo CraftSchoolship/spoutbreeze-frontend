@@ -30,13 +30,45 @@ const HeroSection: React.FC = () => {
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-slate-900 leading-tight">
-              Welcome to{" "}
-              <span className="gradient-text">BlueScale</span>
+              Pay <span className="gradient-text">per moderator</span>,
+              <br />
+              not per attendee
             </h1>
 
-            <h2 className="text-xl sm:text-2xl font-medium mb-6 text-slate-600">
+            <form
+              action="/api/waitlist"
+              method="POST"
+              className="hero-cta flex flex-col sm:flex-row gap-3 mb-3 max-w-md mx-auto lg:mx-0"
+            >
+              <label htmlFor="hero-email" className="sr-only">
+                Work email
+              </label>
+              <input
+                id="hero-email"
+                name="email"
+                type="email"
+                required
+                placeholder="you@company.com"
+                className="flex-1 px-5 py-3.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
+              />
+              <button
+                type="submit"
+                className="px-6 py-3.5 rounded-xl font-semibold text-sm text-white whitespace-nowrap transition-all"
+                style={{
+                  background: "linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)",
+                  boxShadow: "0 4px 14px rgba(14, 165, 233, 0.35)",
+                }}
+              >
+                Get early access
+              </button>
+            </form>
+            <p className="hero-cta-subtext text-sm text-slate-500 mb-6 max-w-md mx-auto lg:mx-0">
+              Join the waitlist — we&apos;ll show you a custom savings estimate for your audience size.
+            </p>
+
+            <p className="hero-tagline text-xl sm:text-2xl font-medium mb-6 text-slate-600">
               Where Ideas Scale to New Heights
-            </h2>
+            </p>
 
             <p className="text-base sm:text-lg text-slate-500 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
               BlueScale is a modern platform that makes hosting, attending, and managing
