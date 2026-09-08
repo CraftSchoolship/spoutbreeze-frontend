@@ -45,7 +45,7 @@ const TalkToFounders: React.FC = () => {
       {/* Real mailto anchor so crawlers see an outbound link and no-JS visitors can
           still reach us; JS upgrades it to the contact modal. */}
       <a
-        href="mailto:founders@bluescale.com"
+        href="mailto:contact@craftschoolship.com"
         onClick={(e) => {
           e.preventDefault();
           setOpen(true);
@@ -150,10 +150,10 @@ const TalkToFounders: React.FC = () => {
                       <p className="text-xs text-slate-500">
                         Or email us directly at{" "}
                         <a
-                          href="mailto:founders@bluescale.com"
+                          href="mailto:contact@craftschoolship.com"
                           className="font-medium text-sky-600 hover:text-sky-700 transition-colors"
                         >
-                          founders@bluescale.com
+                          contact@craftschoolship.com
                         </a>
                         .
                       </p>
