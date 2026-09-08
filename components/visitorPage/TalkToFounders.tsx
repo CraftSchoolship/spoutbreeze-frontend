@@ -42,12 +42,18 @@ const TalkToFounders: React.FC = () => {
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
+      {/* Real mailto anchor so crawlers see an outbound link and no-JS visitors can
+          still reach us; JS upgrades it to the contact modal. */}
+      <a
+        href="mailto:founders@bluescale.com"
+        onClick={(e) => {
+          e.preventDefault();
+          setOpen(true);
+        }}
         className="font-medium text-sky-600 hover:text-sky-700 transition-colors"
       >
         Talk to the founders
-      </button>
+      </a>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
