@@ -9,7 +9,15 @@ const FooterSection: React.FC = () => {
           <span className="font-semibold gradient-text">BlueScale</span> — webinars that bill per
           moderator, not per attendee.
         </p>
-        <TalkToFounders />
+        <div className="flex items-center gap-5">
+          <a
+            href="/pricing"
+            className="font-medium text-slate-500 hover:text-slate-700 transition-colors"
+          >
+            Pricing
+          </a>
+          <TalkToFounders />
+        </div>
       </div>
     </footer>
   );

@@ -7,10 +7,6 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import VideoModal from "./VideoModal";
 
-const handleLogin = async () => {
-  window.location.href = "/auth/signin";
-};
-
 const HeroSection: React.FC = () => {
   const [showVideo, setShowVideo] = useState(false);
 
@@ -79,7 +75,7 @@ const HeroSection: React.FC = () => {
               <Button
                 variant="contained"
                 size="large"
-                onClick={handleLogin}
+                href="/auth/signin"
                 endIcon={<ArrowForwardIcon />}
                 sx={{
                   background: 'linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)',
