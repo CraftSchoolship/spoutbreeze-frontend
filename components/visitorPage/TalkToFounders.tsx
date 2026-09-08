@@ -140,6 +140,18 @@ const TalkToFounders: React.FC = () => {
                       />
                     </div>
                     {error && <p className="text-xs text-red-500">{error}</p>}
+                    {status === "error" && (
+                      <p className="text-xs text-slate-500">
+                        Or email us directly at{" "}
+                        <a
+                          href="mailto:founders@bluescale.com"
+                          className="font-medium text-sky-600 hover:text-sky-700 transition-colors"
+                        >
+                          founders@bluescale.com
+                        </a>
+                        .
+                      </p>
+                    )}
                     <button
                       type="submit"
                       disabled={status === "sending"}
